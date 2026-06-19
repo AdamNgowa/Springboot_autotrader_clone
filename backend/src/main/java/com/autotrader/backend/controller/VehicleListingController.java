@@ -68,7 +68,7 @@ public class VehicleListingController {
 
         /*
          * 2. PROCESSING THE FILTERED SEARCH
-         * * Forwards the extracted search criteria DTO and pagination configuration down to the service layer.
+         * * Forwards the extracted search criteria DTO(filter) and pagination(pageable) configuration down to the service layer.
          * * The service works with JPA Specifications to build a dynamic SQL query based on what fields were filled,
          * executes the query efficiently using pagination limits, and converts the matching database entities into DTOs.
          */
