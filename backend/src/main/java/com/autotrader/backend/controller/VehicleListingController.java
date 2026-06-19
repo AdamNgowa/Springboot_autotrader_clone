@@ -1,14 +1,15 @@
 package com.autotrader.backend.controller;
 
 import com.autotrader.backend.dto.CreateListingRequest;
+import com.autotrader.backend.dto.VehicleListingResponse;
+import com.autotrader.backend.dto.VehicleListingSearchCriteria;
 import com.autotrader.backend.entity.VehicleListing;
 import com.autotrader.backend.repository.UserRepository;
 import com.autotrader.backend.service.VehicleListingService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -17,11 +18,11 @@ import java.net.URI;
 public class VehicleListingController {
 
     private final VehicleListingService vehicleListingService;
-    private final UserRepository userRepository;
 
-    public VehicleListingController(VehicleListingService vehicleListingService, UserRepository userRepository) {
+
+    public VehicleListingController(VehicleListingService vehicleListingService) {
         this.vehicleListingService = vehicleListingService;
-        this.userRepository = userRepository;
+
     }
 
     /**
@@ -33,7 +34,7 @@ public class VehicleListingController {
      * the frontend request into an instance of CreateListingRequest DTO.
      */
     @PostMapping
-    public ResponseEntity<VehicleListing> createListing(@RequestBody CreateListingRequest request) {
+    public ResponseEntity<VehicleListingResponse> createListing(@RequestBody CreateListingRequest request) {
 
         /*
          * 2. PROCESSING THE DATA
@@ -41,7 +42,7 @@ public class VehicleListingController {
          * business logic (finding the seller, mapping relationships, and executing repository calls).
          * It returns the fully populated, database-saved VehicleListing entity with its generated ID.
          */
-        VehicleListing savedListing = vehicleListingService.createListing(request);
+        VehicleListingResponse savedListing = vehicleListingService.createListing(request);
 
         /*
          * 3. BUILDING THE PERFECT REST RESPONSE
@@ -54,4 +55,12 @@ public class VehicleListingController {
                 .created(URI.create("/listings/" + savedListing.getId()))
                 .body(savedListing);
     }
+
+    @GetMapping
+    public ResponseEntity<Page<VehicleListingResponse>> getListings(
+            @ModelAttribute VehicleListingSearchCriteria filter, Pageable pageable) {
+        Page<VehicleListingResponse> listings = vehicleListingService.getListings(filter, pageable);
+        return ResponseEntity.ok(listings);
+    }
+
 }

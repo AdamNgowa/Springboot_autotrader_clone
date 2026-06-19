@@ -1,10 +1,18 @@
 package com.autotrader.backend.service;
 
 import com.autotrader.backend.dto.CreateListingRequest;
+import com.autotrader.backend.dto.VehicleListingResponse;
+import com.autotrader.backend.dto.VehicleListingSearchCriteria;
+import com.autotrader.backend.entity.Enums.ListingStatus;
 import com.autotrader.backend.entity.User;
 import com.autotrader.backend.entity.VehicleListing;
 import com.autotrader.backend.repository.UserRepository;
 import com.autotrader.backend.repository.VehicleListingRepository;
+import com.autotrader.backend.specification.VehicleListingSpecification;
+import com.autotrader.backend.specification.VehicleListingSpecificationBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,7 +27,21 @@ public class VehicleListingService {
         this.vehicleListingRepository = vehicleListingRepository;
     }
 
-    public VehicleListing createListing(CreateListingRequest request) {
+    private VehicleListingResponse toResponse(
+            VehicleListing listing) {
+
+        return new VehicleListingResponse(
+                listing.getId(),
+                listing.getTitle(),
+                listing.getPrice(),
+                listing.getMake(),
+                listing.getModel(),
+                listing.getYear(),
+                listing.getCity()
+        );
+    }
+
+    public VehicleListingResponse createListing(CreateListingRequest request) {
         //1.Fetch seller: Ownership validation starts here
         User seller = userRepository.findById(request.getSellerId())
                 .orElseThrow(() -> new RuntimeException("Seller Not Found!"));
@@ -27,8 +49,6 @@ public class VehicleListingService {
         //2.Convert DTO -> entity
         VehicleListing listing = new VehicleListing();
 
-        listing.setTitle(request.getTitle());
-        listing.setDescription(request.getDescription());
         listing.setTitle(request.getTitle());
         listing.setDescription(request.getDescription());
         listing.setPrice(request.getPrice());
@@ -47,8 +67,31 @@ public class VehicleListingService {
         // status is NOT from request → controlled by backend
         // createdAt handled by @PrePersist
 
-       return vehicleListingRepository.save(listing);
+        VehicleListing saved = vehicleListingRepository.save(listing);
+
+        return toResponse(saved);
 
     }
+
+
+
+    public Page<VehicleListingResponse> getListings(
+            VehicleListingSearchCriteria filter,
+            Pageable pageable) {
+
+        Specification<VehicleListing> spec =
+                VehicleListingSpecificationBuilder.build(filter)
+                        .and(VehicleListingSpecification.hasStatus(
+                                ListingStatus.ACTIVE
+                        ));
+
+
+        Page<VehicleListing> listings =
+                vehicleListingRepository.findAll(spec, pageable);
+
+        return listings.map(this::toResponse);
+
+    }
+
 
 }
