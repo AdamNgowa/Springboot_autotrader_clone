@@ -27,8 +27,11 @@ public class DataInitializer implements CommandLineRunner {
 
         if (userRepository.findByEmail("john@example.com").isEmpty()){
             userRepository.save(user);
+            System.out.println("User Saved!");
+        } else{
+            System.out.println("User already exists");
         }
-        System.out.println("User Saved!");
+
     }
 
 }

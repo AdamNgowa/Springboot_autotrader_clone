@@ -17,12 +17,16 @@ import java.math.BigDecimal;
 public class ListingDataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final VehicleListingRepository vehicleListingRepository;
     private final VehicleListingService vehicleListingService;
 
     public ListingDataInitializer(UserRepository userRepository,
-                                  VehicleListingService vehicleListingService) {
+                                  VehicleListingService vehicleListingService,
+                                  VehicleListingRepository vehicleListingRepository) {
         this.userRepository = userRepository;
+        this.vehicleListingRepository = vehicleListingRepository;
         this.vehicleListingService = vehicleListingService;
+
     }
 
     @Override
@@ -46,11 +50,11 @@ public class ListingDataInitializer implements CommandLineRunner {
         listing.setCity("Nairobi");
         listing.setStatus(ListingStatus.ACTIVE);
 
-        // IMPORTANT RELATIONSHIP LINE
-        // listing.setSeller(user);
-        // vehicleListingRepository.save(listing);
-        // System.out.println("Vehicle Listing Saved!");
 
-//        vehicleListingService.createListing(listing, user);
+         listing.setSeller(user);
+//         vehicleListingRepository.save(listing);
+         System.out.println("Vehicle Listing Saved!");
+
+
     }
 }
