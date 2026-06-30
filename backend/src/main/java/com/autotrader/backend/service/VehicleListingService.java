@@ -1,8 +1,8 @@
 package com.autotrader.backend.service;
 
-import com.autotrader.backend.dto.CreateListingRequest;
-import com.autotrader.backend.dto.VehicleListingResponse;
-import com.autotrader.backend.dto.VehicleListingSearchCriteria;
+import com.autotrader.backend.dto.vehicleListing.CreateListingRequest;
+import com.autotrader.backend.dto.vehicleListing.VehicleListingResponse;
+import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.entity.Enums.ListingStatus;
 import com.autotrader.backend.entity.User;
 import com.autotrader.backend.entity.VehicleListing;

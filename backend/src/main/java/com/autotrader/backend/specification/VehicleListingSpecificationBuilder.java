@@ -1,6 +1,6 @@
 package com.autotrader.backend.specification;
 
-import com.autotrader.backend.dto.VehicleListingSearchCriteria;
+import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.entity.VehicleListing;
 import org.springframework.data.jpa.domain.Specification;
 

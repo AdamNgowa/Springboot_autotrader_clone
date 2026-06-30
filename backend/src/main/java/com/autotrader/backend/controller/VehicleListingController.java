@@ -1,8 +1,8 @@
 package com.autotrader.backend.controller;
 
-import com.autotrader.backend.dto.CreateListingRequest;
-import com.autotrader.backend.dto.VehicleListingResponse;
-import com.autotrader.backend.dto.VehicleListingSearchCriteria;
+import com.autotrader.backend.dto.vehicleListing.CreateListingRequest;
+import com.autotrader.backend.dto.vehicleListing.VehicleListingResponse;
+import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.service.VehicleListingService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,4 +1,4 @@
-package com.autotrader.backend.dto;
+package com.autotrader.backend.dto.vehicleListing;
 
 import java.math.BigDecimal;
 
