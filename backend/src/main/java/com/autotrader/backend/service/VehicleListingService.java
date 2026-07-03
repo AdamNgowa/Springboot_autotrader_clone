@@ -13,6 +13,8 @@ import com.autotrader.backend.specification.VehicleListingSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,9 +44,14 @@ public class VehicleListingService {
     }
 
     public VehicleListingResponse createListing(CreateListingRequest request) {
-        //1.Fetch seller: Ownership validation starts here
-        User seller = userRepository.findById(request.getSellerId())
-                .orElseThrow(() -> new RuntimeException("Seller Not Found!"));
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User seller = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Authenticated user not found"));
 
         //2.Convert DTO -> entity
         VehicleListing listing = new VehicleListing();
@@ -72,7 +79,6 @@ public class VehicleListingService {
         return toResponse(saved);
 
     }
-
 
 
     public Page<VehicleListingResponse> getListings(

@@ -19,7 +19,7 @@ public class CreateListingRequest {
     private Transmission transmission;
     private BodyType bodyType;
     private String city;
-    private Long sellerId;
+
 
     public CreateListingRequest() {
     }
@@ -35,8 +35,8 @@ public class CreateListingRequest {
             FuelType fuelType,
             Transmission transmission,
             BodyType bodyType,
-            String city,
-            Long sellerId) {
+            String city
+            ) {
         this.title = title;
         this.description = description;
         this.price = price;
@@ -48,7 +48,7 @@ public class CreateListingRequest {
         this.transmission = transmission;
         this.bodyType = bodyType;
         this.city = city;
-        this.sellerId = sellerId;
+
     }
 
     // Getters and Setters
@@ -141,11 +141,5 @@ public class CreateListingRequest {
         this.city = city;
     }
 
-    public Long getSellerId() {
-        return sellerId;
-    }
 
-    public void setSellerId(Long sellerId) {
-        this.sellerId = sellerId;
-    }
 }
