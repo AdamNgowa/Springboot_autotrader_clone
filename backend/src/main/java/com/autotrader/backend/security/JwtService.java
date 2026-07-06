@@ -11,17 +11,18 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.function.Function;
 
-// @Service marks this as a Spring-managed Bean handling specialized business logic
 @Service
 public class JwtService {
 
-    // Injects the secret key from your application.properties configuration file
     @Value("${jwt.secret}")
     private String secret;
 
-    // Injects the token expiration duration (in milliseconds) from your configuration file
     @Value("${jwt.expiration}")
     private long jwtExpiration;
+
+    // ==========================================
+    // LAYER 1: PUBLIC CORE OPERATIONS (Mint & Validate)
+    // ==========================================
 
     // Generates a new cryptographic JWT string token using the user's email as the subject identifier
     public String generateToken(String email){
@@ -34,6 +35,15 @@ public class JwtService {
                 .compact(); // Compress everything into a single web-safe URL string separated by dots
     }
 
+    // Returns true if the token belongs to the matching user email and hasn't crossed its expiration time limit.
+    public boolean isTokenValid(String token, String email){
+        return extractUsername(token).equals(email) && !isTokenExpired(token);
+    }
+
+    // ==========================================
+    // LAYER 2: HIGH-LEVEL EXTRACTION METHODS (The "Public Interface" for Filters)
+    // ==========================================
+
     // High-level method used by filters to safely pull the user email out of a token
     public String extractUsername(String token){
         return extractClaim(token, Claims::getSubject);
@@ -43,6 +53,10 @@ public class JwtService {
     public Date extractExpiration(String token){
         return extractClaim(token, Claims::getExpiration);
     }
+
+    // ==========================================
+    // LAYER 3: INNER GENERIC MACHINERY (The Central Core Unpacker)
+    // ==========================================
 
     /*
         Generic claim extractor.
@@ -56,12 +70,9 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
-    /*
-        Returns true if the token belongs to the matching user email and hasn't crossed its expiration time limit.
-     */
-    public boolean isTokenValid(String token, String email){
-        return extractUsername(token).equals(email) && !isTokenExpired(token);
-    }
+    // ==========================================
+    // LAYER 4: PRIVATE BACK-END TOOLS (The Deep Cryptography)
+    // ==========================================
 
     // Checks if the token's expiration date is sitting behind the current clock time
     private boolean isTokenExpired(String token){

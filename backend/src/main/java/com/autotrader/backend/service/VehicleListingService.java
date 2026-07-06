@@ -17,11 +17,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+// @Service tags this class as a Spring-managed Bean handling core vehicle listing business logic.
 @Service
 public class VehicleListingService {
+
+    // 1. DECLARING PERMANENT SLOTS (DEPENDENCIES)
+    // Note: Changing these to private final is best practice to keep them permanent and immutable.
     public UserRepository userRepository;
     public VehicleListingRepository vehicleListingRepository;
 
+    // 2. CONSTRUCTOR INJECTION
+    // Spring automatically wires the database access repositories into our slots.
     public VehicleListingService(
             UserRepository userRepository,
             VehicleListingRepository vehicleListingRepository) {
@@ -29,9 +35,13 @@ public class VehicleListingService {
         this.vehicleListingRepository = vehicleListingRepository;
     }
 
-    private VehicleListingResponse toResponse(
-            VehicleListing listing) {
+    // ==========================================
+    // MAPPING/CONVERSION UTILITY
+    // ==========================================
 
+    // Private mapper method to translate a raw Database Entity (VehicleListing)
+    // into a clean, customized Data Transfer Object (VehicleListingResponse) sent to the client frontend.
+    private VehicleListingResponse toResponse(VehicleListing listing) {
         return new VehicleListingResponse(
                 listing.getId(),
                 listing.getTitle(),
@@ -43,17 +53,27 @@ public class VehicleListingService {
         );
     }
 
+    // ==========================================
+    // CORE BUSINESS OPERATIONS
+    // ==========================================
+
+    // Handles saving a new vehicle listing submitted by an authenticated user
     public VehicleListingResponse createListing(CreateListingRequest request) {
+
+        // Step 1: Reach into Spring Security's central vault to grab the current user's login passport
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
 
+        // Step 2: Extract the unique identifier (the user's email) from the security passport
         String email = authentication.getName();
 
+        // Step 3: Fetch the complete User record from the database using that email string
         User seller = userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new RuntimeException("Authenticated user not found"));
 
-        //2.Convert DTO -> entity
+        // Step 4: Convert Request DTO -> Database Entity model
+        // We create a fresh, blank database row object and explicitly populate it from the request packet fields
         VehicleListing listing = new VehicleListing();
 
         listing.setTitle(request.getTitle());
@@ -68,36 +88,42 @@ public class VehicleListingService {
         listing.setBodyType(request.getBodyType());
         listing.setCity(request.getCity());
 
-        //IMPORTANT: Server controls relationships
+        // Step 5: Establish the Database Relationship
+        // Connect our fetched 'User' object directly into the listing as the designated owner/seller
         listing.setSeller(seller);
 
-        // status is NOT from request → controlled by backend
-        // createdAt handled by @PrePersist
+        // NOTE ON BACKEND OVERRIDES:
+        // ListingStatus (e.g., ACTIVE/PENDING) is intentionally ignored from the user request;
+        // the backend business rules explicitly control statuses. Timestamps are managed by database hooks like @PrePersist.
 
+        // Step 6: Commit the populated listing object safely into the database tables
         VehicleListing saved = vehicleListingRepository.save(listing);
 
+        // Step 7: Map the saved entity back into a clean payload response and return it
         return toResponse(saved);
-
     }
 
-
+    // Fetches a filtered, dynamic, and paginated list of vehicle listings
     public Page<VehicleListingResponse> getListings(
-            VehicleListingSearchCriteria filter,
-            Pageable pageable) {
+            VehicleListingSearchCriteria filter, // Contains custom search items (e.g., make, model, maxPrice)
+            Pageable pageable) {                 // Holds pagination rules (page number, page size, sort order)
 
+        // Step 1: Combine search conditions dynamically using JPA Specifications
+        // It reads the user criteria fields to build standard SQL queries,
+        // and chains an '.and()' condition ensuring we ONLY display vehicles that are actively on sale.
         Specification<VehicleListing> spec =
                 VehicleListingSpecificationBuilder.build(filter)
                         .and(VehicleListingSpecification.hasStatus(
                                 ListingStatus.ACTIVE
                         ));
 
-
+        // Step 2: Query the database passing both our advanced search filters (spec) and pagination metadata (pageable)
+        // This stops your database from crashing by loading exactly what is needed (e.g., 20 items per page).
         Page<VehicleListing> listings =
                 vehicleListingRepository.findAll(spec, pageable);
 
+        // Step 3: Smoothly loop through the fetched Database Page elements and use the method reference (this::toResponse)
+        // to map every single database item into a clean DTO output structure before returning it.
         return listings.map(this::toResponse);
-
     }
-
-
 }
