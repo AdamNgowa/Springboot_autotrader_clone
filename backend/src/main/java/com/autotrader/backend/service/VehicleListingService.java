@@ -23,8 +23,8 @@ public class VehicleListingService {
 
     // 1. DECLARING PERMANENT SLOTS (DEPENDENCIES)
     // Note: Changing these to private final is best practice to keep them permanent and immutable.
-    public UserRepository userRepository;
-    public VehicleListingRepository vehicleListingRepository;
+    private final UserRepository userRepository;
+    private final VehicleListingRepository vehicleListingRepository;
 
     // 2. CONSTRUCTOR INJECTION
     // Spring automatically wires the database access repositories into our slots.
