@@ -7,6 +7,7 @@ import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.entity.Enums.ListingStatus;
 import com.autotrader.backend.entity.User;
 import com.autotrader.backend.entity.VehicleListing;
+import com.autotrader.backend.exception.AuthenticatedUserNotFoundException;
 import com.autotrader.backend.exception.ListingNotFoundException;
 import com.autotrader.backend.exception.UnauthorizedListingAccessException;
 import com.autotrader.backend.repository.UserRepository;
@@ -25,12 +26,10 @@ import org.springframework.stereotype.Service;
 public class VehicleListingService {
 
     // 1. DECLARING PERMANENT SLOTS (DEPENDENCIES)
-    // Note: Changing these to private final is best practice to keep them permanent and immutable.
     private final UserRepository userRepository;
     private final VehicleListingRepository vehicleListingRepository;
 
     // 2. CONSTRUCTOR INJECTION
-    // Spring automatically wires the database access repositories into our slots.
     public VehicleListingService(
             UserRepository userRepository,
             VehicleListingRepository vehicleListingRepository) {
@@ -42,8 +41,7 @@ public class VehicleListingService {
     // MAPPING/CONVERSION UTILITY
     // ==========================================
 
-    // Private mapper method to translate a raw Database Entity (VehicleListing)
-    // into a clean, customized Data Transfer Object (VehicleListingResponse) sent to the client frontend.
+    // Private mapper method to translate a Database Entity into a clean Data Transfer Object (DTO)
     private VehicleListingResponse toResponse(VehicleListing listing) {
         return new VehicleListingResponse(
                 listing.getId(),
@@ -62,23 +60,11 @@ public class VehicleListingService {
 
     // Handles saving a new vehicle listing submitted by an authenticated user
     public VehicleListingResponse createListing(CreateListingRequest request) {
+        // Fetch the complete authenticated User record using our helper method
+        User seller = getAuthenticatedUser();
 
-        // Step 1: Reach into Spring Security's central vault to grab the current user's login passport
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-
-        // Step 2: Extract the unique identifier (the user's email) from the security passport
-        String email = authentication.getName();
-
-        // Step 3: Fetch the complete User record from the database using that email string
-        User seller = userRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Authenticated user not found"));
-
-        // Step 4: Convert Request DTO -> Database Entity model
-        // We create a fresh, blank database row object and explicitly populate it from the request packet fields
+        // Convert Request DTO -> Database Entity model
         VehicleListing listing = new VehicleListing();
-
         listing.setTitle(request.getTitle());
         listing.setDescription(request.getDescription());
         listing.setPrice(request.getPrice());
@@ -91,70 +77,51 @@ public class VehicleListingService {
         listing.setBodyType(request.getBodyType());
         listing.setCity(request.getCity());
 
-        // Step 5: Establish the Database Relationship
-        // Connect our fetched 'User' object directly into the listing as the designated owner/seller
+        // Connect the current user directly to the listing as the designated owner/seller
         listing.setSeller(seller);
 
-        // NOTE ON BACKEND OVERRIDES:
-        // ListingStatus (e.g., ACTIVE/PENDING) is intentionally ignored from the user request;
-        // the backend business rules explicitly control statuses. Timestamps are managed by database hooks like @PrePersist.
-
-        // Step 6: Commit the populated listing object safely into the database tables
+        // Commit the populated listing object safely into the database tables
         VehicleListing saved = vehicleListingRepository.save(listing);
 
-        // Step 7: Map the saved entity back into a clean payload response and return it
+        // Map the saved entity back into a clean payload response and return it
         return toResponse(saved);
     }
 
     // Fetches a filtered, dynamic, and paginated list of vehicle listings
     public Page<VehicleListingResponse> getListings(
-            VehicleListingSearchCriteria filter, // Contains custom search items (e.g., make, model, maxPrice)
-            Pageable pageable) {                 // Holds pagination rules (page number, page size, sort order)
+            VehicleListingSearchCriteria filter,
+            Pageable pageable) {
 
-        // Step 1: Combine search conditions dynamically using JPA Specifications
-        // It reads the user criteria fields to build standard SQL queries,
-        // and chains an '.and()' condition ensuring we ONLY display vehicles that are actively on sale.
+        // Combine search conditions dynamically using JPA Specifications, ensuring we ONLY fetch ACTIVE listings
         Specification<VehicleListing> spec =
                 VehicleListingSpecificationBuilder.build(filter)
                         .and(VehicleListingSpecification.hasStatus(
                                 ListingStatus.ACTIVE
                         ));
 
-        // Step 2: Query the database passing both our advanced search filters (spec) and pagination metadata (pageable)
-        // This stops your database from crashing by loading exactly what is needed (e.g., 20 items per page).
+        // Query the database passing both search filters and pagination rules
         Page<VehicleListing> listings =
                 vehicleListingRepository.findAll(spec, pageable);
 
-        // Step 3: Smoothly loop through the fetched Database Page elements and use the method reference (this::toResponse)
-        // to map every single database item into a clean DTO output structure before returning it.
+        // Map every entity inside the page results into a clean DTO output structure
         return listings.map(this::toResponse);
     }
 
+    // Handles overwriting properties on an active vehicle listing
     public VehicleListingResponse updateListing(
-            Long ListingId,
+            Long listingId,
             UpdateListingRequest request
     ){
-        //1.Find the vehicle listing being updated
-        VehicleListing listing = vehicleListingRepository.findById(ListingId)
-                .orElseThrow(()->
-                        new ListingNotFoundException("Listing not found"));
+        // 1. Fetch the listing via helper (automatically handles validation and soft-deletes check)
+        VehicleListing listing = getActiveListing(listingId);
 
-        //2.Get the authenticated user's email
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // 2. Fetch the authenticated context user via helper
+        User authenticatedUser = getAuthenticatedUser();
 
-        String email = authentication.getName();
+        // 3. Verify security ownership credentials via helper
+        verifyOwnership(listing, authenticatedUser);
 
-        //3.Load the authenticated user from the database
-        User authenticatedUser = userRepository.findByEmail(email)
-                .orElseThrow(()->
-                        new RuntimeException("Authenticated user not found"));
-
-        //4.Verify ownership
-        if(!listing.getSeller().getId().equals(authenticatedUser.getId())){
-            throw new UnauthorizedListingAccessException("You are not allowed to updated this listing");
-        }
-
-        //5. update the editable fields
+        // 4. Overwrite the editable fields with fresh request data
         listing.setTitle(request.getTitle());
         listing.setDescription(request.getDescription());
         listing.setPrice(request.getPrice());
@@ -167,47 +134,69 @@ public class VehicleListingService {
         listing.setBodyType(request.getBodyType());
         listing.setCity(request.getCity());
 
+        // Persist modifications back to database
         VehicleListing updatedListing = vehicleListingRepository.save(listing);
 
         return toResponse(updatedListing);
-
     }
 
-    public void deleteListing(Long listingId){
-        //1.Find the listing
-        VehicleListing listing = vehicleListingRepository.findById(listingId)
-                .orElseThrow(()->
-                        new ListingNotFoundException("Listing not found"));
-        //2.Get the authenticated user's email
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
+    // Performs a safe logical soft-delete on an active listing
+    public void deleteListing(Long listingId) {
+        // 1. Fetch the active listing via helper
+        VehicleListing listing = getActiveListing(listingId);
 
-        //3.Load the authenticated user
-        User authenticatedUser = userRepository.findByEmail(email)
-                .orElseThrow(()->
-                        new RuntimeException("Authenticated User not found"));
+        // 2. Fetch the current user via helper
+        User authenticatedUser = getAuthenticatedUser();
 
+        // 3. Verify the caller owns the listing before deletion processing
+        verifyOwnership(listing, authenticatedUser);
 
-        //4. Verify ownership
-        if(!listing.getSeller().getId().equals(authenticatedUser.getId())) {
-            throw new UnauthorizedListingAccessException("You are not allowed to delete this listing");
-        }
+        // 4. Toggle the listing status to DELETED instead of wiping the raw database record
+        listing.setStatus(ListingStatus.DELETED);
 
-        //4.Delete the listing
-        vehicleListingRepository.delete(listing);
+        // Save status change state to database
+        vehicleListingRepository.save(listing);
     }
 
+    // Fetches a single specific active vehicle listing package
     public VehicleListingResponse getListingById(Long listingId){
-        VehicleListing listing = vehicleListingRepository.findById(listingId)
-                .orElseThrow(()->
-                        new ListingNotFoundException("Listing not found"));
-
-        if (listing.getStatus() == ListingStatus.DELETED){
-            throw new ListingNotFoundException("Listing not found");
-        }
-
+        // Fetch the active listing via helper and parse directly into response structure
+        VehicleListing listing = getActiveListing(listingId);
         return toResponse(listing);
     }
 
+    // ==========================================
+    // PRIVATE HELPER METHODS (Reusable Subroutines)
+    // ==========================================
+
+    // Reach into the Spring Security context to grab and load the active authenticated user profile
+    private User getAuthenticatedUser(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return userRepository.findByEmail(email)
+                .orElseThrow(()->
+                        new AuthenticatedUserNotFoundException("Authenticated user not found"));
+    }
+
+    // Queries a database listing record by ID and throws an error if it doesn't exist or is soft-deleted
+    private VehicleListing getActiveListing(Long listingId) {
+        VehicleListing listing = vehicleListingRepository.findById(listingId)
+                .orElseThrow(() ->
+                        new ListingNotFoundException("Listing not found"));
+
+        if (listing.getStatus() == ListingStatus.DELETED) {
+            throw new ListingNotFoundException("Listing not found");
+        }
+
+        return listing;
+    }
+
+    // Halts processing and throws an unauthorized exception if the context user doesn't own the targeting listing
+    private void verifyOwnership(VehicleListing listing, User authenticatedUser) {
+        if (!listing.getSeller().getId().equals(authenticatedUser.getId())) {
+            throw new UnauthorizedListingAccessException(
+                    "You are not allowed to modify this listing");
+        }
+    }
 }
