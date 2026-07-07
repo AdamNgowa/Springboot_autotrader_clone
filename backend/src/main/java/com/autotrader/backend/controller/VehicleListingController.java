@@ -1,6 +1,7 @@
 package com.autotrader.backend.controller;
 
 import com.autotrader.backend.dto.vehicleListing.CreateListingRequest;
+import com.autotrader.backend.dto.vehicleListing.UpdateListingRequest;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingResponse;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.service.VehicleListingService;
@@ -81,6 +82,25 @@ public class VehicleListingController {
          * * .body(listings): Embeds the paginated catalog results metadata and data arrays into the HTTP JSON response body.
          */
         return ResponseEntity.ok(listings);
+
     }
+
+    // Maps HTTP PUT requests hitting "/{id}" (e.g., PUT /listings/12). Used to update an existing resource.
+    @PutMapping("/{id}")
+    public ResponseEntity<VehicleListingResponse> updateListing(
+            // @PathVariable extracts the "{id}" directly from the URL and injects it into this Long parameter.
+            @PathVariable Long id,
+
+            // @RequestBody tells Jackson to unpack the incoming JSON body into an UpdateListingRequest object.
+            @RequestBody UpdateListingRequest request) {
+
+        // Passes the ID and data to the service layer to update the database record and get the updated mapping.
+        VehicleListingResponse updatedListing =
+                vehicleListingService.updateListing(id, request);
+
+        // Wraps the final response payload inside a standard HTTP 200 OK status wrapper.
+        return ResponseEntity.ok(updatedListing);
+    }
+
 
 }

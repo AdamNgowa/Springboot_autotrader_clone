@@ -1,6 +1,7 @@
 package com.autotrader.backend.service;
 
 import com.autotrader.backend.dto.vehicleListing.CreateListingRequest;
+import com.autotrader.backend.dto.vehicleListing.UpdateListingRequest;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingResponse;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.entity.Enums.ListingStatus;
@@ -125,5 +126,48 @@ public class VehicleListingService {
         // Step 3: Smoothly loop through the fetched Database Page elements and use the method reference (this::toResponse)
         // to map every single database item into a clean DTO output structure before returning it.
         return listings.map(this::toResponse);
+    }
+
+    public VehicleListingResponse updateListing(
+            Long ListingId,
+            UpdateListingRequest request
+    ){
+        //1.Find the vehicle listing being updated
+        VehicleListing listing = vehicleListingRepository.findById(ListingId)
+                .orElseThrow(()->
+                        new RuntimeException("Listing not found"));
+
+        //2.Get the authenticated user's email
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        //3.Load the authenticated user from the database
+        User authenticatedUser = userRepository.findByEmail(email)
+                .orElseThrow(()->
+                        new RuntimeException("Authenticated user not found"));
+
+        //4.Verify ownership
+        if(!listing.getSeller().getId().equals(authenticatedUser.getId())){
+            throw new RuntimeException("You are not allowed to updated this listing");
+        }
+
+        //5. update the editable fields
+        listing.setTitle(request.getTitle());
+        listing.setDescription(request.getDescription());
+        listing.setPrice(request.getPrice());
+        listing.setYear(request.getYear());
+        listing.setMake(request.getMake());
+        listing.setModel(request.getModel());
+        listing.setMileage(request.getMileage());
+        listing.setFuelType(request.getFuelType());
+        listing.setTransmission(request.getTransmission());
+        listing.setBodyType(request.getBodyType());
+        listing.setCity(request.getCity());
+
+        VehicleListing updatedListing = vehicleListingRepository.save(listing);
+
+        return toResponse(updatedListing);
+
     }
 }
