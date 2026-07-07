@@ -16,7 +16,6 @@ import com.autotrader.backend.specification.VehicleListingSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -189,15 +188,6 @@ public class VehicleListingService {
                 .orElseThrow(()->
                         new RuntimeException("Authenticated User not found"));
 
-        System.out.println("========== DELETE DEBUG ==========");
-        System.out.println("JWT email: " + email);
-        System.out.println("Authenticated user ID: " + authenticatedUser.getId());
-        System.out.println("Authenticated user email: " + authenticatedUser.getEmail());
-
-        System.out.println("Listing ID: " + listing.getId());
-        System.out.println("Listing seller ID: " + listing.getSeller().getId());
-        System.out.println("Listing seller email: " + listing.getSeller().getEmail());
-        System.out.println("==================================");
 
         //4. Verify ownership
         if(!listing.getSeller().getId().equals(authenticatedUser.getId())) {
@@ -206,6 +196,18 @@ public class VehicleListingService {
 
         //4.Delete the listing
         vehicleListingRepository.delete(listing);
+    }
+
+    public VehicleListingResponse getListingById(Long listingId){
+        VehicleListing listing = vehicleListingRepository.findById(listingId)
+                .orElseThrow(()->
+                        new ListingNotFoundException("Listing not found"));
+
+        if (listing.getStatus() == ListingStatus.DELETED){
+            throw new ListingNotFoundException("Listing not found");
+        }
+
+        return toResponse(listing);
     }
 
 }

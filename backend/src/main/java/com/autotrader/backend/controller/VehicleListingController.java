@@ -110,6 +110,16 @@ public class VehicleListingController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<VehicleListingResponse> getListingById(
+            @PathVariable Long id) {
+
+        VehicleListingResponse listing =
+                vehicleListingService.getListingById(id);
+
+        return ResponseEntity.ok(listing);
+    }
+
 
 
 }
