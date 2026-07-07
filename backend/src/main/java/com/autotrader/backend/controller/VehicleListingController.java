@@ -102,5 +102,14 @@ public class VehicleListingController {
         return ResponseEntity.ok(updatedListing);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteListing(
+            @PathVariable Long id
+    ) {
+        vehicleListingService.deleteListing(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 }

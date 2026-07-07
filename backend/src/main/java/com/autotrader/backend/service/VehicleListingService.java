@@ -16,6 +16,7 @@ import com.autotrader.backend.specification.VehicleListingSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -172,4 +173,39 @@ public class VehicleListingService {
         return toResponse(updatedListing);
 
     }
+
+    public void deleteListing(Long listingId){
+        //1.Find the listing
+        VehicleListing listing = vehicleListingRepository.findById(listingId)
+                .orElseThrow(()->
+                        new ListingNotFoundException("Listing not found"));
+        //2.Get the authenticated user's email
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        //3.Load the authenticated user
+        User authenticatedUser = userRepository.findByEmail(email)
+                .orElseThrow(()->
+                        new RuntimeException("Authenticated User not found"));
+
+        System.out.println("========== DELETE DEBUG ==========");
+        System.out.println("JWT email: " + email);
+        System.out.println("Authenticated user ID: " + authenticatedUser.getId());
+        System.out.println("Authenticated user email: " + authenticatedUser.getEmail());
+
+        System.out.println("Listing ID: " + listing.getId());
+        System.out.println("Listing seller ID: " + listing.getSeller().getId());
+        System.out.println("Listing seller email: " + listing.getSeller().getEmail());
+        System.out.println("==================================");
+
+        //4. Verify ownership
+        if(!listing.getSeller().getId().equals(authenticatedUser.getId())) {
+            throw new UnauthorizedListingAccessException("You are not allowed to delete this listing");
+        }
+
+        //4.Delete the listing
+        vehicleListingRepository.delete(listing);
+    }
+
 }
