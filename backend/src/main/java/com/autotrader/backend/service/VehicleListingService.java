@@ -7,6 +7,8 @@ import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.entity.Enums.ListingStatus;
 import com.autotrader.backend.entity.User;
 import com.autotrader.backend.entity.VehicleListing;
+import com.autotrader.backend.exception.ListingNotFoundException;
+import com.autotrader.backend.exception.UnauthorizedListingAccessException;
 import com.autotrader.backend.repository.UserRepository;
 import com.autotrader.backend.repository.VehicleListingRepository;
 import com.autotrader.backend.specification.VehicleListingSpecification;
@@ -135,7 +137,7 @@ public class VehicleListingService {
         //1.Find the vehicle listing being updated
         VehicleListing listing = vehicleListingRepository.findById(ListingId)
                 .orElseThrow(()->
-                        new RuntimeException("Listing not found"));
+                        new ListingNotFoundException("Listing not found"));
 
         //2.Get the authenticated user's email
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -149,7 +151,7 @@ public class VehicleListingService {
 
         //4.Verify ownership
         if(!listing.getSeller().getId().equals(authenticatedUser.getId())){
-            throw new RuntimeException("You are not allowed to updated this listing");
+            throw new UnauthorizedListingAccessException("You are not allowed to updated this listing");
         }
 
         //5. update the editable fields
