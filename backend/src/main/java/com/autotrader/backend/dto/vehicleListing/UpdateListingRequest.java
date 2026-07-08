@@ -3,21 +3,52 @@ package com.autotrader.backend.dto.vehicleListing;
 import com.autotrader.backend.entity.Enums.BodyType;
 import com.autotrader.backend.entity.Enums.FuelType;
 import com.autotrader.backend.entity.Enums.Transmission;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 
 public class UpdateListingRequest {
 
+    @NotBlank(message = "Title is required")
+    @Size(max = 100, message = "Title must not exceed 100 characters")
     private String title;
+
+    @NotBlank(message = "Description is required")
+    @Size(max = 2000, message = "Description must not exceed 2000 characters")
     private String description;
+
+    @NotNull(message = "Price is required")
+    @Positive(message = "Price must be greater than zero")
     private BigDecimal price;
-    private int year;
+
+    @NotNull(message = "Year is required")
+    @Min(value = 1886, message = "Year must be 1886 or later")
+    @Max(value = 2100, message = "Year must not exceed 2100")
+    private Integer year;
+
+    @NotBlank(message = "Make is required")
+    @Size(max = 50, message = "Make must not exceed 50 characters")
     private String make;
+
+    @NotBlank(message = "Model is required")
+    @Size(max = 50, message = "Model must not exceed 50 characters")
     private String model;
-    private int mileage;
+
+    @NotNull(message = "Mileage is required")
+    @PositiveOrZero(message = "Mileage cannot be negative")
+    private Integer mileage;
+
+    @NotNull(message = "Fuel type is required")
     private FuelType fuelType;
+
+    @NotNull(message = "Transmission is required")
     private Transmission transmission;
+
+    @NotNull(message = "Body type is required")
     private BodyType bodyType;
+
+    @NotBlank(message = "City is required")
+    @Size(max = 100, message = "City must not exceed 100 characters")
     private String city;
 
     public UpdateListingRequest() {

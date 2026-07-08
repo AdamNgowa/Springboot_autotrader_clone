@@ -1,6 +1,7 @@
 package com.autotrader.backend.dto.error;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ErrorResponse {
 
@@ -9,6 +10,7 @@ public class ErrorResponse {
     private String error;
     private String message;
     private String path;
+    private List<ValidationError> validationErrors;
 
     public ErrorResponse() {
     }
@@ -23,6 +25,20 @@ public class ErrorResponse {
         this.error = error;
         this.message = message;
         this.path = path;
+    }
+
+    public ErrorResponse(LocalDateTime timestamp,
+                         int status,
+                         String error,
+                         String message,
+                         String path,
+                         List<ValidationError> validationErrors) {
+        this.timestamp = timestamp;
+        this.status = status;
+        this.error = error;
+        this.message = message;
+        this.path = path;
+        this.validationErrors = validationErrors;
     }
 
     public LocalDateTime getTimestamp() {
@@ -63,5 +79,13 @@ public class ErrorResponse {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public List<ValidationError> getValidationErrors() {
+        return validationErrors;
+    }
+
+    public void setValidationErrors(List<ValidationError> validationErrors) {
+        this.validationErrors = validationErrors;
     }
 }

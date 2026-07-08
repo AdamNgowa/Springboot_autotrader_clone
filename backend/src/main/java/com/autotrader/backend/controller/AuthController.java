@@ -4,6 +4,7 @@ import com.autotrader.backend.dto.auth.AuthResponse;
 import com.autotrader.backend.dto.auth.LoginRequest;
 import com.autotrader.backend.dto.auth.RegisterRequest;
 import com.autotrader.backend.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,7 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(
             // @RequestBody acts like a funnel. It intercepts the incoming raw JSON text payload from the client's
             // request body and instructs Jackson (Spring's JSON parser) to parse it directly into a Java 'RegisterRequest' object.
+            @Valid
             @RequestBody RegisterRequest request
     ) {
         // Delegate the core registration business logic task to our injected AuthService
@@ -52,6 +54,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             // Intercepts and parses the raw JSON login credentials body into a 'LoginRequest' object
+            @Valid
             @RequestBody LoginRequest request
     ) {
         // Pass the credentials to our service layer to verify the email/password combination and mint a token

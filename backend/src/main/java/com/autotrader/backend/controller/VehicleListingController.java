@@ -5,6 +5,7 @@ import com.autotrader.backend.dto.vehicleListing.UpdateListingRequest;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingResponse;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.service.VehicleListingService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,9 @@ public class VehicleListingController {
      * the frontend request into an instance of CreateListingRequest DTO.
      */
     @PostMapping
-    public ResponseEntity<VehicleListingResponse> createListing(@RequestBody CreateListingRequest request) {
+    public ResponseEntity<VehicleListingResponse> createListing(
+            @Valid
+            @RequestBody CreateListingRequest request) {
 
         /*
          * 2. PROCESSING THE DATA
@@ -92,6 +95,7 @@ public class VehicleListingController {
             @PathVariable Long id,
 
             // @RequestBody tells Jackson to unpack the incoming JSON body into an UpdateListingRequest object.
+            @Valid
             @RequestBody UpdateListingRequest request) {
 
         // Passes the ID and data to the service layer to update the database record and get the updated mapping.
