@@ -10,6 +10,7 @@ import com.autotrader.backend.entity.VehicleListing;
 import com.autotrader.backend.exception.AuthenticatedUserNotFoundException;
 import com.autotrader.backend.exception.ListingNotFoundException;
 import com.autotrader.backend.exception.UnauthorizedListingAccessException;
+import com.autotrader.backend.mapper.VehicleListingMapper;
 import com.autotrader.backend.repository.UserRepository;
 import com.autotrader.backend.repository.VehicleListingRepository;
 import com.autotrader.backend.specification.VehicleListingSpecification;
@@ -28,31 +29,19 @@ public class VehicleListingService {
     // 1. DECLARING PERMANENT SLOTS (DEPENDENCIES)
     private final UserRepository userRepository;
     private final VehicleListingRepository vehicleListingRepository;
+    private final VehicleListingMapper vehicleListingMapper;
 
     // 2. CONSTRUCTOR INJECTION
     public VehicleListingService(
             UserRepository userRepository,
-            VehicleListingRepository vehicleListingRepository) {
+            VehicleListingRepository vehicleListingRepository, VehicleListingMapper vehicleListingMapper) {
         this.userRepository = userRepository;
         this.vehicleListingRepository = vehicleListingRepository;
+        this.vehicleListingMapper = vehicleListingMapper;
     }
 
-    // ==========================================
-    // MAPPING/CONVERSION UTILITY
-    // ==========================================
 
-    // Private mapper method to translate a Database Entity into a clean Data Transfer Object (DTO)
-    private VehicleListingResponse toResponse(VehicleListing listing) {
-        return new VehicleListingResponse(
-                listing.getId(),
-                listing.getTitle(),
-                listing.getPrice(),
-                listing.getMake(),
-                listing.getModel(),
-                listing.getYear(),
-                listing.getCity()
-        );
-    }
+
 
     // ==========================================
     // CORE BUSINESS OPERATIONS
@@ -64,18 +53,7 @@ public class VehicleListingService {
         User seller = getAuthenticatedUser();
 
         // Convert Request DTO -> Database Entity model
-        VehicleListing listing = new VehicleListing();
-        listing.setTitle(request.getTitle());
-        listing.setDescription(request.getDescription());
-        listing.setPrice(request.getPrice());
-        listing.setYear(request.getYear());
-        listing.setMake(request.getMake());
-        listing.setModel(request.getModel());
-        listing.setMileage(request.getMileage());
-        listing.setFuelType(request.getFuelType());
-        listing.setTransmission(request.getTransmission());
-        listing.setBodyType(request.getBodyType());
-        listing.setCity(request.getCity());
+        VehicleListing listing = vehicleListingMapper.toEntity(request);
 
         // Connect the current user directly to the listing as the designated owner/seller
         listing.setSeller(seller);
@@ -84,7 +62,7 @@ public class VehicleListingService {
         VehicleListing saved = vehicleListingRepository.save(listing);
 
         // Map the saved entity back into a clean payload response and return it
-        return toResponse(saved);
+        return vehicleListingMapper.toResponse(saved);
     }
 
     // Fetches a filtered, dynamic, and paginated list of vehicle listings
@@ -104,7 +82,7 @@ public class VehicleListingService {
                 vehicleListingRepository.findAll(spec, pageable);
 
         // Map every entity inside the page results into a clean DTO output structure
-        return listings.map(this::toResponse);
+        return listings.map(vehicleListingMapper::toResponse);
     }
 
     // Handles overwriting properties on an active vehicle listing
@@ -122,22 +100,12 @@ public class VehicleListingService {
         verifyOwnership(listing, authenticatedUser);
 
         // 4. Overwrite the editable fields with fresh request data
-        listing.setTitle(request.getTitle());
-        listing.setDescription(request.getDescription());
-        listing.setPrice(request.getPrice());
-        listing.setYear(request.getYear());
-        listing.setMake(request.getMake());
-        listing.setModel(request.getModel());
-        listing.setMileage(request.getMileage());
-        listing.setFuelType(request.getFuelType());
-        listing.setTransmission(request.getTransmission());
-        listing.setBodyType(request.getBodyType());
-        listing.setCity(request.getCity());
+        vehicleListingMapper.updateEntity(request, listing);
 
         // Persist modifications back to database
         VehicleListing updatedListing = vehicleListingRepository.save(listing);
 
-        return toResponse(updatedListing);
+        return vehicleListingMapper.toResponse(updatedListing);
     }
 
     // Performs a safe logical soft-delete on an active listing
@@ -162,7 +130,7 @@ public class VehicleListingService {
     public VehicleListingResponse getListingById(Long listingId){
         // Fetch the active listing via helper and parse directly into response structure
         VehicleListing listing = getActiveListing(listingId);
-        return toResponse(listing);
+        return vehicleListingMapper.toResponse(listing);
     }
 
     // ==========================================
