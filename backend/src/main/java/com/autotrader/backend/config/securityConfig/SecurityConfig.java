@@ -103,13 +103,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         /*
                          2. Public Exceptions:
+                         - .requestMatchers().permitAll().any().authenticated() essentially allows anyone to access those routes
+                         - Originally only had auth/register and auth/login
                          If someone wants to sign up (/auth/register) or log in (/auth/login), they obviously
                          don't have a token or account yet. This tells Spring: "Let absolutely anyone (permitAll())
                          hit these two specific URLs without requiring any security clearance."
                          */
                         .requestMatchers(
                                 "/auth/register",
-                                "/auth/login"
+                                "/auth/login",
+
+                                //OpenAPI specification endpoint
+                                "/v3/api-docs/**",
+
+                                //Swagger UI static resources
+                                "/swagger-ui/**",
+
+                                //Compatibility endpoint
+                                "/swagger-ui.html"
                         ).permitAll()
 
                         /*

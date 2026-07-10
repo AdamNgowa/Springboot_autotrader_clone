@@ -4,6 +4,8 @@ import com.autotrader.backend.dto.auth.AuthResponse;
 import com.autotrader.backend.dto.auth.LoginRequest;
 import com.autotrader.backend.dto.auth.RegisterRequest;
 import com.autotrader.backend.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 // @RequestMapping sets up the base URL prefix for this entire file. Every endpoint inside will start with "/auth".
 @RequestMapping("/auth")
+@Tag(
+        name = "Authentication",
+        description = "Endpoints for user registration and authentication"
+)
 public class AuthController {
 
     // 1. DECLARING PERMANENT SLOTS (DEPENDENCIES)
@@ -34,6 +40,14 @@ public class AuthController {
 
     // @PostMapping maps this method to HTTP POST requests hitting "/auth/register".
     // ResponseEntity<AuthResponse> is a wrapper object that lets us control both the body data and the HTTP status code.
+    @Operation(
+            summary = "Register a new user",
+            description = """
+                Creates a new user account after validating the submitted information.
+                The password is securely hashed using BCrypt, the user is assigned the USER role,
+                and a JWT is returned upon successful registration.
+                """
+    )
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
             // @RequestBody acts like a funnel. It intercepts the incoming raw JSON text payload from the client's
@@ -51,6 +65,13 @@ public class AuthController {
     }
 
     // @PostMapping maps this method to HTTP POST requests hitting "/auth/login".
+    @Operation(
+            summary = "Authenticate a user",
+            description = """
+                Verifies the supplied email and password.
+                If the credentials are valid, a JWT is generated and returned to the client.
+                """
+    )
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             // Intercepts and parses the raw JSON login credentials body into a 'LoginRequest' object

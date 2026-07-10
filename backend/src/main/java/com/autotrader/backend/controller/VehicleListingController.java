@@ -5,6 +5,9 @@ import com.autotrader.backend.dto.vehicleListing.UpdateListingRequest;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingResponse;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.service.VehicleListingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +18,11 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("/listings")
+@Tag(
+        name = "Vehicle Listings",
+        description = "Operations for creating,retrieving, updating and deleting listings"
+)
+@SecurityRequirement(name = "bearerAuth")
 public class VehicleListingController {
 
     private final VehicleListingService vehicleListingService;
@@ -31,6 +39,14 @@ public class VehicleListingController {
      * * @RequestBody: Automatically converts (deserializes) the incoming JSON payload from
      * the frontend request into an instance of CreateListingRequest DTO.
      */
+
+    @Operation(
+            summary = "Create a vehicle listing",
+            description = """
+                Creates a new vehicle listing for the currently authenticated user.
+                The seller is determined from the authenticated JWT rather than supplied by the client.
+                """
+    )
     @PostMapping
     public ResponseEntity<VehicleListingResponse> createListing(
             @Valid
@@ -66,6 +82,13 @@ public class VehicleListingController {
      * * Pageable: Automatically binds page control query parameters (e.g., ?page=0&size=20&sort=price,asc) from the URL
      * into a Spring Data configuration object.
      */
+    @Operation(
+            summary = "Retrieve vehicle listings",
+            description = """
+                Returns a paginated list of ACTIVE vehicle listings.
+                Supports optional filtering by search criteria.
+                """
+    )
     @GetMapping
     public ResponseEntity<Page<VehicleListingResponse>> getListings(
             @ModelAttribute VehicleListingSearchCriteria filter, Pageable pageable) {
@@ -88,6 +111,30 @@ public class VehicleListingController {
 
     }
 
+    @Operation(
+            summary = "Retrieve a vehicle listing",
+            description = """
+                Returns a single ACTIVE vehicle listing by its identifier.
+                Soft-deleted listings are treated as not found.
+                """
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<VehicleListingResponse> getListingById(
+            @PathVariable Long id) {
+
+        VehicleListingResponse listing =
+                vehicleListingService.getListingById(id);
+
+        return ResponseEntity.ok(listing);
+    }
+
+    @Operation(
+            summary = "Update a vehicle listing",
+            description = """
+                Updates an existing vehicle listing.
+                Only the owner of the listing is authorized to perform this operation.
+                """
+    )
     // Maps HTTP PUT requests hitting "/{id}" (e.g., PUT /listings/12). Used to update an existing resource.
     @PutMapping("/{id}")
     public ResponseEntity<VehicleListingResponse> updateListing(
@@ -106,6 +153,14 @@ public class VehicleListingController {
         return ResponseEntity.ok(updatedListing);
     }
 
+    @Operation(
+            summary = "Delete a vehicle listing",
+            description = """
+                Soft deletes a vehicle listing.
+                The listing remains in the database but becomes inaccessible through normal API operations.
+                Only the owner may perform this action.
+                """
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteListing(
             @PathVariable Long id
@@ -114,15 +169,7 @@ public class VehicleListingController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<VehicleListingResponse> getListingById(
-            @PathVariable Long id) {
 
-        VehicleListingResponse listing =
-                vehicleListingService.getListingById(id);
-
-        return ResponseEntity.ok(listing);
-    }
 
 
 
