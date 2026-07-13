@@ -7,6 +7,8 @@ import com.autotrader.backend.entity.Enums.Transmission;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "vehicle_listings")
@@ -51,9 +53,15 @@ public class VehicleListing {
     @Column(nullable = false)
     private ListingStatus status;
 
+    //Seller relationship
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
+
+    //Image relationship
+    @OneToMany(mappedBy = "vehicleListing")
+    private List<VehicleImage> images = new ArrayList<>();
+
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -181,5 +189,13 @@ public class VehicleListing {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public List<VehicleImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<VehicleImage> images ) {
+        this.images = images;
     }
 }
