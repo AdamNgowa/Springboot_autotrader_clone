@@ -7,19 +7,15 @@ import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.entity.Enums.ListingStatus;
 import com.autotrader.backend.entity.User;
 import com.autotrader.backend.entity.VehicleListing;
-import com.autotrader.backend.exception.AuthenticatedUserNotFoundException;
 import com.autotrader.backend.exception.ListingNotFoundException;
 import com.autotrader.backend.exception.UnauthorizedListingAccessException;
 import com.autotrader.backend.mapper.VehicleListingMapper;
-import com.autotrader.backend.repository.UserRepository;
 import com.autotrader.backend.repository.VehicleListingRepository;
 import com.autotrader.backend.specification.VehicleListingSpecification;
 import com.autotrader.backend.specification.VehicleListingSpecificationBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 // @Service tags this class as a Spring-managed Bean handling core vehicle listing business logic.
@@ -27,20 +23,18 @@ import org.springframework.stereotype.Service;
 public class VehicleListingService {
 
     // 1. DECLARING PERMANENT SLOTS (DEPENDENCIES)
-    private final UserRepository userRepository;
     private final VehicleListingRepository vehicleListingRepository;
     private final VehicleListingMapper vehicleListingMapper;
+    private final CurrentUserService currentUserService;
 
     // 2. CONSTRUCTOR INJECTION
     public VehicleListingService(
-            UserRepository userRepository,
-            VehicleListingRepository vehicleListingRepository, VehicleListingMapper vehicleListingMapper) {
-        this.userRepository = userRepository;
+            VehicleListingRepository vehicleListingRepository, VehicleListingMapper vehicleListingMapper, CurrentUserService currentUserService) {
+
         this.vehicleListingRepository = vehicleListingRepository;
         this.vehicleListingMapper = vehicleListingMapper;
+        this.currentUserService = currentUserService;
     }
-
-
 
 
     // ==========================================
@@ -50,7 +44,7 @@ public class VehicleListingService {
     // Handles saving a new vehicle listing submitted by an authenticated user
     public VehicleListingResponse createListing(CreateListingRequest request) {
         // Fetch the complete authenticated User record using our helper method
-        User seller = getAuthenticatedUser();
+        User seller = currentUserService.getAuthenticatedUser();
 
         // Convert Request DTO -> Database Entity model
         VehicleListing listing = vehicleListingMapper.toEntity(request);
@@ -89,12 +83,13 @@ public class VehicleListingService {
     public VehicleListingResponse updateListing(
             Long listingId,
             UpdateListingRequest request
-    ){
+    ) {
         // 1. Fetch the listing via helper (automatically handles validation and soft-deletes check)
         VehicleListing listing = getActiveListing(listingId);
 
         // 2. Fetch the authenticated context user via helper
-        User authenticatedUser = getAuthenticatedUser();
+
+        User authenticatedUser = currentUserService.getAuthenticatedUser();
 
         // 3. Verify security ownership credentials via helper
         verifyOwnership(listing, authenticatedUser);
@@ -114,7 +109,7 @@ public class VehicleListingService {
         VehicleListing listing = getActiveListing(listingId);
 
         // 2. Fetch the current user via helper
-        User authenticatedUser = getAuthenticatedUser();
+        User authenticatedUser = currentUserService.getAuthenticatedUser();
 
         // 3. Verify the caller owns the listing before deletion processing
         verifyOwnership(listing, authenticatedUser);
@@ -127,28 +122,19 @@ public class VehicleListingService {
     }
 
     // Fetches a single specific active vehicle listing package
-    public VehicleListingResponse getListingById(Long listingId){
+    public VehicleListingResponse getListingById(Long listingId) {
         // Fetch the active listing via helper and parse directly into response structure
         VehicleListing listing = getActiveListing(listingId);
         return vehicleListingMapper.toResponse(listing);
     }
 
     // ==========================================
-    // PRIVATE HELPER METHODS (Reusable Subroutines)
+    // SHARED HELPER METHODS
     // ==========================================
 
-    // Reach into the Spring Security context to grab and load the active authenticated user profile
-    private User getAuthenticatedUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        return userRepository.findByEmail(email)
-                .orElseThrow(()->
-                        new AuthenticatedUserNotFoundException("Authenticated user not found"));
-    }
 
     // Queries a database listing record by ID and throws an error if it doesn't exist or is soft-deleted
-    private VehicleListing getActiveListing(Long listingId) {
+    public VehicleListing getActiveListing(Long listingId) {
         VehicleListing listing = vehicleListingRepository.findById(listingId)
                 .orElseThrow(() ->
                         new ListingNotFoundException("Listing not found"));
@@ -161,7 +147,7 @@ public class VehicleListingService {
     }
 
     // Halts processing and throws an unauthorized exception if the context user doesn't own the targeting listing
-    private void verifyOwnership(VehicleListing listing, User authenticatedUser) {
+    public void verifyOwnership(VehicleListing listing, User authenticatedUser) {
         if (!listing.getSeller().getId().equals(authenticatedUser.getId())) {
             throw new UnauthorizedListingAccessException(
                     "You are not allowed to modify this listing");
