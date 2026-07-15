@@ -34,7 +34,9 @@ public class ImageService {
         this.fileStorageService = fileStorageService;
     }
     /*
-        CORE BUSINESS OPERATIONS
+        -----------------------------------
+             CORE BUSINESS OPERATIONS
+        -----------------------------------
      */
 
     public void uploadImage(Long listingId, MultipartFile file) {
@@ -74,6 +76,12 @@ public class ImageService {
             throw new RuntimeException("Failed to read upload file",e);
         }
 
+        //vehicleImageRepository.existsByVehicleListing(listing) returns true or false
+        boolean listingAlreadyHasImages =
+                vehicleImageRepository.existsByVehicleListing(listing);
+        //When the query returns false , the primary image should be toggled to true and vice versa
+        boolean primaryImage = !listingAlreadyHasImages;
+
         /*
         Here we save the entity data. Not the actual image but the image's information.
         Things like original and storage file names,content type etc.
@@ -84,7 +92,7 @@ public class ImageService {
         We call deleteFile from file storage here as for the sake of double persistence
          */
         try {
-            VehicleImage vehicleImage = createVehicleImage(listing,file,storageFilename);
+            VehicleImage vehicleImage = createVehicleImage(listing,file,storageFilename,primaryImage);
             vehicleImageRepository.save(vehicleImage);
 
         } catch (Exception e) {
@@ -113,12 +121,14 @@ public class ImageService {
     private VehicleImage createVehicleImage(
             VehicleListing listing,
             MultipartFile file,
-            String storageFilename
+            String storageFilename,
+            boolean primaryImage
     ){
         //Create new vehicle image object
         VehicleImage vehicleImage = new VehicleImage();
 
         //Populate fields for the newly created object
+        vehicleImage.setPrimaryImage(primaryImage);
         vehicleImage.setVehicleListing(listing);
         vehicleImage.setOriginalFilename(file.getOriginalFilename());
         vehicleImage.setStorageFilename(storageFilename);
