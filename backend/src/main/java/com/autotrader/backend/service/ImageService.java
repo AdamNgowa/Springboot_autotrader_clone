@@ -1,6 +1,7 @@
 package com.autotrader.backend.service;
 
 import com.autotrader.backend.entity.User;
+import com.autotrader.backend.entity.VehicleImage;
 import com.autotrader.backend.entity.VehicleListing;
 import com.autotrader.backend.repository.VehicleImageRepository;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,13 @@ public class ImageService {
 
         String storageFilename = generateStorageFilename(file);
 
+        /*
+        Here is where we actually save th image itself
+
+        Try adding the file to the file system (Could be local .i.e on disk or remote like amazon S3)
+
+        If saving file to file system fails throw an exception, here we throw an IOException
+         */
         try {
                 fileStorageService.saveFile(
                         file.getInputStream(),
@@ -64,6 +72,24 @@ public class ImageService {
                 );
         } catch (IOException e) {
             throw new RuntimeException("Failed to read upload file",e);
+        }
+
+        /*
+        Here we save the entity data. Not the actual image but the image's information.
+        Things like original and storage file names,content type etc.
+
+        Try saving the image metadata, if anything goes wrong return exception.
+        Here we actually rethrow the exception so that we can have the cause of the issue
+
+        We call deleteFile from file storage here as for the sake of double persistence
+         */
+        try {
+            VehicleImage vehicleImage = createVehicleImage(listing,file,storageFilename);
+            vehicleImageRepository.save(vehicleImage);
+
+        } catch (Exception e) {
+            fileStorageService.deleteFile(storageFilename);
+            throw e;
         }
     }
 
@@ -82,5 +108,23 @@ public class ImageService {
         return UUID.randomUUID() + extension;
 
 
+    }
+
+    private VehicleImage createVehicleImage(
+            VehicleListing listing,
+            MultipartFile file,
+            String storageFilename
+    ){
+        //Create new vehicle image object
+        VehicleImage vehicleImage = new VehicleImage();
+
+        //Populate fields for the newly created object
+        vehicleImage.setVehicleListing(listing);
+        vehicleImage.setOriginalFilename(file.getOriginalFilename());
+        vehicleImage.setStorageFilename(storageFilename);
+        vehicleImage.setContentType(file.getContentType());
+        vehicleImage.setFileSize(file.getSize());
+
+        return vehicleImage;
     }
 }
