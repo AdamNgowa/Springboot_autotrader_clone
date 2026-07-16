@@ -1,6 +1,9 @@
 package com.autotrader.backend.dto.vehicleListing;
 
+import com.autotrader.backend.dto.image.ImageResponse;
+
 import java.math.BigDecimal;
+import java.util.List;
 
 public class VehicleListingResponse {
 
@@ -11,6 +14,7 @@ public class VehicleListingResponse {
     private String model;
     private Integer year;
     private String city;
+    private List<ImageResponse> images;
 
     // Default Constructor
     public VehicleListingResponse() {
@@ -98,5 +102,14 @@ public class VehicleListingResponse {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    //Images
+    public List<ImageResponse> getImages(){
+        return images;
+    }
+
+    public void setImages(List<ImageResponse> images){
+        this.images = images;
     }
 }
