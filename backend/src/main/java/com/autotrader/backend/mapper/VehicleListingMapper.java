@@ -23,7 +23,7 @@ public class VehicleListingMapper {
     // then it populates it with data with getters from vehicle listing entity
     // This process amounts to converting an entity to a request
     public VehicleListingResponse toResponse(VehicleListing listing) {
-        return new VehicleListingResponse(
+        VehicleListingResponse response = new VehicleListingResponse(
                 listing.getId(),
                 listing.getTitle(),
                 listing.getPrice(),
@@ -32,6 +32,13 @@ public class VehicleListingMapper {
                 listing.getYear(),
                 listing.getCity()
         );
+
+        response.setImages(
+                toImageResponses(listing.getImages())
+        );
+
+        return response;
+
     }
 
     //Converts a vehicleImage entity into a imageResponse DTO

@@ -5,6 +5,7 @@ import com.autotrader.backend.entity.Enums.FuelType;
 import com.autotrader.backend.entity.Enums.ListingStatus;
 import com.autotrader.backend.entity.Enums.Transmission;
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,7 +60,14 @@ public class VehicleListing {
     private User seller;
 
     //Image relationship
-    @OneToMany(mappedBy = "vehicleListing")
+    // mappedBy = "vehicleListing" tells spring not to create another foreign key
+    //Instead it should use the relationship already defined by the vehicleListing field inside vehicleImage
+    // That's why the string is "vehicleListing" it literally refers to this field
+    @OneToMany(
+            mappedBy = "vehicleListing",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<VehicleImage> images = new ArrayList<>();
 
 
@@ -195,7 +203,7 @@ public class VehicleListing {
         return images;
     }
 
-    public void setImages(List<VehicleImage> images ) {
+    public void setImages(List<VehicleImage> images) {
         this.images = images;
     }
 }
