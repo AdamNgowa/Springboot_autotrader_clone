@@ -8,6 +8,8 @@ import com.autotrader.backend.entity.VehicleImage;
 import com.autotrader.backend.entity.VehicleListing;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 //@Component registers this mapper as a Spring managed-bean
 //Although it doesn't contain business logic other classes depend on it
 //to translate between entities and DTOs
@@ -42,6 +44,14 @@ public class VehicleListingMapper {
         response.setDisplayOrder(image.getDisplayOrder());
 
         return response;
+    }
+
+    //Converts a collection of VehicleImage entities into image response DTOs
+    private List<ImageResponse> toImageResponses(List<VehicleImage> images) {
+        return images.stream()
+                .map(this::toImageResponse)
+                .toList();
+
     }
 
     //Converts create listing dto into a vehicle listing entity
