@@ -46,27 +46,38 @@ public class VehicleListingMapper {
         ImageResponse response = new ImageResponse();
 
         response.setId(image.getId());
-        response.setImageUrl("/uploads/"+image.getStorageFilename());
+        response.setImageUrl("/uploads/" + image.getStorageFilename());
         response.setPrimaryImage(image.isPrimaryImage());
         response.setDisplayOrder(image.getDisplayOrder());
 
         return response;
     }
 
-    //Converts a collection of VehicleImage entities into image response DTOs
+    // Converts a collection of VehicleImage entities into image response DTOs
     private List<ImageResponse> toImageResponses(List<VehicleImage> images) {
-        return images.stream()
-                .map(this::toImageResponse)
-                .toList();
 
+        // 1. .stream() turns the 'images' list into a Stream (like a conveyor belt).
+        //    Instead of dealing with the whole list at once, it lets us process
+        //    each individual VehicleImage object one by one as it flows down the line.
+        return images.stream()
+
+                // 2. .map() is a transformation step. It takes whatever is on the conveyor belt,
+                //    changes it, and passes the new version forward.
+                //    'this::toImageResponse' tells Java: "Take the current VehicleImage, pass it
+                //    into our single 'toImageResponse' method, and output the resulting ImageResponse."
+                .map(this::toImageResponse)
+
+                // 3. .toList() is the final step. It stops the conveyor belt, collects all
+                //    of the newly created ImageResponse objects, and gathers them into a
+                //    brand new List that gets returned by the method.
+                .toList();
     }
 
     //Converts create listing dto into a vehicle listing entity
     //Creates a new vehicle listing entity and populates it with response data with getters
     //from create listing request
     //This process amounts to converting a request to an entity
-    public VehicleListing toEntity(CreateListingRequest request){
-
+    public VehicleListing toEntity(CreateListingRequest request) {
 
 
         VehicleListing listing = new VehicleListing();
