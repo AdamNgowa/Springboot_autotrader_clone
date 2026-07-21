@@ -124,7 +124,7 @@ public class VehicleListingService {
     // Fetches a single specific active vehicle listing package
     public VehicleListingResponse getListingById(Long listingId) {
         // Fetch the active listing via helper and parse directly into response structure
-        VehicleListing listing = getActiveListing(listingId);
+        VehicleListing listing = getActiveListingWithImages(listingId);
         return vehicleListingMapper.toResponse(listing);
     }
 
@@ -145,6 +145,21 @@ public class VehicleListingService {
 
         return listing;
     }
+
+    //Queries an active listing together with tis images in a single database query
+    public VehicleListing getActiveListingWithImages(Long listingId){
+        VehicleListing listing = vehicleListingRepository.findByIdWithImages(listingId)
+                .orElseThrow(() ->
+                        new ListingNotFoundException("Listing not found"));
+
+        if(listing.getStatus() == ListingStatus.DELETED) {
+            throw new ListingNotFoundException("Listing not found");
+        }
+
+        return listing;
+    }
+
+
 
     // Halts processing and throws an unauthorized exception if the context user doesn't own the targeting listing
     public void verifyOwnership(VehicleListing listing, User authenticatedUser) {

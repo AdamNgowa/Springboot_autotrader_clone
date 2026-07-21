@@ -68,8 +68,8 @@ public class VehicleListingMapper {
                 .map(this::toImageResponse)
 
                 // 3. .toList() is the final step. It stops the conveyor belt, collects all
-                //    of the newly created ImageResponse objects, and gathers them into a
-                //    brand new List that gets returned by the method.
+                //    the newly created ImageResponse objects, and gathers them into a
+                //    brand-new List that gets returned by the method.
                 .toList();
     }
 

@@ -120,7 +120,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
 
                                 //Compatibility endpoint
-                                "/swagger-ui.html"
+                                "/swagger-ui.html",
+
+                                "/uploads/**"
                         ).permitAll()
 
                         /*

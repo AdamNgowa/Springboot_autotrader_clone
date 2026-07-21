@@ -8,6 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+//@Configuration means this app contributes to the configuration of the application context
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
