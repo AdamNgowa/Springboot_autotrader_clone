@@ -13,6 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 // @Configuration means this class contains configuration that should be executed when the application starts.
 // Configuration acts like a blueprint. Without this annotation, Spring would completely ignore this class.
@@ -42,6 +47,34 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    //For requests coming from the specified url these methods and headers are allowed
+    /*
+    "/**" means e.g /auth/login ,/auth/register ,/listings , /uploads etc
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+
+        configuration.setAllowedMethods(List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "OPTIONS"
+        ));
+
+        configuration.setAllowedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
     // 4. AUTHENTICATION PROVIDER BEAN
@@ -87,6 +120,7 @@ public class SecurityConfig {
                  Disabling it allows us to make POST/PUT requests seamlessly.
                  */
                 .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
 
                 // Make the Application Stateless
                 /*
