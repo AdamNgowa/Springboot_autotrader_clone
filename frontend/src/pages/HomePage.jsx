@@ -4,6 +4,7 @@ import { login } from "../api/authApi";
 function HomePage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
 
   function handleEmailChange(ev) {
     setEmail(ev.target.value);
@@ -16,9 +17,14 @@ function HomePage() {
   async function handleSubmit(ev) {
     ev.preventDefault();
     console.log("Form submitted");
-    const response = await login({ email, password });
-    localStorage.setItem("jwt", response.token);
-    console.log("local storage token:", localStorage.getItem("jwt"));
+    try {
+      await login({ email, password });
+      setLoginError("");
+      console.log("local storage token:", localStorage.getItem("jwt"));
+    } catch (error) {
+      setLoginError(error.message);
+      console.error(error);
+    }
   }
 
   return (
@@ -36,6 +42,7 @@ function HomePage() {
         <button className="bg-blue-700" type="submit">
           Login
         </button>
+        {loginError && <p className="mt-2 text-red-600">{loginError} </p>}
       </form>
 
       <br />
