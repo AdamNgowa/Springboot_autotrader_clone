@@ -120,6 +120,7 @@ public class SecurityConfig {
                  Disabling it allows us to make POST/PUT requests seamlessly.
                  */
                 .csrf(csrf -> csrf.disable())
+                //Enables CORS support in spring security
                 .cors(Customizer.withDefaults())
 
                 // Make the Application Stateless

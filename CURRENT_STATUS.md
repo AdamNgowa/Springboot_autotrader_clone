@@ -2,35 +2,32 @@
 
 ## Current Phase
 
-### Phase 7 — Image Management: **Completed**
+### Phase 8 — React Frontend: **In Progress**
 
-Phase 7 has been completed successfully.
+Phase 8 has moved from architecture planning into the first implementation stage.
 
-The backend now supports:
+Completed during this phase so far:
 
-* Image upload
-* Local filesystem storage
-* Image metadata persistence
-* Public image serving
-* Image retrieval through listing responses
+- React project initialized with Vite
+- JavaScript selected instead of TypeScript for educational purposes
+- ESLint configured
+- Tailwind CSS configured
+- Frontend connected successfully to the Spring Boot backend
+- First end-to-end authentication request completed
+- Browser persistence introduced with localStorage
+- Frontend architecture discussions started
 
-The next phase is:
-
-> **Phase 8 — React + TypeScript Frontend**
-
-The first objective of Phase 8 is **frontend architecture design**, not implementation.
+The next objective is to continue designing the API layer by introducing a dedicated `apiClient` before expanding authentication.
 
 ---
 
 # Project Summary
 
-AutoTrader is currently a production-oriented Spring Boot REST API for vehicle marketplace listings.
+AutoTrader is currently a production-oriented full-stack application consisting of a Spring Boot REST API and a React frontend.
 
-The application supports secure JWT authentication, ownership-based authorization, CRUD operations for listings, validation, dynamic searching, pagination, OpenAPI documentation, and image management.
+The backend supports JWT authentication, ownership-based authorization, vehicle listings, validation, OpenAPI documentation, image management, and filesystem image storage.
 
-Images are stored on the local filesystem while their metadata is stored separately in PostgreSQL, establishing a clear separation between binary storage and relational data.
-
-The backend has intentionally been built incrementally to prioritize understanding of architectural decisions before introducing automation or helper libraries.
+The frontend has been intentionally built incrementally. Rather than immediately using helper libraries, the project has focused on understanding React fundamentals, component rendering, state management, controlled forms, API communication with `fetch`, browser storage, and frontend architecture before introducing additional abstractions.
 
 ---
 
@@ -42,13 +39,13 @@ Completed.
 
 Implemented:
 
-* User registration
-* Login
-* BCrypt password hashing
-* JWT generation
-* JWT validation
-* Stateless authentication
-* Ownership-based authorization
+- User registration
+- Login
+- BCrypt password hashing
+- JWT generation
+- JWT validation
+- Stateless authentication
+- Ownership-based authorization
 
 ---
 
@@ -58,14 +55,10 @@ Completed.
 
 Implemented:
 
-* Create listing
-* Retrieve listing
-* Retrieve listing by ID
-* Update listing
-* Soft delete
-* Pagination
-* Dynamic filtering
-* JPA Specifications
+- CRUD operations
+- Pagination
+- Dynamic filtering
+- JPA Specifications
 
 ---
 
@@ -75,11 +68,10 @@ Completed.
 
 Highlights:
 
-* Extracted VehicleListingMapper
-* Extracted CurrentUserService
-* Introduced helper methods
-* Improved service responsibilities
-* Reduced duplication
+- VehicleListingMapper extraction
+- CurrentUserService extraction
+- Reduced duplication
+- Improved service responsibilities
 
 ---
 
@@ -89,10 +81,10 @@ Completed.
 
 Implemented:
 
-* Jakarta Bean Validation
-* Validation DTOs
-* Global exception handling
-* Structured validation responses
+- Jakarta Bean Validation
+- Validation DTOs
+- Global exception handling
+- Structured validation responses
 
 ---
 
@@ -102,7 +94,7 @@ Completed.
 
 Implemented:
 
-* Manual DTO mapping
+- Manual DTO mapping
 
 MapStruct intentionally postponed.
 
@@ -114,10 +106,10 @@ Completed.
 
 Implemented:
 
-* OpenAPI
-* Swagger UI
-* JWT integration
-* DTO documentation
+- OpenAPI
+- Swagger UI
+- JWT integration
+- DTO documentation
 
 ---
 
@@ -127,21 +119,21 @@ Completed.
 
 Implemented:
 
-* VehicleImage entity
-* OneToMany / ManyToOne relationship
-* Local filesystem storage
-* FileStorageService
-* ImageService
-* UUID filenames
-* MIME type validation
-* Ownership verification
-* Metadata persistence
-* Compensating cleanup for failed persistence
-* Automatic primary image assignment
-* Spring MVC static resource configuration
-* Public image URLs
-* Image retrieval within listing responses
-* Specialized repository query for fetching listings with images
+- VehicleImage entity
+- Filesystem storage
+- Metadata persistence
+- UUID filenames
+- Upload validation
+- Ownership verification
+- Public image serving
+- Listing image retrieval
+
+Deferred intentionally:
+
+- Image deletion
+- Image ordering
+- Primary image switching
+- Cloud storage abstraction
 
 ---
 
@@ -149,160 +141,148 @@ Implemented:
 
 ## Backend
 
-Spring Boot 3.5.x
-
-Java 17
-
-Gradle
-
-REST API
-
----
+- Spring Boot 3.5.x
+- Java 17
+- Gradle
+- REST API
 
 ## Security
 
-* Spring Security
-* JWT authentication
-* BCrypt password hashing
-* Stateless security
-
----
+- Spring Security
+- JWT authentication
+- BCrypt password hashing
+- Stateless security
+- CORS configured for React development
 
 ## Persistence
 
-* PostgreSQL
-* Spring Data JPA
-* Hibernate
-
----
+- PostgreSQL
+- Spring Data JPA
+- Hibernate
 
 ## Storage
 
-Filesystem storage
-
-Uploads directory managed through FileStorageService.
-
-Metadata stored separately inside PostgreSQL.
-
----
+- Local filesystem for uploaded images
+- PostgreSQL for metadata
 
 ## Mapping
 
-Manual mapper implementation.
-
-VehicleListingMapper now maps image metadata into API responses.
-
-MapStruct intentionally postponed.
-
----
+- Manual mapper implementation
 
 ## Validation
 
-Jakarta Bean Validation
-
-Global exception handling.
-
----
+- Jakarta Bean Validation
+- Global exception handling
 
 ## API Documentation
 
-Swagger UI
-
-OpenAPI
-
-Bearer authentication support.
-
----
+- Swagger UI
+- OpenAPI
 
 ## Frontend
 
-Not yet started.
+- React (JavaScript)
+- Vite
+- ESLint
+- Tailwind CSS
+- Browser Fetch API
+- Controlled forms
+- Browser localStorage
+- Incrementally growing folder structure
 
 ---
 
 # Important Architectural Decisions
 
-* Metadata and binary files are stored separately.
-* Local filesystem storage was intentionally implemented before cloud storage.
-* FileStorageService owns filesystem operations.
-* ImageService orchestrates image upload workflows.
-* VehicleImage is its own entity rather than embedding image information into VehicleListing.
-* UUID filenames prevent collisions and avoid exposing original filenames publicly.
-* Lazy loading remains the default relationship strategy.
-* Specialized repository queries are preferred over globally eager relationships.
-* Validation occurs before side effects.
-* Authorization occurs before resource modification.
-* Manual implementations precede helper libraries to reinforce understanding.
-* Service responsibilities remain intentionally focused.
-* Constructor injection is used throughout the application.
-
-Deferred intentionally:
-
-* Image deletion
-* Primary image switching
-* Image ordering
-* Cloud storage abstraction
-* Refresh tokens
-* Email verification
-* Production optimizations
-
-These deferred features may become a future production-improvement phase rather than extending Phase 7.
+- React will use JavaScript instead of TypeScript for this project to better understand what TypeScript adds in future projects.
+- Folder structure will evolve gradually alongside implementation instead of creating every folder upfront.
+- Tailwind CSS is the project's styling solution.
+- Manual React concepts precede helper libraries.
+- Manual forms before React Hook Form.
+- Manual fetch before Axios or React Query.
+- Browser localStorage introduced before React Context.
+- Authentication will follow a hybrid approach:
+  - localStorage provides persistence across refreshes.
+  - React state/context will provide application-wide access later.
+- API communication is moving toward a centralized API client rather than allowing every API module to manage authentication independently.
+- Backend architectural decisions from previous phases remain unchanged.
+- Deferred production features remain intentionally postponed:
+  - Refresh tokens
+  - HttpOnly cookie authentication
+  - Email verification
+  - Cloud storage
+  - Production optimizations
 
 ---
 
 # Remaining Roadmap
 
-* Phase 8 — React + TypeScript Frontend
-* Phase 9 — Testing
-* Phase 10 — Docker & Containers
-* Phase 11 — Deployment
-* Phase 12 — Production Improvements
+- Continue Phase 8 — React Frontend
+  - API client abstraction
+  - Authentication architecture
+  - Routing
+  - Global authentication state
+  - Listings UI
+  - Image upload UI
+- Phase 9 — Testing
+- Phase 10 — Docker
+- Phase 11 — Deployment
+- Phase 12 — Production Improvements
 
 ---
 
 # Files and Structure Added During This Chat
 
-## Repository
+## Frontend
 
-Repository structure standardized to:
+Initialized React project using Vite.
+
+Current frontend includes:
 
 ```text
-AutoTrader/
-│
-├── .idea/
-├── backend/
-├── frontend/
-├── PROJECT_CHARTER.md
-├── CURRENT_STATUS.md
-└── README.md
+frontend/
+├── public/
+├── src/
+│   ├── api/
+│   │   └── authApi.js
+│   ├── assets/
+│   ├── pages/
+│   │   └── HomePage.jsx
+│   ├── App.jsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.jsx
+├── eslint.config.js
+├── vite.config.js
+├── package.json
+└── index.html
 ```
 
-## Documentation
+Backend updated:
 
-Created:
-
-* PROJECT_CHARTER.md
-
-Planned:
-
-* STATUS_REPORT_PROMPT.md
-
-Discussed long-term documentation strategy using:
-
-* PROJECT_CHARTER.md
-* CURRENT_STATUS.md
+- Spring Security CORS configuration added to allow the React development server.
 
 ---
 
 # Concepts Learned During This Chat
 
-* Why specialized repository methods are preferable to globally eager loading.
-* Why different use cases require different fetch strategies.
-* How Spring MVC serves static resources outside the classpath.
-* Why backend architecture should evolve with new requirements rather than replacing earlier decisions.
-* Why project documentation should evolve alongside the codebase.
-* How maintaining a project charter improves long-term continuity.
-* Why architecture design should precede frontend implementation.
+- React rendering cycle
+- Why local variables reset every render
+- React state lifecycle
+- Functional state updates
+- Controlled components
+- Form submission in React
+- JavaScript objects vs JSON
+- Why `JSON.stringify()` is required
+- Browser Fetch API
+- Async/await request flow
+- Parsing JSON responses
+- Browser CORS and why Postman is unaffected
+- Browser localStorage
+- JWT persistence
+- Difference between React memory and browser persistence
+- Separation of API responsibilities
+- Why centralized API communication scales better than duplicated fetch logic
 
 ---
 
@@ -310,72 +290,55 @@ Discussed long-term documentation strategy using:
 
 Be able to explain:
 
-* Why FileStorageService exists separately from ImageService.
-* Why filesystem storage was implemented before cloud storage.
-* Why metadata is stored separately from image files.
-* Why UUID filenames are preferable to original filenames.
-* Why lazy loading remains the default strategy.
-* Why fetch joins should be targeted instead of replacing lazy loading globally.
-* Why architecture evolves as requirements evolve.
-* Why backend APIs should influence frontend architecture.
-* Why documentation should be treated as part of the codebase.
+- Why React state survives re-renders but not page refreshes
+- Why local variables reset on every render
+- Functional updates in `useState`
+- Controlled vs uncontrolled inputs
+- Why `JSON.stringify()` is required before sending requests
+- Difference between JavaScript objects and JSON
+- What CORS is and why browsers enforce it
+- Why Postman bypasses CORS
+- Why JWTs are persisted in localStorage
+- Why React state alone is insufficient for authentication persistence
+- Benefits of a hybrid authentication architecture
+- Why API communication should be centralized instead of duplicated
 
 ---
 
 # Next Recommended Starting Point
 
-Begin Phase 8.
+Continue Phase 8 by designing the frontend API layer before adding additional features.
 
-Do **not** begin by creating React components.
+Specifically:
 
-Instead:
+1. Introduce a dedicated `apiClient.js`.
+2. Refactor `authApi.js` to use the API client without changing functionality.
+3. Keep authentication behavior identical.
+4. Afterwards, extend the API client to automatically attach JWT tokens for protected requests.
+5. Only then introduce global authentication state (React Context) and routing.
 
-1. Design the frontend architecture.
-2. Design the folder structure.
-3. Design routing.
-4. Design authentication flow.
-5. Design API communication.
-6. Design state ownership.
-7. Design reusable component organization.
+Continue following the established workflow:
 
-Only after the architecture is understood should implementation begin.
+- Architecture discussion first.
+- Request existing files before modifying them.
+- Implement incrementally.
+- Compile, test, and verify after every step.
 
 ---
 
 # Notes for Continuation
 
-The mentoring workflow has been refined.
+The frontend is intentionally following the same educational philosophy used throughout the backend:
 
-Implementation should now follow a consistent two-step process:
+- understand the underlying mechanism first,
+- then introduce abstractions gradually.
 
-### Step 1
+Current authentication flow:
 
-* Recap the current state.
-* Explain the theory.
-* Explain architectural decisions.
-* Discuss alternatives and trade-offs.
-* Request any existing files before suggesting changes.
+React Form → authApi → Fetch API → Spring Boot → JWT → JSON Response → localStorage.
 
-### Step 2
+The browser successfully stores the JWT after login, and the frontend/backend integration has been verified.
 
-* Guide the implementation incrementally.
-* Specify file names and locations.
-* Explain important code.
-* Compile and test before continuing.
-* Conclude with:
+An architectural discussion concluded that authentication responsibilities should not be duplicated across API modules. The agreed direction is to introduce a centralized `apiClient` responsible for common HTTP behavior, with authentication layered on afterward.
 
-    * Files changed
-    * Why they changed
-    * Concepts learned
-    * Production considerations
-    * Interview Notes
-    * Suggested Git commit message
-
-An additional documentation workflow has also been established.
-
-Future chats should begin by providing:
-
-1. PROJECT_CHARTER.md
-2. CURRENT_STATUS.md
-
-This combination provides sufficient context to continue the project without reconstructing prior discussions.
+Future production improvements (refresh tokens, HttpOnly cookies, React Query, React Hook Form, Zod, etc.) remain intentionally deferred until the underlying mechanisms have been implemented and understood manually.

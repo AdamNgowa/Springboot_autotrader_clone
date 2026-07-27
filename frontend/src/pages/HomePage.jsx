@@ -13,10 +13,12 @@ function HomePage() {
     setPassword(ev.target.value);
   }
 
-  function handleSubmit(ev) {
+  async function handleSubmit(ev) {
     ev.preventDefault();
     console.log("Form submitted");
-    login({ email, password });
+    const response = await login({ email, password });
+    localStorage.setItem("jwt", response.token);
+    console.log("local storage token:", localStorage.getItem("jwt"));
   }
 
   return (
