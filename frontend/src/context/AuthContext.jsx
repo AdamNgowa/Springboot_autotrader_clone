@@ -1,6 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { login as loginRequest } from "../api/authApi";
 import { getToken, saveToken, removeToken } from "../auth/authStorage";
+import { getCurrentUser } from "../api/userApi";
 
 // 1. CONTEXT CONTAINER
 // Creates the Context object that child components will subscribe to.
@@ -14,17 +15,37 @@ export function AuthProvider({ children }) {
   // STATE: Holds the active JWT string in React memory (null = logged out).
   const [token, setToken] = useState(null);
 
+  // STATE: Holds the current user object once fetched from the API.
+  // null = we don't have a confirmed user yet (logged out, OR still checking).
+  // This is the "source of truth" that isAuthenticated below is derived from.
+  const [user, setUser] = useState(null);
+
   /**
    * APP STARTUP EFFECT:
    * Restores state from localStorage when the app first loads or refreshes.
    * - Runs ONLY ONCE on mount due to the empty dependency array `[]`.
    */
   useEffect(() => {
-    const storedToken = getToken();
+    async function restoreSession() {
+      const storedToken = getToken();
 
-    if (storedToken) {
-      setToken(storedToken); // Restores user session if a saved token exists.
+      if (!storedToken) {
+        return;
+      }
+
+      setToken(storedToken);
+
+      try {
+        const currentUser = await getCurrentUser();
+        setUser(currentUser);
+      } catch {
+        removeToken();
+        setToken(null);
+        setUser(null);
+      }
     }
+
+    restoreSession();
   }, []);
 
   /**
@@ -45,6 +66,9 @@ export function AuthProvider({ children }) {
     // Update React state to trigger immediate UI re-renders for authenticated views.
     setToken(response.token);
 
+    const currentUser = await getCurrentUser();
+    setUser(currentUser); // user goes from null -> object, so isAuthenticated flips true
+
     return response;
   }
 
@@ -55,6 +79,7 @@ export function AuthProvider({ children }) {
   function logout() {
     removeToken(); // Erases token from localStorage.
     setToken(null); // Resets state to null, instantly marking user as unauthenticated.
+    setUser(null); // user goes back to null, so isAuthenticated flips false
   }
 
   /**
@@ -63,7 +88,16 @@ export function AuthProvider({ children }) {
    */
   const value = {
     token,
-    isAuthenticated: token !== null, // Derived boolean flag for easy route protection.
+    user,
+
+    // DERIVED VALUE (not its own useState):
+    // Strict inequality check `!==` asks "is user NOT equal to null?"
+    //   - user is null        -> user !== null is false -> isAuthenticated: false
+    //   - user is an object   -> user !== null is true  -> isAuthenticated: true
+    // Deriving it from `user` (instead of tracking a separate state variable)
+    // guarantees isAuthenticated can never drift out of sync with the actual user data.
+    isAuthenticated: user !== null,
+
     login,
     logout,
   };

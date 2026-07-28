@@ -15,12 +15,18 @@ public class CurrentUserService {
         this.userRepository = userRepository;
     }
 
-    public User getAuthenticatedUser(){
+    public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AuthenticatedUserNotFoundException(
+                    "Authenticated user not found"
+            );
+        }
         String email = authentication.getName();
 
         return userRepository.findByEmail(email)
-                .orElseThrow(()->
+                .orElseThrow(() ->
                         new AuthenticatedUserNotFoundException("Authenticated user not found"));
     }
 }

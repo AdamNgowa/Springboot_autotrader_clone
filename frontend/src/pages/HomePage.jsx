@@ -6,7 +6,7 @@ function HomePage() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
 
   function handleEmailChange(ev) {
     setEmail(ev.target.value);
@@ -56,6 +56,18 @@ function HomePage() {
         <hr />
 
         <p>Authenticated: {isAuthenticated ? "Yes" : "No"}</p>
+
+        {user && (
+          <>
+            <hr />
+            <p>
+              Name: {user.firstName} {user.lastName}
+            </p>
+            <p>Email: {user.email}</p>
+            <p>Role: {user.role}</p>
+            <p>Phone: {user.phoneNumber}</p>
+          </>
+        )}
       </div>
     </main>
   );

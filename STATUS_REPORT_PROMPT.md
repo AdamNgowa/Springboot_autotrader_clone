@@ -139,3 +139,5 @@ Requirements
 - Preserve terminology used throughout the project.
 - Reflect the final state of the project at the end of this conversation.
 - Think of this as a handoff document between engineers.
+
+- also ask for the current folder structure, so the next chat is aware of the current files that exist,so it doesnt have to guess file names of existing files

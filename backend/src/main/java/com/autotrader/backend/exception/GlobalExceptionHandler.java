@@ -3,7 +3,6 @@ package com.autotrader.backend.exception;
 import com.autotrader.backend.dto.error.ErrorResponse;
 import com.autotrader.backend.dto.error.ValidationError;
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.coyote.Response; // Unused Tomcat engine class; safe to remove in production cleanup
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
