@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { login } from "../api/authApi";
+import { useAuth } from "../hooks/useAuth";
 
 function HomePage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+
+  const { login, isAuthenticated } = useAuth();
 
   function handleEmailChange(ev) {
     setEmail(ev.target.value);
@@ -16,11 +18,11 @@ function HomePage() {
 
   async function handleSubmit(ev) {
     ev.preventDefault();
-    console.log("Form submitted");
+
     try {
       await login({ email, password });
+
       setLoginError("");
-      console.log("local storage token:", localStorage.getItem("jwt"));
     } catch (error) {
       setLoginError(error.message);
       console.error(error);
@@ -30,27 +32,33 @@ function HomePage() {
   return (
     <main className="m-4">
       <form onSubmit={handleSubmit}>
-        Email: <input type="email" onChange={handleEmailChange} value={email} />
+        Email: <input type="email" value={email} onChange={handleEmailChange} />
         <br />
         Password:{" "}
         <input
           type="password"
-          onChange={handlePasswordChange}
           value={password}
+          onChange={handlePasswordChange}
         />
         <br />
         <button className="bg-blue-700" type="submit">
           Login
         </button>
-        {loginError && <p className="mt-2 text-red-600">{loginError} </p>}
+        {loginError && <p className="mt-2 text-red-600">{loginError}</p>}
       </form>
 
       <br />
+
       <div>
         <p>Email: {email}</p>
         <p>Password: {password}</p>
+
+        <hr />
+
+        <p>Authenticated: {isAuthenticated ? "Yes" : "No"}</p>
       </div>
     </main>
   );
 }
+
 export default HomePage;

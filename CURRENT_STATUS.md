@@ -2,32 +2,30 @@
 
 ## Current Phase
 
-### Phase 8 — React Frontend: **In Progress**
+### Phase 8 — React Frontend: Authentication Architecture (In Progress)
 
-Phase 8 has moved from architecture planning into the first implementation stage.
+Phase 8 continued beyond the initial API layer and entered the authentication architecture stage.
 
-Completed during this phase so far:
+Completed during this chat:
 
-- React project initialized with Vite
-- JavaScript selected instead of TypeScript for educational purposes
-- ESLint configured
-- Tailwind CSS configured
-- Frontend connected successfully to the Spring Boot backend
-- First end-to-end authentication request completed
-- Browser persistence introduced with localStorage
-- Frontend architecture discussions started
+- Centralized API communication through `apiClient`
+- Added configurable authentication behavior via `requiresAuth`
+- Added robust HTTP error handling
+- Added safe handling for responses without JSON bodies
+- Introduced an authentication storage abstraction (`authStorage`)
+- Began implementing global authentication state using React Context
+- Introduced `AuthProvider` as the application's authentication state owner
+- Decided on a hybrid authentication model using both React Context and `localStorage`
 
-The next objective is to continue designing the API layer by introducing a dedicated `apiClient` before expanding authentication.
+The next objective is to complete the integration between `AuthProvider` and the authentication flow before introducing protected routing and authenticated user retrieval.
 
 ---
 
 # Project Summary
 
-AutoTrader is currently a production-oriented full-stack application consisting of a Spring Boot REST API and a React frontend.
+AutoTrader currently consists of a production-oriented Spring Boot REST API and a React frontend that now has the foundations of a scalable authentication architecture.
 
-The backend supports JWT authentication, ownership-based authorization, vehicle listings, validation, OpenAPI documentation, image management, and filesystem image storage.
-
-The frontend has been intentionally built incrementally. Rather than immediately using helper libraries, the project has focused on understanding React fundamentals, component rendering, state management, controlled forms, API communication with `fetch`, browser storage, and frontend architecture before introducing additional abstractions.
+The backend already supports JWT authentication, authorization, listings, validation, OpenAPI documentation, image management, and structured error handling. The frontend now includes a reusable HTTP client, centralized authentication persistence, and the beginnings of application-wide authentication state through React Context.
 
 ---
 
@@ -36,8 +34,6 @@ The frontend has been intentionally built incrementally. Rather than immediately
 ## Phase 1 — Authentication
 
 Completed.
-
-Implemented:
 
 - User registration
 - Login
@@ -52,8 +48,6 @@ Implemented:
 ## Phase 2 — Vehicle Listings
 
 Completed.
-
-Implemented:
 
 - CRUD operations
 - Pagination
@@ -108,7 +102,7 @@ Implemented:
 
 - OpenAPI
 - Swagger UI
-- JWT integration
+- JWT authorization support
 - DTO documentation
 
 ---
@@ -141,7 +135,7 @@ Deferred intentionally:
 
 ## Backend
 
-- Spring Boot 3.5.x
+- Spring Boot
 - Java 17
 - Gradle
 - REST API
@@ -151,8 +145,8 @@ Deferred intentionally:
 - Spring Security
 - JWT authentication
 - BCrypt password hashing
-- Stateless security
-- CORS configured for React development
+- Stateless authentication
+- CORS configured for React
 
 ## Persistence
 
@@ -162,127 +156,203 @@ Deferred intentionally:
 
 ## Storage
 
-- Local filesystem for uploaded images
+- Local filesystem for images
 - PostgreSQL for metadata
-
-## Mapping
-
-- Manual mapper implementation
+- Browser `localStorage` for JWT persistence
 
 ## Validation
 
 - Jakarta Bean Validation
 - Global exception handling
+- Structured error DTOs
+
+## Mapping
+
+- Manual DTO mapping
 
 ## API Documentation
 
+- SpringDoc OpenAPI
 - Swagger UI
-- OpenAPI
 
 ## Frontend
 
+Current frontend architecture includes:
+
 - React (JavaScript)
 - Vite
-- ESLint
 - Tailwind CSS
-- Browser Fetch API
+- ESLint
+- React Router
+- Fetch API
+- Centralized `apiClient`
+- API modules (`authApi`)
+- Authentication storage abstraction (`authStorage`)
+- React Context (`AuthContext`)
 - Controlled forms
-- Browser localStorage
-- Incrementally growing folder structure
+- Local component state
+- Global authentication state (partially implemented)
 
 ---
 
 # Important Architectural Decisions
 
-- React will use JavaScript instead of TypeScript for this project to better understand what TypeScript adds in future projects.
-- Folder structure will evolve gradually alongside implementation instead of creating every folder upfront.
-- Tailwind CSS is the project's styling solution.
-- Manual React concepts precede helper libraries.
-- Manual forms before React Hook Form.
-- Manual fetch before Axios or React Query.
-- Browser localStorage introduced before React Context.
-- Authentication will follow a hybrid approach:
-  - localStorage provides persistence across refreshes.
-  - React state/context will provide application-wide access later.
-- API communication is moving toward a centralized API client rather than allowing every API module to manage authentication independently.
-- Backend architectural decisions from previous phases remain unchanged.
-- Deferred production features remain intentionally postponed:
-  - Refresh tokens
-  - HttpOnly cookie authentication
-  - Email verification
-  - Cloud storage
-  - Production optimizations
+### Centralized API Client
+
+All HTTP communication now flows through a reusable `apiClient`.
+
+Responsibilities include:
+
+- base URL management
+- attaching Authorization headers
+- HTTP error handling
+- JSON parsing
+- handling empty response bodies
+
+Individual API modules should focus only on business endpoints.
+
+---
+
+### Authentication Storage
+
+JWT persistence has been extracted from API modules into dedicated storage helper functions.
+
+This separates browser persistence from HTTP communication.
+
+---
+
+### Explicit Authentication Requests
+
+`apiClient` now accepts:
+
+```javascript
+requiresAuth: true;
+```
+
+instead of automatically attaching JWTs to every request.
+
+This prevents accidental Authorization headers on public endpoints such as login and registration.
+
+---
+
+### Hybrid Authentication Model
+
+An important architectural decision was made:
+
+React Context supplements `localStorage`; it does not replace it.
+
+Responsibilities are intentionally separated.
+
+`localStorage`
+
+- survives browser refreshes
+- acts as persistent storage
+
+React Context
+
+- stores the current authentication state
+- triggers UI updates
+- provides application-wide access
+- eliminates repeated `localStorage` reads
+
+---
+
+### Authentication Ownership
+
+Another architectural decision made during this chat:
+
+The `AuthProvider` should eventually own the authenticated user/session, not just the JWT.
+
+The JWT exists primarily for backend communication.
+
+Application components should consume authentication information from Context rather than directly interacting with browser storage.
+
+---
+
+### Error Handling
+
+HTTP concerns remain inside `apiClient`.
+
+Components receive normal JavaScript errors without knowing HTTP implementation details.
 
 ---
 
 # Remaining Roadmap
 
-- Continue Phase 8 — React Frontend
-  - API client abstraction
-  - Authentication architecture
-  - Routing
-  - Global authentication state
-  - Listings UI
-  - Image upload UI
-- Phase 9 — Testing
-- Phase 10 — Docker
-- Phase 11 — Deployment
-- Phase 12 — Production Improvements
+Continue Phase 8.
+
+Remaining authentication work:
+
+- Finish integrating `AuthProvider` with login
+- Synchronize Context after successful authentication
+- Implement logout
+- Add authenticated user loading (`/users/me` or equivalent endpoint)
+- Store authenticated user inside Context
+- Introduce protected routes
+- Add route guards
+- Build authenticated layouts/navigation
+
+After authentication:
+
+- Listings UI
+- Listing CRUD
+- Image upload UI
+- Reusable UI components
+- Loading states
+- Global error handling
+
+Future phases remain:
+
+- Testing
+- Docker
+- Deployment
+- Production improvements
 
 ---
 
 # Files and Structure Added During This Chat
 
-## Frontend
+## New
 
-Initialized React project using Vite.
+```
+src/context/
+    AuthContext.jsx
 
-Current frontend includes:
-
-```text
-frontend/
-├── public/
-├── src/
-│   ├── api/
-│   │   └── authApi.js
-│   ├── assets/
-│   ├── pages/
-│   │   └── HomePage.jsx
-│   ├── App.jsx
-│   ├── App.css
-│   ├── index.css
-│   └── main.jsx
-├── eslint.config.js
-├── vite.config.js
-├── package.json
-└── index.html
+src/auth/
+    authStorage.js
 ```
 
-Backend updated:
+---
 
-- Spring Security CORS configuration added to allow the React development server.
+## Modified
+
+```
+src/api/
+    apiClient.js
+    authApi.js
+
+src/pages/
+    HomePage.jsx
+
+src/App.jsx
+
+src/main.jsx
+```
 
 ---
 
 # Concepts Learned During This Chat
 
-- React rendering cycle
-- Why local variables reset every render
-- React state lifecycle
-- Functional state updates
-- Controlled components
-- Form submission in React
-- JavaScript objects vs JSON
-- Why `JSON.stringify()` is required
-- Browser Fetch API
-- Async/await request flow
-- Parsing JSON responses
-- Browser CORS and why Postman is unaffected
-- Browser localStorage
-- JWT persistence
-- Difference between React memory and browser persistence
-- Separation of API responsibilities
-- Why centralized API communication scales better than duplicated fetch logic
+- Separation of HTTP concerns from business logic
+- Why authentication headers should be opt-in
+- Safe parsing of HTTP responses
+- Why APIs may legitimately return empty bodies
+- Centralized API client architecture
+- Browser persistence vs application state
+- React Context responsibilities
+- Why Context complements rather than replaces `localStorage`
+- Ownership of authentication state
+- Designing authentication for future scalability
 
 ---
 
@@ -290,55 +360,54 @@ Backend updated:
 
 Be able to explain:
 
-- Why React state survives re-renders but not page refreshes
-- Why local variables reset on every render
-- Functional updates in `useState`
-- Controlled vs uncontrolled inputs
-- Why `JSON.stringify()` is required before sending requests
-- Difference between JavaScript objects and JSON
-- What CORS is and why browsers enforce it
-- Why Postman bypasses CORS
-- Why JWTs are persisted in localStorage
-- Why React state alone is insufficient for authentication persistence
-- Benefits of a hybrid authentication architecture
-- Why API communication should be centralized instead of duplicated
+- Why use a centralized API client?
+- Why shouldn't every request automatically attach a JWT?
+- What problem does `requiresAuth` solve?
+- Why separate `authStorage` from `authApi`?
+- Why should HTTP error handling stay inside `apiClient`?
+- Why can `response.json()` fail?
+- Why should React Context not replace `localStorage`?
+- Why should `AuthProvider` own authentication state?
+- Why is storing only the JWT in Context insufficient?
+- What responsibilities belong to an API layer versus a UI component?
 
 ---
 
 # Next Recommended Starting Point
 
-Continue Phase 8 by designing the frontend API layer before adding additional features.
+Begin by completing the authentication architecture before building additional application features.
 
-Specifically:
+Implementation order:
 
-1. Introduce a dedicated `apiClient.js`.
-2. Refactor `authApi.js` to use the API client without changing functionality.
-3. Keep authentication behavior identical.
-4. Afterwards, extend the API client to automatically attach JWT tokens for protected requests.
-5. Only then introduce global authentication state (React Context) and routing.
+1. Finish integrating `AuthProvider` with the login flow.
+2. Ensure successful login updates both:
+   - `localStorage`
+   - React Context
+3. Design a `/me` endpoint for retrieving the authenticated user's profile.
+4. Expand `AuthContext` to store the authenticated user alongside the token.
+5. Implement logout.
+6. Introduce protected routes and route guards.
 
 Continue following the established workflow:
 
-- Architecture discussion first.
-- Request existing files before modifying them.
-- Implement incrementally.
-- Compile, test, and verify after every step.
+- discuss architecture first
+- request current files before modifying existing code
+- implement incrementally
+- compile and test after every step
 
 ---
 
 # Notes for Continuation
 
-The frontend is intentionally following the same educational philosophy used throughout the backend:
+Several important architectural conclusions were reached during this conversation and should be preserved:
 
-- understand the underlying mechanism first,
-- then introduce abstractions gradually.
+- React Context supplements browser persistence instead of replacing it.
+- Authentication should eventually revolve around the authenticated user rather than the JWT itself.
+- The JWT is an implementation detail used for backend communication.
+- UI components should primarily consume authentication state from Context.
+- HTTP concerns (headers, parsing, error handling) belong inside `apiClient`.
+- Browser persistence belongs inside `authStorage`.
+- Business operations belong inside API modules such as `authApi`.
+- UI components should remain focused on rendering and user interaction.
 
-Current authentication flow:
-
-React Form → authApi → Fetch API → Spring Boot → JWT → JSON Response → localStorage.
-
-The browser successfully stores the JWT after login, and the frontend/backend integration has been verified.
-
-An architectural discussion concluded that authentication responsibilities should not be duplicated across API modules. The agreed direction is to introduce a centralized `apiClient` responsible for common HTTP behavior, with authentication layered on afterward.
-
-Future production improvements (refresh tokens, HttpOnly cookies, React Query, React Hook Form, Zod, etc.) remain intentionally deferred until the underlying mechanisms have been implemented and understood manually.
+At the end of this conversation, `AuthContext` has been introduced but is not yet fully integrated with the login flow. The next chat should complete that integration before implementing protected routes or additional authenticated features.

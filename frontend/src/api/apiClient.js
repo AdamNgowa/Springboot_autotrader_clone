@@ -1,3 +1,5 @@
+import { getToken } from "../auth/authStorage";
+
 // Base URL for the backend API endpoints.
 const BASE_URL = "http://localhost:8080";
 
@@ -14,7 +16,7 @@ export async function apiClient(endpoint, options = {}) {
   const { requiresAuth = false, ...fetchOptions } = options;
 
   // Retrieve the JSON Web Token stored in the browser's LocalStorage.
-  const token = localStorage.getItem("jwt");
+  const token = getToken();
 
   // Create a headers object initialized with any custom headers passed by the caller.
   const headers = {
