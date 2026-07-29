@@ -17,6 +17,7 @@ export async function apiClient(endpoint, options = {}) {
 
   // Retrieve the JSON Web Token stored in the browser's LocalStorage.
   const token = getToken();
+  console.log("Token from storage:", token);
 
   // Create a headers object initialized with any custom headers passed by the caller.
   const headers = {

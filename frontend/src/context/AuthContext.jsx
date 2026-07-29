@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
   // null = we don't have a confirmed user yet (logged out, OR still checking).
   // This is the "source of truth" that isAuthenticated below is derived from.
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   /**
    * APP STARTUP EFFECT:
@@ -27,9 +28,11 @@ export function AuthProvider({ children }) {
    */
   useEffect(() => {
     async function restoreSession() {
+      console.log("restoreSession started");
       const storedToken = getToken();
 
       if (!storedToken) {
+        setLoading(false);
         return;
       }
 
@@ -38,10 +41,12 @@ export function AuthProvider({ children }) {
       try {
         const currentUser = await getCurrentUser();
         setUser(currentUser);
+        setLoading(false);
       } catch {
         removeToken();
         setToken(null);
         setUser(null);
+        setLoading(false);
       }
     }
 
@@ -97,7 +102,7 @@ export function AuthProvider({ children }) {
     // Deriving it from `user` (instead of tracking a separate state variable)
     // guarantees isAuthenticated can never drift out of sync with the actual user data.
     isAuthenticated: user !== null,
-
+    loading,
     login,
     logout,
   };
