@@ -43,9 +43,9 @@ public class VehicleListingController {
     @Operation(
             summary = "Create a vehicle listing",
             description = """
-                Creates a new vehicle listing for the currently authenticated user.
-                The seller is determined from the authenticated JWT rather than supplied by the client.
-                """
+                    Creates a new vehicle listing for the currently authenticated user.
+                    The seller is determined from the authenticated JWT rather than supplied by the client.
+                    """
     )
     @PostMapping
     public ResponseEntity<VehicleListingResponse> createListing(
@@ -85,9 +85,9 @@ public class VehicleListingController {
     @Operation(
             summary = "Retrieve vehicle listings",
             description = """
-                Returns a paginated list of ACTIVE vehicle listings.
-                Supports optional filtering by search criteria.
-                """
+                    Returns a paginated list of ACTIVE vehicle listings.
+                    Supports optional filtering by search criteria.
+                    """
     )
     @GetMapping
     public ResponseEntity<Page<VehicleListingResponse>> getListings(
@@ -114,9 +114,9 @@ public class VehicleListingController {
     @Operation(
             summary = "Retrieve a vehicle listing",
             description = """
-                Returns a single ACTIVE vehicle listing by its identifier.
-                Soft-deleted listings are treated as not found.
-                """
+                    Returns a single ACTIVE vehicle listing by its identifier.
+                    Soft-deleted listings are treated as not found.
+                    """
     )
     @GetMapping("/{id}")
     public ResponseEntity<VehicleListingResponse> getListingById(
@@ -129,11 +129,29 @@ public class VehicleListingController {
     }
 
     @Operation(
+            summary = "Retrieve current user's listings",
+            description = """
+                    Returns all ACTIVE vehicle listings owned by
+                    the authenticated user.
+                    """
+    )
+    @GetMapping("/me")
+    public ResponseEntity<Page<VehicleListingResponse>> getCurrentUserListings(
+            Pageable pageable
+    ) {
+
+        Page<VehicleListingResponse> listings =
+                vehicleListingService.getCurrentUserListings(pageable);
+
+        return ResponseEntity.ok(listings);
+    }
+
+    @Operation(
             summary = "Update a vehicle listing",
             description = """
-                Updates an existing vehicle listing.
-                Only the owner of the listing is authorized to perform this operation.
-                """
+                    Updates an existing vehicle listing.
+                    Only the owner of the listing is authorized to perform this operation.
+                    """
     )
     // Maps HTTP PUT requests hitting "/{id}" (e.g., PUT /listings/12). Used to update an existing resource.
     @PutMapping("/{id}")
@@ -156,10 +174,10 @@ public class VehicleListingController {
     @Operation(
             summary = "Delete a vehicle listing",
             description = """
-                Soft deletes a vehicle listing.
-                The listing remains in the database but becomes inaccessible through normal API operations.
-                Only the owner may perform this action.
-                """
+                    Soft deletes a vehicle listing.
+                    The listing remains in the database but becomes inaccessible through normal API operations.
+                    Only the owner may perform this action.
+                    """
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteListing(
@@ -168,9 +186,6 @@ public class VehicleListingController {
         vehicleListingService.deleteListing(id);
         return ResponseEntity.noContent().build();
     }
-
-
-
 
 
 }

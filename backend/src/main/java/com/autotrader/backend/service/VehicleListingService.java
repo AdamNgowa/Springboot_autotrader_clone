@@ -79,6 +79,20 @@ public class VehicleListingService {
         return listings.map(vehicleListingMapper::toResponse);
     }
 
+    public Page<VehicleListingResponse> getCurrentUserListings(
+            Pageable pageable){
+        User authenticatedUser =
+                currentUserService.getAuthenticatedUser();
+
+        Page<VehicleListing> listings =
+                vehicleListingRepository.findBySellerAndStatus(
+                        authenticatedUser,
+                        ListingStatus.ACTIVE,
+                        pageable);
+
+        return listings.map(vehicleListingMapper::toResponse);
+    }
+
     // Handles overwriting properties on an active vehicle listing
     public VehicleListingResponse updateListing(
             Long listingId,
@@ -146,7 +160,7 @@ public class VehicleListingService {
         return listing;
     }
 
-    //Queries an active listing together with tis images in a single database query
+    //Queries an active listing together with these images in a single database query
     public VehicleListing getActiveListingWithImages(Long listingId){
         VehicleListing listing = vehicleListingRepository.findByIdWithImages(listingId)
                 .orElseThrow(() ->
