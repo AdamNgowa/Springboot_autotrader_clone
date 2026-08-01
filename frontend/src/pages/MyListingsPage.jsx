@@ -30,11 +30,11 @@ function MyListingsPage() {
   }
 
   return (
-    <main>
+    <main className="max-w-6xl mx-auto p-6">
       <h1>My Listings</h1>
       <p>Total listings: {listings.length}</p>
 
-      <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 m-2">
         {listings.map((listing) => (
           <ListingCard key={listing.id} listing={listing} />
         ))}

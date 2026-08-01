@@ -5,6 +5,7 @@ import DashboardPage from "../pages/DashboardPage";
 import ProtectedRoute from "../components/ProtectedRoute";
 import MyListingsPage from "../pages/MyListingsPage";
 import CreateListingPage from "../pages/CreateListingPage";
+import EditListingPage from "../pages/EditListingPage";
 
 function AppRouter() {
   return (
@@ -12,13 +13,22 @@ function AppRouter() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-        //Protected routes
+        {/* Protected routes */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               {" "}
               <DashboardPage />{" "}
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path={`/listings/:id/edit`}
+          element={
+            <ProtectedRoute>
+              {" "}
+              <EditListingPage />{" "}
             </ProtectedRoute>
           }
         />

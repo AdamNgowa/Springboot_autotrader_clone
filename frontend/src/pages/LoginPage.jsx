@@ -1,8 +1,74 @@
+import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+
 function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  const { login, isAuthenticated, user } = useAuth();
+
+  function handleEmailChange(ev) {
+    setEmail(ev.target.value);
+  }
+
+  function handlePasswordChange(ev) {
+    setPassword(ev.target.value);
+  }
+
+  async function handleSubmit(ev) {
+    ev.preventDefault();
+
+    try {
+      await login({ email, password });
+
+      setLoginError("");
+    } catch (error) {
+      setLoginError(error.message);
+      console.error(error);
+    }
+  }
+
   return (
-    <main className="min-h-screen flex justify-center items-center">
-      {" "}
-      <h1 className="text-4xl font-bold">LoginPage</h1>{" "}
+    <main className="m-4">
+      <form onSubmit={handleSubmit}>
+        Email: <input type="email" value={email} onChange={handleEmailChange} />
+        <br />
+        Password:{" "}
+        <input
+          type="password"
+          value={password}
+          onChange={handlePasswordChange}
+        />
+        <br />
+        <button className="bg-blue-700" type="submit">
+          Login
+        </button>
+        {loginError && <p className="mt-2 text-red-600">{loginError}</p>}
+      </form>
+
+      <br />
+
+      <div>
+        <p>Email: {email}</p>
+        <p>Password: {password}</p>
+
+        <hr />
+
+        <p>Authenticated: {isAuthenticated ? "Yes" : "No"}</p>
+
+        {user && (
+          <>
+            <hr />
+            <p>
+              Name: {user.firstName} {user.lastName}
+            </p>
+            <p>Email: {user.email}</p>
+            <p>Role: {user.role}</p>
+            <p>Phone: {user.phoneNumber}</p>
+          </>
+        )}
+      </div>
     </main>
   );
 }

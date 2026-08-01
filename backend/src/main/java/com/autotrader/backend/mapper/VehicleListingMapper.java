@@ -23,15 +23,25 @@ public class VehicleListingMapper {
     // then it populates it with data with getters from vehicle listing entity
     // This process amounts to converting an entity to a request
     public VehicleListingResponse toResponse(VehicleListing listing) {
-        VehicleListingResponse response = new VehicleListingResponse(
-                listing.getId(),
-                listing.getTitle(),
-                listing.getPrice(),
-                listing.getMake(),
-                listing.getModel(),
-                listing.getYear(),
-                listing.getCity()
-        );
+        VehicleListingResponse response = new VehicleListingResponse();
+
+        response.setId(listing.getId());
+        response.setTitle(listing.getTitle());
+        response.setDescription(listing.getDescription());
+
+        response.setPrice(listing.getPrice());
+
+        response.setMake(listing.getMake());
+        response.setModel(listing.getModel());
+        response.setYear(listing.getYear());
+        response.setMileage(listing.getMileage());
+
+        response.setFuelType(listing.getFuelType());
+        response.setTransmission(listing.getTransmission());
+        response.setBodyType(listing.getBodyType());
+
+        response.setCity(listing.getCity());
+
 
         response.setImages(
                 toImageResponses(listing.getImages())
