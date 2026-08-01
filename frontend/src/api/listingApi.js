@@ -19,6 +19,7 @@ export function getMyListings() {
 export function getListing(id) {
   return apiClient(`/listings/${id}`, {
     method: "GET",
+    requiresAuth: true,
   });
 }
 

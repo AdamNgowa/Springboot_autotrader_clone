@@ -112,6 +112,7 @@ autotrader
 │   │   ├── pages/
 │   │   │   ├── HomePage.jsx
 │   │   │   ├── LoginPage.jsx
+            ├── EditListingPage.jsx
 │   │   │   ├── DashboardPage.jsx
 │   │   │   ├── MyListingsPage.jsx
 │   │   │   └── CreateListingPage.jsx
