@@ -2,70 +2,81 @@
 
 ## Current Phase
 
-### Phase 8 — React Frontend: Authentication Architecture (In Progress)
+### Phase 8 — React Frontend (Authentication Completed, My Listings UI In Progress)
 
-Phase 8 continued beyond the initial API layer and entered the authentication architecture stage.
+During this chat, the frontend moved beyond authentication and into the first authenticated feature.
 
-Completed during this chat:
+Completed during this phase:
 
-- Centralized API communication through `apiClient`
-- Added configurable authentication behavior via `requiresAuth`
-- Added robust HTTP error handling
-- Added safe handling for responses without JSON bodies
-- Introduced an authentication storage abstraction (`authStorage`)
-- Began implementing global authentication state using React Context
-- Introduced `AuthProvider` as the application's authentication state owner
-- Decided on a hybrid authentication model using both React Context and `localStorage`
+- Authentication Context (`AuthContext`)
+- JWT persistence using `localStorage`
+- Session restoration on page refresh
+- Protected routes using `ProtectedRoute`
+- Authenticated routing with React Router
+- `/listings/me` backend integration
+- Initial implementation of the **My Listings** page
+- First reusable UI component (`ListingCard`) started
 
-The next objective is to complete the integration between `AuthProvider` and the authentication flow before introducing protected routing and authenticated user retrieval.
+Current focus:
+
+Building the authenticated Listings Management UI incrementally, beginning with `MyListingsPage`.
 
 ---
 
 # Project Summary
 
-AutoTrader currently consists of a production-oriented Spring Boot REST API and a React frontend that now has the foundations of a scalable authentication architecture.
+AutoTrader now consists of a production-oriented Spring Boot backend and a React frontend with a functioning authentication system.
 
-The backend already supports JWT authentication, authorization, listings, validation, OpenAPI documentation, image management, and structured error handling. The frontend now includes a reusable HTTP client, centralized authentication persistence, and the beginnings of application-wide authentication state through React Context.
+Authenticated users can:
+
+- log in
+- remain logged in after refresh
+- access protected pages
+- retrieve their own listings from the backend
+- display those listings in the frontend
+
+The frontend architecture now mirrors the backend's modular design, separating routing, API communication, authentication, pages, hooks, and reusable components.
 
 ---
 
 # Completed Phases
 
-## Phase 1 — Authentication
+## Phase 1 — Authentication (Backend)
 
 Completed.
 
-- User registration
+- Registration
 - Login
-- BCrypt password hashing
-- JWT generation
-- JWT validation
-- Stateless authentication
-- Ownership-based authorization
+- BCrypt
+- JWT authentication
+- Ownership authorization
 
 ---
 
-## Phase 2 — Vehicle Listings
+## Phase 2 — Vehicle Listings (Backend)
 
 Completed.
 
-- CRUD operations
+- Create
+- Retrieve
+- Retrieve by ID
+- Update
+- Soft delete
 - Pagination
 - Dynamic filtering
-- JPA Specifications
+- Specifications
 
 ---
 
-## Phase 3 — Refactoring
+## Phase 3 — Backend Refactoring
 
 Completed.
-
-Highlights:
 
 - VehicleListingMapper extraction
 - CurrentUserService extraction
+- Helper methods
 - Reduced duplication
-- Improved service responsibilities
+- Clearer service responsibilities
 
 ---
 
@@ -73,20 +84,15 @@ Highlights:
 
 Completed.
 
-Implemented:
-
-- Jakarta Bean Validation
+- Bean Validation
 - Validation DTOs
 - Global exception handling
-- Structured validation responses
 
 ---
 
 ## Phase 5 — Mapping
 
 Completed.
-
-Implemented:
 
 - Manual DTO mapping
 
@@ -98,12 +104,9 @@ MapStruct intentionally postponed.
 
 Completed.
 
-Implemented:
-
-- OpenAPI
 - Swagger UI
-- JWT authorization support
-- DTO documentation
+- SpringDoc OpenAPI
+- JWT integration
 
 ---
 
@@ -115,19 +118,65 @@ Implemented:
 
 - VehicleImage entity
 - Filesystem storage
-- Metadata persistence
 - UUID filenames
-- Upload validation
-- Ownership verification
-- Public image serving
-- Listing image retrieval
+- Metadata persistence
+- Image retrieval
+- Public image URLs
 
 Deferred intentionally:
 
-- Image deletion
 - Image ordering
+- Image deletion
 - Primary image switching
-- Cloud storage abstraction
+- Cloud storage
+
+---
+
+## Phase 8 — React Frontend (Current)
+
+Completed so far:
+
+### Frontend Architecture
+
+- Vite
+- React
+- React Router
+- Modular folder structure
+- API layer
+- Authentication storage
+- Context API
+- Protected routes
+
+### Authentication
+
+Implemented:
+
+- AuthContext
+- AuthProvider
+- useAuth hook
+- login()
+- logout()
+- session restoration
+- current user retrieval
+- JWT persistence
+- loading state during session restoration
+- route protection
+
+### Listings
+
+Implemented:
+
+- listingApi
+- getMyListings()
+- MyListingsPage
+- loading state
+- error state
+- empty state
+- successful rendering of listings
+
+Started:
+
+- reusable ListingCard component
 
 ---
 
@@ -136,172 +185,152 @@ Deferred intentionally:
 ## Backend
 
 - Spring Boot
-- Java 17
-- Gradle
-- REST API
-
-## Security
-
 - Spring Security
-- JWT authentication
-- BCrypt password hashing
-- Stateless authentication
-- CORS configured for React
-
-## Persistence
-
+- JWT
 - PostgreSQL
 - Spring Data JPA
-- Hibernate
-
-## Storage
-
-- Local filesystem for images
-- PostgreSQL for metadata
-- Browser `localStorage` for JWT persistence
-
-## Validation
-
-- Jakarta Bean Validation
-- Global exception handling
-- Structured error DTOs
-
-## Mapping
-
-- Manual DTO mapping
-
-## API Documentation
-
-- SpringDoc OpenAPI
-- Swagger UI
+- Specifications
+- DTO mapping
+- Image management
 
 ## Frontend
 
-Current frontend architecture includes:
+Architecture currently consists of:
 
-- React (JavaScript)
-- Vite
-- Tailwind CSS
-- ESLint
+- React
 - React Router
+- Context API
 - Fetch API
-- Centralized `apiClient`
-- API modules (`authApi`)
-- Authentication storage abstraction (`authStorage`)
-- React Context (`AuthContext`)
-- Controlled forms
-- Local component state
-- Global authentication state (partially implemented)
+- Centralized apiClient
+- authApi
+- listingApi
+- authStorage
+- AuthContext
+- useAuth hook
+- ProtectedRoute
+- Page-based routing
+- Reusable component architecture (introduced)
 
 ---
 
 # Important Architectural Decisions
 
-### Centralized API Client
+## API Layer
 
-All HTTP communication now flows through a reusable `apiClient`.
+All HTTP communication flows through `apiClient`.
 
-Responsibilities include:
+Responsibilities:
 
-- base URL management
-- attaching Authorization headers
-- HTTP error handling
+- Authorization headers
 - JSON parsing
-- handling empty response bodies
+- Error handling
+- Empty response handling
 
-Individual API modules should focus only on business endpoints.
-
----
-
-### Authentication Storage
-
-JWT persistence has been extracted from API modules into dedicated storage helper functions.
-
-This separates browser persistence from HTTP communication.
+Business APIs remain thin wrappers.
 
 ---
 
-### Explicit Authentication Requests
+## Authentication
 
-`apiClient` now accepts:
+Authentication state belongs inside `AuthContext`.
 
-```javascript
-requiresAuth: true;
+`localStorage` is persistence only.
+
+The authenticated user—not merely the JWT—is considered the application's source of truth.
+
+---
+
+## Route Protection
+
+Protected pages are wrapped using:
+
+```
+<ProtectedRoute>
+    <DashboardPage />
+</ProtectedRoute>
 ```
 
-instead of automatically attaching JWTs to every request.
+The route decides access.
 
-This prevents accidental Authorization headers on public endpoints such as login and registration.
-
----
-
-### Hybrid Authentication Model
-
-An important architectural decision was made:
-
-React Context supplements `localStorage`; it does not replace it.
-
-Responsibilities are intentionally separated.
-
-`localStorage`
-
-- survives browser refreshes
-- acts as persistent storage
-
-React Context
-
-- stores the current authentication state
-- triggers UI updates
-- provides application-wide access
-- eliminates repeated `localStorage` reads
+The page itself does not perform authentication checks.
 
 ---
 
-### Authentication Ownership
+## Loading During Session Restoration
 
-Another architectural decision made during this chat:
+A loading state was added to `AuthContext`.
 
-The `AuthProvider` should eventually own the authenticated user/session, not just the JWT.
+Without it, protected routes redirected before the authentication check completed.
 
-The JWT exists primarily for backend communication.
-
-Application components should consume authentication information from Context rather than directly interacting with browser storage.
+This fixed the issue where logged-in users were immediately redirected to `/login` after refreshing the page.
 
 ---
 
-### Error Handling
+## Listings API
 
-HTTP concerns remain inside `apiClient`.
+The backend returns paginated responses.
 
-Components receive normal JavaScript errors without knowing HTTP implementation details.
+Example:
+
+```
+{
+    content: [...],
+    totalElements: ...
+}
+```
+
+The frontend therefore stores:
+
+```
+data.content
+```
+
+rather than the entire response object when rendering listings.
+
+---
+
+## React Learning Approach
+
+We agreed not to jump directly to finished UI.
+
+Instead we build:
+
+- one component
+- one React concept
+- one UI improvement
+
+at a time.
+
+Each change is explained before moving to the next.
+
+At the end of the feature, we will have the complete polished page while understanding every part of its implementation.
 
 ---
 
 # Remaining Roadmap
 
-Continue Phase 8.
+Immediate:
 
-Remaining authentication work:
+- Finish ListingCard
+- Add listing image
+- Improve typography
+- Improve spacing
+- Add Edit button
+- Add Delete button
+- Improve empty state
+- Build responsive card layout
 
-- Finish integrating `AuthProvider` with login
-- Synchronize Context after successful authentication
-- Implement logout
-- Add authenticated user loading (`/users/me` or equivalent endpoint)
-- Store authenticated user inside Context
-- Introduce protected routes
-- Add route guards
-- Build authenticated layouts/navigation
+After My Listings:
 
-After authentication:
-
-- Listings UI
-- Listing CRUD
+- Create Listing page
+- Edit Listing page
+- Delete confirmation
 - Image upload UI
-- Reusable UI components
-- Loading states
-- Global error handling
+- Public marketplace
+- Listing details page
+- Search and filtering UI
 
-Future phases remain:
+Later phases remain:
 
 - Testing
 - Docker
@@ -310,104 +339,108 @@ Future phases remain:
 
 ---
 
-# Files and Structure Added During This Chat
+# Files Added or Modified During This Chat
 
-## New
+Frontend additions include:
 
-```
-src/context/
-    AuthContext.jsx
+- AuthContext
+- useAuth
+- ProtectedRoute
+- listingApi
+- DashboardPage
+- MyListingsPage
+- CreateListingPage
+- ListingCard (started)
 
-src/auth/
-    authStorage.js
-```
+Modified:
 
----
+- AppRouter
+- apiClient
+- authApi
+- App
+- main
+- LoginPage
 
-## Modified
+Backend additions:
 
-```
-src/api/
-    apiClient.js
-    authApi.js
-
-src/pages/
-    HomePage.jsx
-
-src/App.jsx
-
-src/main.jsx
-```
+- `/listings/me` endpoint
+- corresponding service support for authenticated user's listings
 
 ---
 
 # Concepts Learned During This Chat
 
-- Separation of HTTP concerns from business logic
-- Why authentication headers should be opt-in
-- Safe parsing of HTTP responses
-- Why APIs may legitimately return empty bodies
-- Centralized API client architecture
-- Browser persistence vs application state
-- React Context responsibilities
-- Why Context complements rather than replaces `localStorage`
-- Ownership of authentication state
-- Designing authentication for future scalability
+- React Context
+- Protected Routes
+- React children prop
+- Route composition
+- Session restoration
+- Loading state during authentication
+- Why redirects happened before authentication completed
+- API pagination
+- Rendering arrays with `.map()`
+- Arrow function return syntax inside JSX
+- Separating reusable UI into components
 
 ---
 
 # Interview Topics Covered
 
-Be able to explain:
+Be prepared to explain:
 
-- Why use a centralized API client?
-- Why shouldn't every request automatically attach a JWT?
-- What problem does `requiresAuth` solve?
-- Why separate `authStorage` from `authApi`?
-- Why should HTTP error handling stay inside `apiClient`?
-- Why can `response.json()` fail?
-- Why should React Context not replace `localStorage`?
-- Why should `AuthProvider` own authentication state?
-- Why is storing only the JWT in Context insufficient?
-- What responsibilities belong to an API layer versus a UI component?
+- Why use React Context for authentication?
+- Why store both token and user?
+- Why is a loading state required during session restoration?
+- Why wrap routes instead of checking authentication inside pages?
+- What is the `children` prop?
+- Why does `.map()` require a returned JSX element?
+- Why return `data.content` instead of the entire response?
+- Why build reusable components such as ListingCard?
 
 ---
 
 # Next Recommended Starting Point
 
-Begin by completing the authentication architecture before building additional application features.
+Continue implementing the UI for **My Listings**.
 
-Implementation order:
+Do not redesign the architecture.
 
-1. Finish integrating `AuthProvider` with the login flow.
-2. Ensure successful login updates both:
-   - `localStorage`
-   - React Context
-3. Design a `/me` endpoint for retrieving the authenticated user's profile.
-4. Expand `AuthContext` to store the authenticated user alongside the token.
-5. Implement logout.
-6. Introduce protected routes and route guards.
+Continue incrementally:
 
-Continue following the established workflow:
+1. Finish the basic `ListingCard`.
+2. Add the listing image.
+3. Improve card layout.
+4. Add Edit and Delete actions.
+5. Polish spacing and typography.
+6. Make the page responsive.
 
-- discuss architecture first
-- request current files before modifying existing code
-- implement incrementally
-- compile and test after every step
+Only after My Listings reaches a polished state should we begin the Create Listing page.
 
 ---
 
 # Notes for Continuation
 
-Several important architectural conclusions were reached during this conversation and should be preserved:
+The agreed mentoring workflow remains unchanged.
 
-- React Context supplements browser persistence instead of replacing it.
-- Authentication should eventually revolve around the authenticated user rather than the JWT itself.
-- The JWT is an implementation detail used for backend communication.
-- UI components should primarily consume authentication state from Context.
-- HTTP concerns (headers, parsing, error handling) belong inside `apiClient`.
-- Browser persistence belongs inside `authStorage`.
-- Business operations belong inside API modules such as `authApi`.
-- UI components should remain focused on rendering and user interaction.
+Continue implementing features in small, testable steps with explanations before code.
 
-At the end of this conversation, `AuthContext` has been introduced but is not yet fully integrated with the login flow. The next chat should complete that integration before implementing protected routes or additional authenticated features.
+The current ListingCard already displays the basic listing information successfully.
+
+The next iteration should evolve it toward a marketplace-style card:
+
+---
+
+[ Image ]
+
+2019 Toyota Corolla
+
+Toyota Corolla
+Nairobi • 2019
+
+KSh 1,850,000
+
+## [Edit] [Delete]
+
+Build this gradually rather than dropping in a finished component.
+
+**Before making code changes in the next chat, ask for the latest project folder structure (`FOLDER_STRUCTURE.md`) so existing files and locations are known and no assumptions are made about the current codebase.**

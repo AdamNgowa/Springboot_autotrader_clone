@@ -6,11 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 //Then we return them
 //return chilren; - simply means "Render whatever was placed inside me."
 function ProtectedRoute({ children }) {
-  const { user, loading, isAuthenticated } = useAuth();
-
-  console.log("ProtectedRoute");
-  console.log("User:", user);
-  console.log("Authenticated:", isAuthenticated);
+  const { loading, isAuthenticated } = useAuth();
 
   //Don't immideatley redirect but instead wait for isAuthenticated to become true
   if (loading) {
