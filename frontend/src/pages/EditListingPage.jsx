@@ -9,6 +9,7 @@ function EditListingPage() {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   //Whenever the id changes , run the effect (runs getListing api call)
   useEffect(() => {
@@ -28,10 +29,13 @@ function EditListingPage() {
 
   async function handleSubmit(updatedListing) {
     try {
+      setSaving(true);
       const updated = await updateListing(id, updatedListing);
       console.log("Updated listing:", updated);
     } catch (error) {
       console.error(error);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -50,6 +54,7 @@ function EditListingPage() {
         initialValues={listing}
         onSubmit={handleSubmit}
         submitText="Update listing"
+        saving={saving}
       />
     </main>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function ListingForm({ initialValues, onSubmit, submitText }) {
+function ListingForm({ initialValues, onSubmit, submitText, saving }) {
   const [formData, setFormData] = useState(initialValues);
 
   //Run this effect whenever "initialValues" changes
@@ -83,9 +83,13 @@ function ListingForm({ initialValues, onSubmit, submitText }) {
         />
       </div>
 
+      {/* When saving is false, render --> <button></button>
+      When saving is true , render --> <button disabled></button> */}
       <button
         type="submit"
-        className="bg-blue-600 text-white px-5 py-2 rounded-md"
+        disabled={saving}
+        className="bg-blue-600 text-white px-5 py-2 rounded-md
+        disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {submitText}
       </button>
