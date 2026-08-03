@@ -91,7 +91,7 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
         className="bg-blue-600 text-white px-5 py-2 rounded-md
         disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {submitText}
+        {saving ? "Saving..." : submitText}
       </button>
     </form>
   );
