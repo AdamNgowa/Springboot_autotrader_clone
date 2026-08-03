@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getListing } from "../api/listingApi";
+import { updateListing, getListing } from "../api/listingApi";
+import Lf from "../components/ListingForm";
 
 function EditListingPage() {
   const { id } = useParams();
@@ -9,6 +10,7 @@ function EditListingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  //Whenever the id changes , run the effect (runs getListing api call)
   useEffect(() => {
     async function loadListing() {
       try {
@@ -24,6 +26,15 @@ function EditListingPage() {
     loadListing();
   }, [id]);
 
+  async function handleSubmit(updatedListing) {
+    try {
+      const updated = await updateListing(id, updatedListing);
+      console.log("Updated listing:", updated);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   if (loading) {
     return <p>Loading listing...</p>;
   }
@@ -35,8 +46,11 @@ function EditListingPage() {
   return (
     <main className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Edit Listing</h1>
-
-      <pre>{JSON.stringify(listing, null, 2)}</pre>
+      <Lf
+        initialValues={listing}
+        onSubmit={handleSubmit}
+        submitText="Update listing"
+      />
     </main>
   );
 }

@@ -6,8 +6,8 @@ function ListingCard({ listing }) {
   const primaryImage = listing.images?.find((image) => image.primaryImage);
   return (
     <article
-      className="border overflow-hidden rounded-lg flex flex-col 
-    gap-4 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1 duration-200"
+      className="overflow-hidden rounded-lg flex flex-col gap-4 shadow-sm hover:shadow-lg border border-transparent
+       hover:border-slate-300 transition-all duration-200 hover:-translate-y-1"
     >
       <div className="h-48 rounded-md bg-gray-200 flex items-center justify-center ">
         {primaryImage ? (
