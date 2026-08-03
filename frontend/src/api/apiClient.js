@@ -47,7 +47,10 @@ export async function apiClient(endpoint, options = {}) {
   if (!response.ok) {
     // Fall back to a generic message if no structured error message was returned in the response body.
     const error = new Error(data?.message || "Request failed");
+
+    //Save useful informatiion on the Error Object
     error.status = response.status;
+    error.data = data;
 
     throw error;
   }

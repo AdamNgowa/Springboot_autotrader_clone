@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateListing, getListing } from "../api/listingApi";
-import Lf from "../components/ListingForm";
+import ListingForm from "../components/ListingForm";
 
 function EditListingPage() {
   const { id } = useParams();
@@ -45,7 +45,12 @@ function EditListingPage() {
         navigate("/my-listings");
       }, SUCCESS_MESSAGE_DURATION);
     } catch (error) {
-      console.error(error);
+      setError(
+        error.data?.message || error.message || "Failed to edit listing.",
+      );
+      console.error("Status:", error.status);
+      console.error("Message:", error.message);
+      console.error("Response:", error.data);
     } finally {
       setSaving(false);
     }
@@ -77,7 +82,7 @@ function EditListingPage() {
           </button>
         </div>
       )}
-      <Lf
+      <ListingForm
         initialValues={listing}
         onSubmit={handleSubmit}
         submitText="Update listing"
