@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { updateListing, getListing } from "../api/listingApi";
 import Lf from "../components/ListingForm";
 
 function EditListingPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const SUCCESS_MESSAGE_DURATION = 3000;
 
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState("");
 
   //Whenever the id changes , run the effect (runs getListing api call)
   useEffect(() => {
@@ -29,9 +32,18 @@ function EditListingPage() {
 
   async function handleSubmit(updatedListing) {
     try {
+      setSuccess("");
       setSaving(true);
+
       const updated = await updateListing(id, updatedListing);
-      console.log("Updated listing:", updated);
+
+      setSuccess("Listing updated successfully.");
+
+      // setTimeout(functionToRunLater, milliseconds);
+      setTimeout(() => {
+        setSuccess("");
+        navigate("/my-listings");
+      }, SUCCESS_MESSAGE_DURATION);
     } catch (error) {
       console.error(error);
     } finally {
@@ -50,6 +62,21 @@ function EditListingPage() {
   return (
     <main className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Edit Listing</h1>
+      {success && (
+        <div
+          className="mb-4 flex items-center justify-between rounded-md
+               bg-green-100 p-3 text-green-800"
+        >
+          <span>{success}</span>
+          <button
+            type="button"
+            onClick={() => setSuccess("")}
+            className="font-bold hover:text-green-950"
+          >
+            X
+          </button>
+        </div>
+      )}
       <Lf
         initialValues={listing}
         onSubmit={handleSubmit}

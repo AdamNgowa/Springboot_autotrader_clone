@@ -13,8 +13,9 @@ function ProtectedRoute({ children }) {
     return <p>Loading...</p>;
   }
 
-  //If condition results to true, then don't render this page
-  //Instead send the browser to "/login"
+  // Redirect unauthenticated users to login.
+  // 'replace' overwrites the history entry so the browser's Back button
+  // takes them to their previous page instead of getting trapped in a redirect loop.
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }

@@ -43,7 +43,10 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 rounded border border-slate-300 p-4 shadow-md "
+    >
       {/* Title */}
       <div>
         <label className="block mb-1 font-medium">Title</label>
@@ -89,7 +92,7 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
         type="submit"
         disabled={saving}
         className="bg-blue-600 text-white px-5 py-2 rounded-md
-        disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 "
       >
         {saving ? "Saving..." : submitText}
       </button>
