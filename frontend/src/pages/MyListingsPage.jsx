@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getMyListings } from "../api/listingApi";
+import { deleteListing, getMyListings } from "../api/listingApi";
 import ListingCard from "../components/ListingCard";
 
 function MyListingsPage() {
@@ -21,6 +21,24 @@ function MyListingsPage() {
     loadListings();
   }, []);
 
+  async function handleDelete(id) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete the listing?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+    try {
+      await deleteListing(id);
+      setListings((currentListings) =>
+        currentListings.filter((listing) => listing.id !== id),
+      );
+    } catch (error) {
+      setError(error.message);
+    }
+  }
+
   if (loading) {
     return <p>Loading listings...</p>;
   }
@@ -36,7 +54,11 @@ function MyListingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 m-2">
         {listings.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} />
+          <ListingCard
+            key={listing.id}
+            listing={listing}
+            onDelete={handleDelete}
+          />
         ))}
       </div>
     </main>

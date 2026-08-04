@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function ListingCard({ listing }) {
+function ListingCard({ listing, onDelete }) {
   const navigate = useNavigate();
   const formattedPrice = new Intl.NumberFormat().format(listing.price);
   const primaryImage = listing.images?.find((image) => image.primaryImage);
@@ -43,6 +43,7 @@ function ListingCard({ listing }) {
           </button>
           <button
             type="button"
+            onClick={() => onDelete(listing.id)}
             className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
           >
             Delete
