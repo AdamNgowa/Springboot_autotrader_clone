@@ -31,9 +31,20 @@ function MyListingsPage() {
     }
     try {
       await deleteListing(id);
+      // Call setListings using the "functional update pattern" (passing a callback function).
+      // React automatically runs this callback and passes in the freshest state array
+      // as the first argument, which we name 'currentListings'.
       setListings((currentListings) =>
+        // .filter() creates a BRAND NEW array by looping through every item in 'currentListings'.
+        // For each individual 'listing' in the array, it evaluates the condition:
+        // Is this listing's ID NOT EQUAL to the ID we just deleted?
+        //
+        // - If TRUE (IDs don't match): Keep this listing in the new array.
+        // - If FALSE (IDs match): Drop this listing from the new array.
         currentListings.filter((listing) => listing.id !== id),
       );
+      // React receives the new filtered array, replaces the old state, and re-renders the UI
+      // so the deleted item instantly vanishes from the screen.
     } catch (error) {
       setError(error.message);
     }
