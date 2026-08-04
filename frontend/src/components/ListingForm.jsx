@@ -21,10 +21,6 @@ function ListingForm({
     setFormData(initialValues);
   }, [initialValues]);
 
-  //Whenever a user types into an input or text area, react passes and event object
-  //It contains details about what just happened. e.g key presses, mouse clicks or maybe, which html element triggered the change
-  //event.target - refers to the exact input element the user typed into
-
   function handleChange(event) {
     const { name, value } = event.target;
     setFormData({

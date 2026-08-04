@@ -35,7 +35,7 @@ function EditListingPage() {
       setSuccess("");
       setSaving(true);
 
-      const updated = await updateListing(id, updatedListing);
+      await updateListing(id, updatedListing);
 
       setSuccess("Listing updated successfully.");
 
