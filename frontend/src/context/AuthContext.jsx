@@ -28,7 +28,6 @@ export function AuthProvider({ children }) {
    */
   useEffect(() => {
     async function restoreSession() {
-      console.log("restoreSession started");
       const storedToken = getToken();
 
       if (!storedToken) {

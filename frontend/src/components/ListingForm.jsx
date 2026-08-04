@@ -6,7 +6,14 @@ import {
   BODY_TYPES,
 } from "../constants/listingEnums";
 
-function ListingForm({ initialValues, onSubmit, submitText, saving }) {
+function ListingForm({
+  initialValues,
+  onSubmit,
+  submitText,
+  saving,
+  validationErrors = {},
+  clearValidationError,
+}) {
   const [formData, setFormData] = useState(initialValues);
 
   //Run this effect whenever "initialValues" changes
@@ -19,27 +26,13 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
   //event.target - refers to the exact input element the user typed into
 
   function handleChange(event) {
-    //const {name,value } = event.target is the same as const name = event.target.name
-    // or const value = event.target.value;
     const { name, value } = event.target;
-    //setFormData updates the stored memory(Changes the data inside) and tells react to re-render the screen
     setFormData({
-      //Copies already present data into the setformdata so it can be available for the re-render
-      //
       ...formData,
-      //[name]:value - computed property name
-      //Dynamically assigns the key name,in the form if for example name="title",
-      //[name] becomes ["title"] so finally [name]:value becomes "title":"Marcopolo g7"
       [name]: value,
-      //The result of all this should ,for example,look something like:
-      /* 
-      {
-            title: "Apartment",       // Preserved by ...formData
-            description: "Nice view", // Preserved by ...formData
-            ["price"]: "100"          // Dynamically sets price: "100"
-}
-      */
     });
+
+    clearValidationError?.(name);
   }
 
   function handleSubmit(event) {
@@ -68,6 +61,12 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
           disabled:text-gray-500
           disabled:cursor-not-allowed"
         />
+        {validationErrors.title && (
+          <p className="mt-1 text-sm text-red-600">
+            {" "}
+            {validationErrors.title}{" "}
+          </p>
+        )}
       </div>
 
       {/* Price */}
@@ -85,6 +84,9 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
              disabled:text-gray-500
              disabled:cursor-not-allowed"
         />
+        {validationErrors.price && (
+          <p className="mt-1 text-sm text-red-600">{validationErrors.price}</p>
+        )}
       </div>
 
       {/* Description */}
@@ -102,6 +104,11 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
              disabled:text-gray-500
              disabled:cursor-not-allowed"
         />
+        {validationErrors.description && (
+          <p className="mt-1 text-sm text-red-600">
+            {validationErrors.description}
+          </p>
+        )}
       </div>
 
       {/* Year */}
@@ -116,6 +123,9 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
           onChange={handleChange}
           className="border rounded-md p-2 w-full"
         />
+        {validationErrors.year && (
+          <p className="mt-1 text-sm text-red-600">{validationErrors.year}</p>
+        )}
       </div>
 
       {/* Make */}
@@ -130,6 +140,9 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
           onChange={handleChange}
           className="border rounded-md p-2 w-full"
         />
+        {validationErrors.make && (
+          <p className="mt-1 text-sm text-red-600">{validationErrors.make}</p>
+        )}
       </div>
 
       {/* Model */}
@@ -144,6 +157,9 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
           onChange={handleChange}
           className="border rounded-md p-2 w-full"
         />
+        {validationErrors.model && (
+          <p className="mt-1 text-sm text-red-600">{validationErrors.model}</p>
+        )}
       </div>
 
       {/* Mileage */}
@@ -158,6 +174,11 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
           onChange={handleChange}
           className="border rounded-md p-2 w-full"
         />
+        {validationErrors.mileage && (
+          <p className="mt-1 text-sm text-red-600">
+            {validationErrors.mileage}
+          </p>
+        )}
       </div>
       {/* City */}
       <div>
@@ -171,6 +192,9 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
           onChange={handleChange}
           className="border rounded-md p-2 w-full"
         />
+        {validationErrors.city && (
+          <p className="mt-1 text-sm text-red-600">{validationErrors.city}</p>
+        )}
       </div>
 
       {/* Fuel type */}
@@ -193,6 +217,11 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
             </option>
           ))}
         </select>
+        {validationErrors.fuelType && (
+          <p className="mt-1 text-sm text-red-600">
+            {validationErrors.fuelType}
+          </p>
+        )}
       </div>
 
       {/* Body type */}
@@ -212,6 +241,11 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
             </option>
           ))}
         </select>
+        {validationErrors.bodyType && (
+          <p className="mt-1 text-sm text-red-600">
+            {validationErrors.bodyType}
+          </p>
+        )}
       </div>
 
       {/* transmission */}
@@ -231,6 +265,11 @@ function ListingForm({ initialValues, onSubmit, submitText, saving }) {
             </option>
           ))}
         </select>
+        {validationErrors.transmission && (
+          <p className="mt-1 text-sm text-red-600">
+            {validationErrors.transmission}
+          </p>
+        )}
       </div>
 
       {/* When saving is false, render --> <button></button>

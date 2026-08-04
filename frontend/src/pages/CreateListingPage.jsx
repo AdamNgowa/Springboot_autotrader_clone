@@ -2,45 +2,80 @@ import { useNavigate } from "react-router-dom";
 import ListingForm from "../components/ListingForm";
 import { useState } from "react";
 import { createListing } from "../api/listingApi";
-import {
-  FUEL_TYPES,
-  TRANSMISSIONS,
-  BODY_TYPES,
-} from "../constants/listingEnums";
+
+const EMPTY_LISTING = {
+  title: "",
+  description: "",
+  price: "",
+  year: "",
+  make: "",
+  model: "",
+  mileage: "",
+  city: "",
+  fuelType: "",
+  transmission: "",
+  bodyType: "",
+};
 
 function CreateListingPage() {
   const navigate = useNavigate();
 
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
 
-  const initialValues = {
-    title: "",
-    description: "",
-    price: "",
-    year: "",
-    make: "",
-    model: "",
-    mileage: "",
-    city: "",
-    fuelType: "",
-    transmission: "",
-    bodyType: "",
-  };
+  function clearValidationError(fieldName) {
+    setValidationErrors((currentErrors) => {
+      const updatedErrors = { ...currentErrors };
+
+      delete updatedErrors[fieldName];
+
+      return updatedErrors;
+    });
+  }
 
   async function handleSubmit(newListing) {
+    const clientValidationErrors = {};
+
+    if (!newListing.fuelType) {
+      clientValidationErrors.fuelType = "Fuel type is required";
+    }
+
+    if (!newListing.transmission) {
+      clientValidationErrors.transmission = "Transmission is required";
+    }
+
+    if (!newListing.bodyType) {
+      clientValidationErrors.bodyType = "Body type is required";
+    }
+
+    if (Object.keys(clientValidationErrors).length > 0) {
+      setValidationErrors(clientValidationErrors);
+      return;
+    }
+
     try {
       setSaving(true);
       setError(null);
+      setValidationErrors({});
       console.log("Submitting:", newListing);
       const createdListing = await createListing(newListing);
       console.log("Created listing:", createdListing);
       navigate("/my-listings");
     } catch (error) {
-      setError("Failed to create listing.");
-      console.error("Status:", error.status);
-      console.error("Message:", error.message);
-      console.error("Response:", error.data);
+      console.log("Full error:", error);
+      console.log("Error data:", error.data);
+      if (error.data?.validationErrors) {
+        const fieldErrors = {};
+
+        error.data.validationErrors.forEach((item) => {
+          fieldErrors[item.field] = item.message;
+        });
+
+        setValidationErrors(fieldErrors);
+      } else {
+        setError(error.message);
+      }
     } finally {
       setSaving(false);
     }
@@ -53,10 +88,12 @@ function CreateListingPage() {
         <div className="mb-4 rounded bg-red-100 p-3 text-red-700">{error}</div>
       )}
       <ListingForm
-        initialValues={initialValues}
+        initialValues={EMPTY_LISTING}
         onSubmit={handleSubmit}
         saving={saving}
         submitText="Create listing"
+        validationErrors={validationErrors}
+        clearValidationError={clearValidationError}
       />
     </main>
   );

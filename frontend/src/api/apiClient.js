@@ -57,6 +57,5 @@ export async function apiClient(endpoint, options = {}) {
 
   // Return the parsed JSON response object (or null for empty responses like 204 No Content).
   console.log("returned data:", data);
-
   return data;
 }
