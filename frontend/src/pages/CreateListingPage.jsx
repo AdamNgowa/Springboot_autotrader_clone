@@ -25,12 +25,21 @@ function CreateListingPage() {
   const [saving, setSaving] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
 
+  // Function that takes the name of an input field (e.g., "email" or "username")
   function clearValidationError(fieldName) {
+    // Call setValidationErrors using a callback function.
+    // React automatically passes the freshest state object into 'currentErrors'.
     setValidationErrors((currentErrors) => {
+      // 1. Create a shallow copy (clone) of the currentErrors object using the spread operator (...).
+      // NEVER mutate React state directly; always modify a cloned copy instead!
       const updatedErrors = { ...currentErrors };
 
+      // 2. Remove the specific error property matching fieldName from the cloned object.
+      // e.g., if fieldName is "email", this removes updatedErrors.email
       delete updatedErrors[fieldName];
 
+      // 3. Return the newly modified object. React sets this as the new state
+      // and re-renders the UI, removing the error message from the screen.
       return updatedErrors;
     });
   }
