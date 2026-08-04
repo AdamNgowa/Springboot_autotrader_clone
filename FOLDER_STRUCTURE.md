@@ -112,13 +112,15 @@ autotrader
 │   │   ├── pages/
 │   │   │   ├── HomePage.jsx
 │   │   │   ├── LoginPage.jsx
-            ├── EditListingPage.jsx
+|   |   |   ├── EditListingPage.jsx
 │   │   │   ├── DashboardPage.jsx
 │   │   │   ├── MyListingsPage.jsx
 │   │   │   └── CreateListingPage.jsx
 │   │   │
 │   │   ├── routes/
 │   │   │   └── AppRouter.jsx
+│   │   ├── utils/
+│   │   │   └── validateListing.js
 │   │   │
 │   │   ├── App.css
 │   │   ├── App.jsx

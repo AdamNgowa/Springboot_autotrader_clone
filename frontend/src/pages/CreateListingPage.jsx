@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import ListingForm from "../components/ListingForm";
 import { useState } from "react";
 import { createListing } from "../api/listingApi";
+import { validateListing } from "../utils/validateListing";
 
 const EMPTY_LISTING = {
   title: "",
@@ -35,25 +36,17 @@ function CreateListingPage() {
   }
 
   async function handleSubmit(newListing) {
-    const clientValidationErrors = {};
-
-    if (!newListing.fuelType) {
-      clientValidationErrors.fuelType = "Fuel type is required";
-    }
-
-    if (!newListing.transmission) {
-      clientValidationErrors.transmission = "Transmission is required";
-    }
-
-    if (!newListing.bodyType) {
-      clientValidationErrors.bodyType = "Body type is required";
-    }
-
+    const clientValidationErrors = validateListing(newListing);
+    //Object.keys(clientValidationErrors).length > 0: It takes the clientValidationErrors object, extracts an array of its keys,
+    //  and checks if the count of keys is greater than 0 (meaning errors exist).
     if (Object.keys(clientValidationErrors).length > 0) {
+      //If errors exist, it passes the full clientValidationErrors object to a React state updating function (setValidationErrors),
+      // so the UI can render them.
       setValidationErrors(clientValidationErrors);
+      //It stops the execution of the current function immediately and
+      // returns undefined (an empty return used to exit early and prevent further code from running, such as making an API call).
       return;
     }
-
     try {
       setSaving(true);
       setError(null);

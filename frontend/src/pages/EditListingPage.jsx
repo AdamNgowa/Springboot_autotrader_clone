@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateListing, getListing } from "../api/listingApi";
 import ListingForm from "../components/ListingForm";
+import { validateListing } from "../utils/validateListing";
 
 function EditListingPage() {
   const { id } = useParams();
@@ -13,6 +14,15 @@ function EditListingPage() {
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
+  const [validationErrors, setValidationErrors] = useState({});
+
+  function clearValidationError(fieldName) {
+    setValidationErrors((current) => {
+      const updated = { ...current };
+      delete updated[fieldName];
+      return updated;
+    });
+  }
 
   //Whenever the id changes , run the effect (runs getListing api call)
   useEffect(() => {
@@ -31,6 +41,11 @@ function EditListingPage() {
   }, [id]);
 
   async function handleSubmit(updatedListing) {
+    const clientValidationErrors = validateListing(updatedListing);
+    if (Object.keys(clientValidationErrors).length > 0) {
+      setValidationErrors(clientValidationErrors);
+      return;
+    }
     try {
       setSuccess("");
       setSaving(true);
@@ -45,12 +60,17 @@ function EditListingPage() {
         navigate("/my-listings");
       }, SUCCESS_MESSAGE_DURATION);
     } catch (error) {
-      setError(
-        error.data?.message || error.message || "Failed to edit listing.",
-      );
-      console.error("Status:", error.status);
-      console.error("Message:", error.message);
-      console.error("Response:", error.data);
+      if (error.data?.validationErrors) {
+        const fieldErrors = {};
+
+        error.data.validationErrors.forEach((item) => {
+          fieldErrors[item.field] = item.message;
+        });
+
+        setValidationErrors(fieldErrors);
+      } else {
+        setError(error.message);
+      }
     } finally {
       setSaving(false);
     }
@@ -87,6 +107,8 @@ function EditListingPage() {
         onSubmit={handleSubmit}
         submitText="Update listing"
         saving={saving}
+        validationErrors={validationErrors}
+        clearValidationError={clearValidationError}
       />
     </main>
   );
