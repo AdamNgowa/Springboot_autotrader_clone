@@ -62,13 +62,13 @@ function CreateListingPage() {
       setError(null);
       setValidationErrors({});
       console.log("Submitting:", newListing);
-      const createdListing = await createListing(newListing);
-      console.log("Created listing:", createdListing);
+      const savedListing = await createListing(newListing);
+      console.log("Created listing:", savedListing);
       //Loops through the selected images and performs actual upload one after the other until all the images selected are finished
       // for...of is specifically,instead of for each,because this loop ensure the upload finishes before moving to the next one
       //and the navigation only happens after all the files have been uploaded
       for (const file of selectedFiles) {
-        await uploadImage(createdListing.id, file);
+        await uploadImage(savedListing.id, file);
       }
       navigate("/my-listings");
     } catch (error) {
