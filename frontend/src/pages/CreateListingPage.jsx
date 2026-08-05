@@ -3,6 +3,7 @@ import ListingForm from "../components/ListingForm";
 import { useState } from "react";
 import { createListing } from "../api/listingApi";
 import { validateListing } from "../utils/validateListing";
+import { uploadImage } from "../api/imageApi";
 
 const EMPTY_LISTING = {
   title: "",
@@ -44,7 +45,7 @@ function CreateListingPage() {
     });
   }
 
-  async function handleSubmit(newListing) {
+  async function handleSubmit(newListing, selectedFiles) {
     const clientValidationErrors = validateListing(newListing);
     //Object.keys(clientValidationErrors).length > 0: It takes the clientValidationErrors object, extracts an array of its keys,
     //  and checks if the count of keys is greater than 0 (meaning errors exist).
@@ -63,6 +64,12 @@ function CreateListingPage() {
       console.log("Submitting:", newListing);
       const createdListing = await createListing(newListing);
       console.log("Created listing:", createdListing);
+      //Loops through the selected images and performs actual upload one after the other until all the images selected are finished
+      // for...of is specifically,instead of for each,because this loop ensure the upload finishes before moving to the next one
+      //and the navigation only happens after all the files have been uploaded
+      for (const file of selectedFiles) {
+        await uploadImage(createdListing.id, file);
+      }
       navigate("/my-listings");
     } catch (error) {
       console.log("Full error:", error);

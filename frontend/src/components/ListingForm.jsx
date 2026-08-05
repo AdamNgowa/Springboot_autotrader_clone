@@ -15,11 +15,19 @@ function ListingForm({
   clearValidationError,
 }) {
   const [formData, setFormData] = useState(initialValues);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   //Run this effect whenever "initialValues" changes
   useEffect(() => {
     setFormData(initialValues);
   }, [initialValues]);
+
+  function handleFileChange(event) {
+    //event.target.files is a FileList not a true js array
+    //Array.from() converts it into a normal array,allowing us to then use familiar methods like:
+    // .map(),.foreach() .filter() etc
+    setSelectedFiles(Array.from(event.target.files));
+  }
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -34,7 +42,8 @@ function ListingForm({
   function handleSubmit(event) {
     event.preventDefault();
 
-    onSubmit(formData);
+    //Allows the parent widget to receive both the listing data and selected image files
+    onSubmit(formData, selectedFiles);
   }
 
   return (
@@ -266,6 +275,21 @@ function ListingForm({
             {validationErrors.transmission}
           </p>
         )}
+      </div>
+      {/* files */}
+      <div>
+        <label className="block mb-1 font-medium">Images</label>
+        <input
+          type="file"
+          multiple
+          accept="image/png,image/jpeg,image/webp"
+          onChange={handleFileChange}
+          disabled={saving}
+        />
+
+        <p className="mt-1 text-sm text-gray-500">
+          You can select one or more JPEG,PNG or WEBP images
+        </p>
       </div>
 
       {/* When saving is false, render --> <button></button>
