@@ -6,6 +6,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import MyListingsPage from "../pages/MyListingsPage";
 import CreateListingPage from "../pages/CreateListingPage";
 import EditListingPage from "../pages/EditListingPage";
+import ListingDetailsPage from "../pages/ListingDetailsPage";
 
 function AppRouter() {
   return (
@@ -48,6 +49,7 @@ function AppRouter() {
             </ProtectedRoute>
           }
         />
+        <Route path="/listings/:id" element={<ListingDetailsPage />} />
       </Routes>
     </BrowserRouter>
   );
