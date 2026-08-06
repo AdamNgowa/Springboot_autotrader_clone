@@ -1,8 +1,20 @@
 import { apiClient } from "./apiClient";
 
 // Fetch all active listings
-export function getListings() {
-  return apiClient("/listings", {
+export function getListings(filters = {}) {
+  const params = new URLSearchParams();
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== "" && value !== null && value !== undefined) {
+      params.append(key, value);
+    }
+  });
+
+  const queryString = params.toString();
+
+  console.log(`/listings${queryString ? `?${queryString}` : ""}`);
+
+  return apiClient(`/listings${queryString ? `?${queryString}` : ""}`, {
     method: "GET",
   });
 }

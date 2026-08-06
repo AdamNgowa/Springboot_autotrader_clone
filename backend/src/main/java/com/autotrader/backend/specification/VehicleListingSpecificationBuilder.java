@@ -10,13 +10,13 @@ public class VehicleListingSpecificationBuilder {
     ) {
         Specification<VehicleListing> spec = Specification.unrestricted();
 
-        if (filter.getCity() != null) {
+        if (filter.getCity() != null && !filter.getCity().isBlank()) {
             spec = spec.and(
                     VehicleListingSpecification.hasCity(filter.getCity())
             );
         }
 
-        if (filter.getMake() != null) {
+        if (filter.getMake() != null && !filter.getMake().isBlank()) {
             spec = spec.and(
                     VehicleListingSpecification.hasMake(filter.getMake())
             );
@@ -33,6 +33,39 @@ public class VehicleListingSpecificationBuilder {
                     VehicleListingSpecification.hasMinPrice(filter.getMinPrice())
             );
         }
+
+        if (filter.getBodyType() != null) {
+            spec = spec.and(
+                    VehicleListingSpecification.hasBodyType(
+                            filter.getBodyType()
+                    )
+            );
+        }
+
+        if (filter.getFuelType() != null) {
+            spec = spec.and(
+                    VehicleListingSpecification.hasFuelType(
+                            filter.getFuelType()
+                    )
+            );
+        }
+
+        if (filter.getTransmission() != null) {
+            spec = spec.and(
+                    VehicleListingSpecification.hasTransmission(
+                            filter.getTransmission()
+                    )
+            );
+        }
+
+        if (filter.getYear() != null) {
+            spec = spec.and(
+                    VehicleListingSpecification.hasYear(
+                            filter.getYear()
+                    )
+            );
+        }
+
 
         return spec;
     }

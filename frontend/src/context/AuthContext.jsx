@@ -1,5 +1,8 @@
 import { createContext, useEffect, useState } from "react";
-import { login as loginRequest } from "../api/authApi";
+import {
+  login as loginRequest,
+  register as registerRequest,
+} from "../api/authApi";
 import { getToken, saveToken, removeToken } from "../auth/authStorage";
 import { getCurrentUser } from "../api/userApi";
 
@@ -53,25 +56,37 @@ export function AuthProvider({ children }) {
   }, []);
 
   /**
-   * LOGIN ACTION:
-   * Handles user login by calling the backend API, persisting the JWT to storage,
-   * and updating the global React state.
+   * SESSION INITIALIZATION:
+   * Completes the authentication lifecycle once a valid JWT has been received.
    *
-   * @param {Object} credentials - User inputs (e.g., { username, password }).
-   * @returns {Promise<Object>} The server response containing token and user details.
+   * @param {string} token - JWT returned by the backend.
    */
+  async function initializeSession(token) {
+    // Persist the JWT so the session survives browser refreshes.
+    saveToken(token);
+
+    // Update React state immediately.
+    setToken(token);
+
+    // Load the authenticated user's profile.
+    const currentUser = await getCurrentUser();
+
+    // Store the user in context.
+    setUser(currentUser);
+  }
+
   async function login(credentials) {
-    // Send HTTP POST request to backend auth endpoint.
     const response = await loginRequest(credentials);
 
-    // Save token to browser localStorage for session persistence across refreshes.
-    saveToken(response.token);
+    await initializeSession(response.token);
 
-    // Update React state to trigger immediate UI re-renders for authenticated views.
-    setToken(response.token);
+    return response;
+  }
 
-    const currentUser = await getCurrentUser();
-    setUser(currentUser); // user goes from null -> object, so isAuthenticated flips true
+  async function register(userData) {
+    const response = await registerRequest(userData);
+
+    await initializeSession(response.token);
 
     return response;
   }
@@ -103,6 +118,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: user !== null,
     loading,
     login,
+    register,
     logout,
   };
 

@@ -7,13 +7,36 @@ import MyListingsPage from "../pages/MyListingsPage";
 import CreateListingPage from "../pages/CreateListingPage";
 import EditListingPage from "../pages/EditListingPage";
 import ListingDetailsPage from "../pages/ListingDetailsPage";
+import Navbar from "../components/Navbar";
+import RegisterPage from "../pages/RegisterPage";
+import GuestOnlyRoute from "../components/GuestOnlyRoute";
 
 function AppRouter() {
   return (
     <BrowserRouter>
+      <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
+        <Route path="/listings/:id" element={<ListingDetailsPage />} />
+
+        <Route
+          path="/login"
+          element={
+            <GuestOnlyRoute>
+              <LoginPage />
+            </GuestOnlyRoute>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <GuestOnlyRoute>
+              <RegisterPage />
+            </GuestOnlyRoute>
+          }
+        />
+
         {/* Protected routes */}
         <Route
           path="/dashboard"
@@ -49,7 +72,6 @@ function AppRouter() {
             </ProtectedRoute>
           }
         />
-        <Route path="/listings/:id" element={<ListingDetailsPage />} />
       </Routes>
     </BrowserRouter>
   );

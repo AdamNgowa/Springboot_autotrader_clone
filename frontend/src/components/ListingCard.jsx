@@ -47,10 +47,12 @@ function ListingCard({ listing, onDelete, showOwnerActions = false }) {
             {listing.city} • {listing.year}
           </p>
         </section>
+        <section>
+          <strong className="text-2xl font-bold">KSh {formattedPrice}</strong>
+        </section>
 
         {showOwnerActions && (
           <footer className="border-t pt-4">
-            <strong className="text-2xl font-bold">KSh {formattedPrice}</strong>
             <div className="flex justify-between m-4">
               {/* Edit button */}
               <button
