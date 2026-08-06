@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getListing } from "../api/listingApi";
+import SpecificationCard from "../components/SpecificationCard";
+import ImageGallery from "../components/ImageGallery";
 
 function ListingDetailsPage() {
   const { id } = useParams();
@@ -8,113 +10,132 @@ function ListingDetailsPage() {
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   //When the id changes,trigger the code inside this effect
   useEffect(() => {
     async function loadListing() {
       try {
         const data = await getListing(id);
+
         setListing(data);
+
+        const primary =
+          data.images?.find((image) => image.primaryImage) ??
+          data.images?.[0] ??
+          null;
+
+        setSelectedImage(primary);
       } catch (error) {
         setError(error.message);
       } finally {
         setLoading(false);
       }
     }
-
     loadListing();
   }, [id]);
 
   if (loading) {
-    return <p>Load listing...</p>;
+    return (
+      <main className="mx-auto max-w-6xl p-6">
+        <p className="text-center text-slate-500">Loading listing...</p>
+      </main>
+    );
   }
 
   if (error) {
-    return <p>Error:{error}</p>;
+    return (
+      <main className="mx-auto max-w-6xl p-6">
+        <div className="rounded-lg bg-red-100 p-4 text-red-700">
+          Error: {error}
+        </div>
+      </main>
+    );
   }
 
   if (!listing) {
-    return <p>Listing not found.</p>;
+    return (
+      <main className="mx-auto max-w-6xl p-6">
+        <div className="rounded-lg bg-yellow-100 p-4 text-yellow-700">
+          Listing not found.
+        </div>
+      </main>
+    );
   }
 
   const formattedPrice = new Intl.NumberFormat().format(listing.price);
-  // 1. Declare a variable to hold the primary image object (or undefined if not found).
-  const primaryImage =
-    // 2. Safely access the 'images' array on the 'listing' object.
-    //    The optional chaining operator (?.) checks if 'images' exists first;
-    //    if listing.images is null or undefined, execution stops here and returns undefined
-    //    instead of throwing a TypeError crash.
-    listing.images
-      // 3. Call the built-in JavaScript Array method .find() to loop through the images.
-      ?.find(
-        // 4. Pass an inline arrow function callback that receives each individual 'image' object.
-        (image) =>
-          // 5. Evaluate the 'primaryImage' boolean property on the current image.
-          //    .find() checks this truthiness: the moment it encounters an image where
-          //    image.primaryImage === true, it immediately stops looping and returns
-          //    that exact image object. If no image has primaryImage: true, it returns undefined.
-          image.primaryImage,
-      );
+
+  function formatEnum(value) {
+    if (!value) return "";
+
+    return value
+      .toLowerCase()
+      .replaceAll("_", " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+  }
 
   return (
-    <main className="max-w-6xl mx-auto p-6">
-      <div className="mb-8 h-96 overflow-hidden rounded-lg bg-gray-200">
-        {primaryImage ? (
-          <img
-            src={`http://localhost:8080${primaryImage.imageUrl}`}
-            alt={listing.title}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-gray-500">
-            No image available
-          </div>
-        )}
-      </div>
-      <section>
-        <h1 className="text-4xl font-bold">{listing.title}</h1>
+    <main className="max-w-6xl mx-auto space-y-10  p-6">
+      <ImageGallery
+        images={listing.images}
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+        title={listing.title}
+      />
 
-        <p className="mt-4 text-3xl font-bold text-blue-700">
-          KSh {formattedPrice}
-        </p>
+      <section className="space-y-2">
+        <h1 className="text-4xl font-bold text-slate-900">{listing.title}</h1>
 
-        <p className="mt-2 text-gray-600">{listing.city}</p>
+        <p className="text-3xl font-bold text-blue-700">KSh {formattedPrice}</p>
+
+        <p className="text-lg text-slate-500">{listing.city}</p>
       </section>
-      <section className="mt-10">
+      <section>
         <h2 className="mb-3 text-2xl font-semibold">Description</h2>
 
-        <p className="leading-7 text-gray-700">{listing.description}</p>
+        <p className="leading-8 text-slate-700">{listing.description}</p>
       </section>
-      <section className="mt-10">
-        <h2 className="mb-4 text-2xl font-semibold">Specifications</h2>
+      <section>
+        <h2 className="mb-5 text-2xl font-semibold">Specifications</h2>
 
-        <div className="grid grid-cols-2 gap-4">
-          <p>
-            <strong>Year:</strong> {listing.year}
-          </p>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+          <SpecificationCard label="Year" value={listing.year} />
 
-          <p>
-            <strong>Make:</strong> {listing.make}
-          </p>
+          <SpecificationCard label="Make" value={listing.make} />
 
-          <p>
-            <strong>Model:</strong> {listing.model}
-          </p>
+          <SpecificationCard label="Model" value={listing.model} />
 
-          <p>
-            <strong>Mileage:</strong> {listing.mileage.toLocaleString()} km
-          </p>
+          <SpecificationCard
+            label="Mileage"
+            value={`${listing.mileage.toLocaleString()} km`}
+          />
 
-          <p>
-            <strong>Fuel:</strong> {listing.fuelType}
-          </p>
+          <SpecificationCard
+            label="Fuel"
+            value={formatEnum(listing.fuelType)}
+          />
 
-          <p>
-            <strong>Transmission:</strong> {listing.transmission}
-          </p>
+          <SpecificationCard
+            label="Transmission"
+            value={formatEnum(listing.transmission)}
+          />
 
-          <p>
-            <strong>Body Type:</strong> {listing.bodyType}
+          <SpecificationCard
+            label="Body Type"
+            value={formatEnum(listing.bodyType)}
+          />
+
+          <SpecificationCard label="Location" value={listing.city} />
+        </div>
+      </section>
+      <section>
+        <h2 className="mb-4 text-2xl font-semibold">Seller</h2>
+
+        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="text-lg font-semibold">Vehicle Marketplace Seller</h3>
+
+          <p className="mt-2 text-slate-600">
+            Contact information will be available in a future update.
           </p>
         </div>
       </section>

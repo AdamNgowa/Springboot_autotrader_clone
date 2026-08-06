@@ -64,7 +64,8 @@ function ListingCard({ listing, onDelete }) {
           <button
             type="button"
             onClick={(event) => {
-              (event.stopPropagation(), onDelete(listing.id));
+              event.stopPropagation();
+              onDelete(listing.id);
             }}
             className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
           >
