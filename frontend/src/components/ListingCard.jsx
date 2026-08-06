@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-function ListingCard({ listing, onDelete }) {
+function ListingCard({ listing, onDelete, showOwnerActions = false }) {
   const navigate = useNavigate();
   const formattedPrice = new Intl.NumberFormat().format(listing.price);
   // 1. Declare a variable to hold the primary image object (or undefined if not found).
@@ -37,42 +37,47 @@ function ListingCard({ listing, onDelete }) {
           <p className="text-gray-500">Image coming soon</p>
         )}
       </div>
+      <div className="p-2">
+        <section className="flex flex-col gap-1">
+          <p className="text-lg font-medium">
+            {listing.year} {listing.make} {listing.model}
+          </p>
 
-      <section className="flex flex-col gap-1">
-        <p className="text-lg font-medium">
-          {listing.year} {listing.make} {listing.model}
-        </p>
+          <p className="text-sm text-gray-500">
+            {listing.city} • {listing.year}
+          </p>
+        </section>
 
-        <p className="text-sm text-gray-500">
-          {listing.city} • {listing.year}
-        </p>
-      </section>
-
-      <footer className="border-t pt-4">
-        <strong className="text-2xl font-bold">KSh {formattedPrice}</strong>
-        <div className="flex justify-between m-4">
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              navigate(`/listings/${listing.id}/edit`);
-            }}
-            className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              onDelete(listing.id);
-            }}
-            className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
-          >
-            Delete
-          </button>
-        </div>
-      </footer>
+        {showOwnerActions && (
+          <footer className="border-t pt-4">
+            <strong className="text-2xl font-bold">KSh {formattedPrice}</strong>
+            <div className="flex justify-between m-4">
+              {/* Edit button */}
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  navigate(`/listings/${listing.id}/edit`);
+                }}
+                className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Edit
+              </button>
+              {/* Delete button */}
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onDelete(listing.id);
+                }}
+                className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </footer>
+        )}
+      </div>
     </article>
   );
 }

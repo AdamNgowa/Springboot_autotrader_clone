@@ -75,7 +75,7 @@ function ListingDetailsPage() {
   }
 
   return (
-    <main className="max-w-6xl mx-auto space-y-10  p-6">
+    <main className="max-w-6xl mx-auto flex flex-col gap-10 p-6">
       <ImageGallery
         images={listing.images}
         selectedImage={selectedImage}
@@ -83,18 +83,20 @@ function ListingDetailsPage() {
         title={listing.title}
       />
 
-      <section className="space-y-2">
+      <section className="flex flex-col gap-2">
         <h1 className="text-4xl font-bold text-slate-900">{listing.title}</h1>
 
         <p className="text-3xl font-bold text-blue-700">KSh {formattedPrice}</p>
 
         <p className="text-lg text-slate-500">{listing.city}</p>
       </section>
+
       <section>
         <h2 className="mb-3 text-2xl font-semibold">Description</h2>
 
         <p className="leading-8 text-slate-700">{listing.description}</p>
       </section>
+
       <section>
         <h2 className="mb-5 text-2xl font-semibold">Specifications</h2>
 
@@ -128,6 +130,7 @@ function ListingDetailsPage() {
           <SpecificationCard label="Location" value={listing.city} />
         </div>
       </section>
+
       <section>
         <h2 className="mb-4 text-2xl font-semibold">Seller</h2>
 
@@ -142,4 +145,5 @@ function ListingDetailsPage() {
     </main>
   );
 }
+
 export default ListingDetailsPage;

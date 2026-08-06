@@ -4,6 +4,7 @@ import com.autotrader.backend.security.CustomUserDetailsService;
 import com.autotrader.backend.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -159,6 +160,10 @@ public class SecurityConfig {
 
                                 "/uploads/**"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET,"/listings")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET,"/listings/*")
+                        .permitAll()
 
                         /*
                          3. Global Lockdown:
