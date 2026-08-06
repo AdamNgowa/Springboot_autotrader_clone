@@ -348,6 +348,27 @@ Docker
 
 ## Phase 11
 
+Developer Tooling
+
+Build internal tooling that improves the development experience and keeps the project maintainable.
+
+Potential topics:
+
+- Project document generator
+- Automatic folder structure generator
+- Current status generator
+- Git hooks
+- Code formatting and linting
+- Build automation
+- Development scripts
+- Environment validation
+- Dependency auditing
+- Project health reports
+
+## The goal of this phase is to experience building tools that developers use, not just applications for end users.
+
+## Phase 12
+
 Deployment
 
 - Profiles

@@ -141,3 +141,5 @@ Requirements
 - Think of this as a handoff document between engineers.
 
 - also ask for the current folder structure, so the next chat is aware of the current files that exist,so it doesnt have to guess file names of existing files
+
+-status prompt should be provided as a markdown file (.md)
