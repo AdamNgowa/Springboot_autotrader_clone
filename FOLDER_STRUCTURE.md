@@ -91,6 +91,7 @@ autotrader
 │   │   ├── api/
 │   │   │   ├── apiClient.js
 │   │   │   ├── authApi.js
+│   │   │   ├── imageApi.js
 │   │   │   ├── listingApi.js
 │   │   │   └── userApi.js
 │   │   │
@@ -100,8 +101,14 @@ autotrader
 │   │   │   └── authStorage.js
 │   │   │
 │   │   ├── components/
+│   │   │   ├── ImageGallery.jsx
 │   │   │   ├── ListingCard.jsx
-│   │   │   └── ProtectedRoute.jsx
+│   │   │   ├── ListingForm.jsx
+│   │   │   ├── ProtectedRoute.jsx
+│   │   │   └── SpecificationCard.jsx
+│   │   │
+│   │   ├── constants/
+│   │   │   └── listingEnums.js
 │   │   │
 │   │   ├── context/
 │   │   │   └── AuthContext.jsx
@@ -110,15 +117,17 @@ autotrader
 │   │   │   └── useAuth.js
 │   │   │
 │   │   ├── pages/
-│   │   │   ├── HomePage.jsx
-│   │   │   ├── LoginPage.jsx
-|   |   |   ├── EditListingPage.jsx
+│   │   │   ├── CreateListingPage.jsx
 │   │   │   ├── DashboardPage.jsx
-│   │   │   ├── MyListingsPage.jsx
-│   │   │   └── CreateListingPage.jsx
+│   │   │   ├── EditListingPage.jsx
+│   │   │   ├── HomePage.jsx
+│   │   │   ├── ListingDetailsPage.jsx
+│   │   │   ├── LoginPage.jsx
+│   │   │   └── MyListingsPage.jsx
 │   │   │
 │   │   ├── routes/
 │   │   │   └── AppRouter.jsx
+│   │   │
 │   │   ├── utils/
 │   │   │   └── validateListing.js
 │   │   │
@@ -143,19 +152,3 @@ autotrader
 ├── PROJECT_CHARTER.md
 └── STATUS_REPORT_PROMPT.md
 ```
-
-## Notes
-
-This document should always reflect the current project structure.
-
-When starting a new conversation, provide this file together with:
-
-- `PROJECT_CHARTER.md`
-- `CURRENT_STATUS.md`
-
-This allows the next chat to:
-
-- know exactly which files already exist
-- avoid inventing file names or locations
-- request the current contents of existing files before suggesting modifications
-- continue development without making assumptions about the project structure
