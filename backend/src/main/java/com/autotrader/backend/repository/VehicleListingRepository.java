@@ -12,6 +12,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
+//VehicleListingRepository: Extends JpaSpecificationExecutor<VehicleListing>,
+// granting access to spring methods like findAll(Specification, Pageable).
 public interface VehicleListingRepository
         extends JpaRepository<VehicleListing, Long>, JpaSpecificationExecutor<VehicleListing> {
 

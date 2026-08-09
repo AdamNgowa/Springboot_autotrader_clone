@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 
+//VehicleListingSpecification: Houses individual,
+// reusable query predicate factories (e.g., hasMake(), hasMaxPrice(), hasStatus()).
 public class VehicleListingSpecification {
     public static Specification<VehicleListing> hasCity(String city) {
 

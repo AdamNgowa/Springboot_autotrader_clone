@@ -159,10 +159,13 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
 
                                 "/uploads/**"
+                                //Authorization rules are based on the combination of HTTP method and request path.
+                                // GET /listings/{id} can be public, while PUT /listings/{id} and DELETE /listings/{id} remain restricted to authenticated users (and, in your application,
+                                // further restricted by ownership checks in the service layer).
                         ).permitAll()
-                        .requestMatchers(HttpMethod.GET,"/listings")
+                        .requestMatchers(HttpMethod.GET, "/listings")
                         .permitAll()
-                        .requestMatchers(HttpMethod.GET,"/listings/*")
+                        .requestMatchers(HttpMethod.GET, "/listings/*")
                         .permitAll()
 
                         /*

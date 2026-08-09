@@ -69,7 +69,7 @@ function MyListingsPage() {
             key={listing.id}
             listing={listing}
             onDelete={handleDelete}
-            // showOwnerActions is the same as saying showOwnerActions={true}
+            // showOwnerActions here is the same as saying showOwnerActions={true}
             showOwnerActions
           />
         ))}

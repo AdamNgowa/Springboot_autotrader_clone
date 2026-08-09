@@ -5,6 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  console.log("Login location: ", location);
 
   const { login, isAuthenticated, loading } = useAuth();
 
@@ -32,10 +33,6 @@ function LoginPage() {
         email,
         password,
       });
-
-      const redirectTo = location.state?.from?.pathname || "/";
-
-      navigate(redirectTo, { replace: true });
     } catch (error) {
       setLoginError(error.message);
     } finally {

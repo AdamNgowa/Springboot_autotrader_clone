@@ -76,6 +76,7 @@ public class VehicleListingService {
                 vehicleListingRepository.findAll(spec, pageable);
 
         // Map every entity inside the page results into a clean DTO output structure
+        //Mapping is simply conversion -> here it changes listings into vehicle listing response
         return listings.map(vehicleListingMapper::toResponse);
     }
 

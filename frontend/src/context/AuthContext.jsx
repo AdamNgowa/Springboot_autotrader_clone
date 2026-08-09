@@ -67,12 +67,14 @@ export function AuthProvider({ children }) {
 
     // Update React state immediately.
     setToken(token);
+    console.log("authcontext token:", token);
 
     // Load the authenticated user's profile.
     const currentUser = await getCurrentUser();
 
     // Store the user in context.
     setUser(currentUser);
+    console.log("user in authcontext:", currentUser);
   }
 
   async function login(credentials) {

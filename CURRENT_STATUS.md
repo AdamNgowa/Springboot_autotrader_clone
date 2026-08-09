@@ -2,344 +2,590 @@
 
 ## Current Phase
 
-### Phase 8 — React Frontend (Listing Details Completed, Public Listings Starting)
+**Current Phase:** Authentication UX Polish
 
-During this chat, the Listing Details feature was completed and integrated into the React frontend.
+The core authentication system is complete and verified.
 
-Completed during this phase:
+The next immediate phase is to finish the **Authentication UX Polish** work that has been designed but **has not yet been implemented in the codebase**.
 
-- Listing Details page
-- Public listing route (`/listings/:id`)
-- Individual listing API integration
-- Loading, error, and "listing not found" states
-- Image gallery with thumbnail selection
-- Reusable `SpecificationCard` component
-- Vehicle specifications section
-- Seller information placeholder
-- Improved listing presentation
-
-The next feature is **Public Listings (Home Page)**, where visitors will browse all active listings.
+After authentication UX is complete, development should continue with the marketplace/listing experience, followed by favorites, messaging, admin moderation, testing, and deployment.
 
 ---
 
-# Project Summary
+## Project Summary
 
-AutoTrader now consists of a production-oriented Spring Boot backend and a React frontend supporting authenticated listing management together with public listing viewing.
+AutoTrader is a full-stack vehicle marketplace built with Spring Boot and React.
 
-Authenticated users can:
+The backend currently provides JWT authentication, user management, vehicle listing CRUD, ownership authorization, validation, JPA Specification-based searching/filtering, pagination, DTO mapping, filesystem image storage, and secured REST APIs. The frontend provides authentication, session restoration, protected routing, listing creation/editing/deletion, image upload, listing management, and authentication-aware navigation.
 
-- register and log in
-- remain authenticated across refreshes
-- create listings
-- edit their own listings
-- delete their own listings
-- upload images during listing creation
-- view and manage their own listings
-
-Any visitor can:
-
-- open an individual listing
-- browse listing images
-- view vehicle specifications
+The core authentication feature is complete. The remaining authentication work is UX refinement rather than architectural redesign.
 
 ---
 
-# Completed Phases
+## Completed Phases
 
-## Phase 1 — Authentication (Backend)
+### Phase 1 — Project Foundation
 
-Completed.
+- Backend and frontend project structure established.
+- Core architecture established.
 
-- Registration
-- Login
-- BCrypt
-- JWT authentication
-- Ownership authorization
+### Phase 2 — Authentication Backend
 
----
+- User registration implemented.
+- Login implemented.
+- BCrypt password hashing implemented.
+- JWT generation and validation implemented.
+- Spring Security configured.
+- Stateless authentication implemented.
+- User roles established.
+- Ownership-based authorization implemented.
 
-## Phase 2 — Vehicle Listings (Backend)
+### Phase 3 — Vehicle Listings Backend
 
-Completed.
+- Vehicle listing CRUD implemented.
+- Ownership authorization implemented.
+- Soft deletion implemented.
+- Pagination implemented.
+- Dynamic filtering implemented.
+- JPA Specification pattern implemented.
+- Validation implemented.
+- DTO mapping introduced.
 
-- Create
-- Retrieve
-- Retrieve by ID
-- Update
-- Soft delete
-- Pagination
-- Dynamic filtering
-- Specifications
+### Phase 4 — Backend Refactoring
 
----
+- `VehicleListingMapper` extracted.
+- `CurrentUserService` extracted.
+- Helper methods introduced.
+- Service responsibilities improved.
+- Duplication reduced.
 
-## Phase 3 — Backend Refactoring
+### Phase 5 — Validation
 
-Completed.
+- Bean Validation implemented.
+- Validation DTOs implemented.
+- Global exception handling implemented.
+- Structured validation responses implemented.
 
-- VehicleListingMapper extraction
-- CurrentUserService extraction
-- Helper methods
-- Reduced duplication
-- Clearer service responsibilities
+### Phase 6 — Mapping
 
----
+- Manual DTO mapping implemented.
+- MapStruct intentionally postponed.
 
-## Phase 4 — Validation
+### Phase 7 — API Documentation
 
-Completed.
+- SpringDoc OpenAPI implemented.
+- Swagger UI implemented.
+- JWT authorization integration implemented.
+- DTO documentation added.
 
-Backend:
-
-- Bean Validation
-- Validation DTOs
-- Global exception handling
-
-Frontend:
-
-- Shared validation utility
-- Client-side validation
-- Shared validation between Create and Edit pages
-
----
-
-## Phase 5 — Mapping
-
-Completed.
-
-- Manual DTO mapping
-
-MapStruct intentionally postponed.
-
----
-
-## Phase 6 — API Documentation
-
-Completed.
-
-- Swagger UI
-- SpringDoc OpenAPI
-- JWT integration
-
----
-
-## Phase 7 — Image Management (Backend)
-
-Completed.
+### Phase 8 — Image Uploads
 
 Implemented:
 
-- VehicleImage entity
-- Filesystem storage
-- UUID filenames
-- Metadata persistence
-- Public image URLs
-- Image upload endpoints
+- Dedicated `VehicleImage` entity.
+- Filesystem storage.
+- Image metadata persistence.
+- UUID filenames.
+- Upload validation.
+- Ownership verification.
+- Compensating file cleanup.
+- Primary image assignment.
+- Dedicated image repository queries.
+- Spring MVC static resource handling.
+- Public image URLs.
 
-Deferred intentionally:
+Still deferred:
 
-- Image deletion
-- Image ordering
-- Primary image switching
-- Cloud storage
+- Image deletion.
+- Primary image switching.
+- Image ordering.
+- Cloud storage abstraction.
+- Image optimization.
+- Background image processing.
+
+### Phase 9 — Frontend API Layer
+
+- Generic `apiClient` created.
+- Authentication API abstraction created.
+- Listing API abstraction created.
+- User API abstraction created.
+
+### Phase 10 — Frontend Authentication
+
+Completed and verified:
+
+- `AuthContext` implemented.
+- Session restoration implemented.
+- Login implemented.
+- Registration implemented.
+- Logout implemented.
+- JWT persistence implemented.
+- Protected routes implemented.
+- Guest-only authentication behavior established/planned.
+- Authentication-aware navigation implemented.
+- Automatic authentication after registration implemented.
+
+Verified behavior:
+
+- Existing login works.
+- Session restoration works after refresh.
+- Logout works.
+- Navbar updates correctly after login/logout.
+- Registration creates a new account.
+- Registration automatically authenticates the new user.
+- Newly registered users can access `/my-listings`.
+- Protected routes work.
+
+### Phase 11 — Listing Management UI
+
+- Listing creation page completed.
+- Listing editing infrastructure completed.
+- Listing deletion completed.
+- Client-side listing validation implemented.
+- Image upload integrated.
+- Reusable `ListingForm` established.
+
+### Phase 12 — Frontend Navigation
+
+- Navbar integrated.
+- Authentication-aware navigation implemented.
+- Login/Register navigation implemented.
+- Logout flow implemented.
+- Conditional navigation implemented.
+- Protected routing implemented.
+- Registration page integrated.
 
 ---
 
-## Phase 8 — React Frontend (Current)
+## Current Architecture
 
-Completed so far:
-
-### Frontend Architecture
-
-- React
-- Vite
-- React Router
-- Context API
-- Centralized API layer
-- Protected routes
-- Modular folder structure
-
-### Authentication
-
-Implemented:
-
-- AuthContext
-- JWT persistence
-- Session restoration
-- ProtectedRoute
-
-### Listings Management
-
-Implemented:
-
-- My Listings page
-- ListingCard component
-- Create Listing
-- Edit Listing
-- Delete Listing
-- Shared validation
-- Success messages
-- Loading and saving states
-
-### Image Upload
-
-Implemented:
-
-- Multiple image upload during listing creation
-- Backend image integration
-- Primary image display in cards
-
-### Listing Details
-
-Implemented:
-
-- Listing Details page
-- Public route
-- Thumbnail gallery
-- Image switching
-- Vehicle specifications
-- Reusable SpecificationCard component
-- Seller placeholder section
-- Loading/error handling
-
----
-
-# Current Architecture
-
-## Backend
+### Backend
 
 - Spring Boot
 - Spring Security
-- JWT
+- JWT authentication
+- JPA/Hibernate
 - PostgreSQL
-- Spring Data JPA
-- Specifications
-- DTO mapping
+- JPA Specification pattern
+- DTO layer
+- Manual mapper layer
+- Global exception handling
+- REST API architecture
+- Bean Validation
+- Pagination
 - Filesystem image storage
-- Dedicated Image API
 
-## Frontend
-
-Current architecture includes:
+### Frontend
 
 - React
 - React Router
-- Context API
-- Fetch API
-- Centralized `apiClient`
-- `authApi`
-- `listingApi`
-- `AuthContext`
-- `ProtectedRoute`
-- `ListingForm`
-- `ListingCard`
-- `SpecificationCard`
-- Shared validation utility
-- Listing Details page
+- Context API authentication
+- Generic API client
+- Feature-specific API modules
+- Protected routes
+- Authentication-aware navigation
+- Listing forms
+- Shared components
+- TailwindCSS
+
+### Security
+
+- JWT Bearer authentication.
+- `AuthContext` is the frontend authentication source of truth.
+- Session restoration occurs when the application starts.
+- Protected routes prevent unauthenticated access.
+- Listing ownership authorization is enforced by the backend.
+
+### Persistence
+
+- PostgreSQL for application data.
+- JPA/Hibernate for persistence.
+
+### Image Storage
+
+- Image metadata stored in the database.
+- Image files stored on the filesystem.
+- Public image URLs exposed through Spring MVC resource handling.
+
+### API Layer
+
+Frontend API communication is centralized through `apiClient`.
+
+Feature-specific API modules wrap the generic client rather than making HTTP requests directly throughout components.
+
+### Routing
+
+React Router is used for:
+
+- Public routes.
+- Protected routes.
+- Authentication routes.
+- Listing management routes.
+
+### Validation
+
+- Backend validation uses Bean Validation.
+- Frontend listing validation uses a dedicated validation utility.
+- Authentication client-side validation has been designed but **has not yet been implemented**.
 
 ---
 
-# Important Architectural Decisions
+## Important Architectural Decisions
 
-- All HTTP communication continues through `apiClient`.
-- Business-specific API files remain thin wrappers around the API client.
-- Authentication state remains owned by `AuthContext`.
-- Validation logic is centralized in `validateListing`.
-- Listing forms are shared between Create and Edit pages.
-- Images are uploaded after listing creation because a listing ID is required.
-- Listing Details uses local component state to manage the selected gallery image instead of additional libraries.
-- Image deletion, image ordering, primary image management, cloud storage, and React Query remain intentionally postponed to preserve the educational progression.
+- `AuthContext` is the single source of truth for frontend authentication.
+- Authentication state is based on the authenticated user rather than only JWT existence.
+- Session restoration fetches the authenticated user on application startup.
+- API communication is centralized through `apiClient`.
+- Feature-specific API modules wrap `apiClient`.
+- Listing validation exists on both client and server.
+- Authentication UX validation should follow the same architectural pattern as listing validation.
+- Listing forms keep saving state and validation state at the parent/page level where appropriate.
+- Filesystem storage was intentionally implemented before cloud storage.
+- Manual DTO mapping was intentionally implemented before MapStruct.
+- JPA Specifications were chosen instead of repository-method explosion.
+- Protected route logic is centralized in `ProtectedRoute`.
+- Image uploads occur after successful listing creation.
+- Image metadata and binary storage are intentionally separated.
 
----
+### Deferred Technical Improvements
 
-# Remaining Roadmap
+These remain intentionally postponed unless requirements make them necessary:
 
-Immediate:
+- Refresh tokens.
+- Cloud image storage.
+- Image optimization.
+- Background image processing.
+- Image ordering.
+- Toast notification system.
+- Global loading indicators.
+- MapStruct.
+- React Query.
+- React Hook Form.
+- Zod.
 
-- Build Public Listings (Home Page)
-- Pagination
-- Search
-- Filtering
-- Sorting
-- Responsive polish
-
-Later:
-
-- Testing
-- Docker
-- Deployment
-- Production improvements
-
----
-
-# Files and Structure Added During This Chat
-
-### Added
-
-- `ListingDetailsPage.jsx`
-- `SpecificationCard.jsx`
-
-### Modified
-
-- `AppRouter.jsx`
-- `ListingCard.jsx`
-- `listingApi.js`
-- `CURRENT_STATUS.md` (this document)
+The project should continue following the established principle of understanding the underlying mechanism before introducing abstractions.
 
 ---
 
-# Concepts Learned During This Chat
+## Remaining Roadmap
 
-- Separating collection views from detail views.
-- Using route parameters with `useParams`.
-- Fetching a single resource independently from a list.
-- Managing loading, error, and empty states.
-- Image gallery state management using React state.
-- Building reusable presentational components.
-- Defensive rendering while asynchronous data loads.
-- Why local UI state is appropriate for image selection.
+### Phase A — Authentication UX Polish
+
+**Not yet implemented.**
+
+Planned work:
+
+- Client-side login validation.
+- Client-side registration validation.
+- Validation error display.
+- Loading states for login and registration.
+- Disabled form controls while requests are running.
+- Improved Login page UI.
+- Improved Register page UI.
+- Shared visual language between authentication pages.
+- Login/Register cross-links.
+- Redirect authenticated users away from `/login`.
+- Redirect authenticated users away from `/register`.
+- Preserve the originally requested protected route during login.
+- Improved `ProtectedRoute` redirect behavior.
+- Navbar active-link styling.
+- Navbar authentication-restoration loading behavior.
+- Improved authenticated-user greeting.
+- Authentication-page accessibility improvements.
+- Responsive authentication layouts.
+
+### Phase B — Listing and Marketplace UX
+
+After Authentication UX Polish is complete:
+
+- Listing card improvements.
+- Listing details improvements.
+- Seller information on listing cards.
+- Seller information on listing details.
+- Frontend search and filtering UX.
+- Frontend pagination UX.
+- Sorting.
+- Image management.
+- Delete listing images.
+- Set/change primary listing image.
+- Image ordering if still required.
+- Image previews.
+- Upload progress.
+- Improved listing error handling.
+- Responsive listing interfaces.
+
+**Note:** Backend pagination and dynamic filtering already exist. The remaining work is primarily exposing and polishing these capabilities through the frontend.
+
+### Phase C — Marketplace Features
+
+- Favorites / wishlist.
+- Buyer and seller messaging.
+- User/seller profile improvements.
+
+### Phase D — Administration
+
+- Admin moderation.
+- Role-based administrative workflows.
+- Listing moderation.
+- User/content moderation as requirements become clearer.
+
+### Phase E — Testing
+
+Backend:
+
+- Unit tests.
+- Service tests.
+- Repository tests.
+- Controller tests.
+- MockMvc.
+- Mockito.
+- Integration testing.
+
+Frontend:
+
+- React Testing Library.
+- Component testing.
+- Hook testing.
+- API mocking.
+
+### Phase F — Containerization and Production
+
+- Docker.
+- Dockerfiles.
+- Docker Compose.
+- PostgreSQL containerization.
+- Environment variables.
+- Production configuration.
+- Secrets management.
+- HTTPS.
+- Reverse proxy.
+- CI/CD.
+- Logging.
+- Monitoring.
+- Health checks.
+- Cloud hosting.
+
+### Phase G — Production Hardening
+
+Potential future work:
+
+- Refresh tokens.
+- Email verification.
+- Password reset.
+- Rate limiting.
+- Database indexing.
+- Caching.
+- Performance optimization.
+- Security hardening.
+- Audit logging.
+- API versioning.
+- Background jobs.
+- Cloud object storage.
+- Advanced search.
 
 ---
 
-# Interview Topics Covered
+## Files and Structure Added During This Chat
 
-Be prepared to explain:
+Important frontend files currently known to exist or have been worked on include:
 
-- Why have separate endpoints for a collection and a single resource?
-- Why use route parameters?
-- Why initialize state with `null`?
-- Why did accessing `listing.price` initially throw an error?
-- Why is the selected image stored in component state?
-- Why extract `SpecificationCard` into its own component?
-- Why is the listing list stale immediately after editing?
+- `frontend/src/main.jsx`
+- `frontend/src/pages/LoginPage.jsx`
+- `frontend/src/pages/RegisterPage.jsx`
+- `frontend/src/components/Navbar.jsx`
+- `frontend/src/components/ProtectedRoute.jsx`
+- `frontend/src/context/AuthContext.jsx`
+- `frontend/src/hooks/useAuth.js`
+- `frontend/src/api/authApi.js`
+- `frontend/src/api/apiClient.js`
+- `frontend/src/components/ListingForm.jsx`
+- Listing validation utility.
+
+### Important Status
+
+The proposed Authentication UX changes discussed during this chat have **not necessarily been applied to these files**.
+
+In particular, do **not** assume that the following implementations are already present:
+
+- Authentication client-side validation.
+- Login loading state.
+- Register loading state.
+- Guest-only redirect implementation.
+- Intended-destination redirect.
+- Navbar active-link styling.
+- Navbar auth-restoration loading behavior.
+- Shared authentication-page styling.
+- Improved authentication error display.
+
+The next conversation must inspect the actual current files before modifying them.
 
 ---
 
-# Next Recommended Starting Point
+## Concepts Learned During This Chat
 
-Before making code changes:
-
-1. Provide the current `FOLDER_STRUCTURE.md`.
-2. Review the current `HomePage.jsx`.
-3. Design the Public Listings page architecture before implementation.
-4. Build the public listings page incrementally using the existing `ListingCard` component where appropriate.
+- Authentication state versus JWT persistence.
+- Session restoration.
+- Context as an authentication state owner.
+- Protected routes.
+- Guest-only routes.
+- Redirecting after authentication.
+- Preserving intended navigation destinations with React Router location state.
+- Loading states during asynchronous authentication.
+- Client-side validation versus server-side validation.
+- Reusing validation architecture across features.
+- Conditional navigation based on authentication state.
+- Active navigation state with React Router.
+- Separating authentication concerns between API, Context, routing, and UI.
+- Completing a feature before moving to the next major feature.
 
 ---
 
-# Notes for Continuation
+## Interview Topics Covered
 
-The Listing Details feature is considered complete for the current scope.
+Be able to explain:
 
-One known improvement remains:
+- Why `AuthContext` is the frontend authentication source of truth.
+- Why JWT persistence does not itself represent complete authentication state.
+- How session restoration works.
+- Why protected routes are necessary.
+- Difference between protected routes and guest-only routes.
+- How React Router can preserve the originally requested destination.
+- Why authentication loading state matters during application startup.
+- Why client-side validation does not replace server-side validation.
+- Why listing and authentication validation can follow the same architectural pattern.
+- Why API communication is centralized through `apiClient`.
+- Why feature-specific API modules wrap the generic API client.
+- How `NavLink` determines active navigation state.
+- Why authentication UI should not flash between guest and authenticated states.
+- How ownership authorization differs from frontend route protection.
+- Why filesystem image storage was chosen before cloud storage.
+- Why manual DTO mapping was chosen before MapStruct.
+- Why JPA Specifications were chosen for dynamic filtering.
 
-- After editing a listing, the My Listings page still displays stale data until it is reloaded because the local React state is not synchronized after the update. This should be addressed when improving the listings management experience.
+---
 
-The next feature is the Public Listings page, which will introduce public browsing, followed by pagination, search, filtering, and sorting.
+## Next Recommended Starting Point
 
-At the beginning of the next chat, please provide:
+At the beginning of the next chat:
 
-- `PROJECT_CHARTER.md`
-- `CURRENT_STATUS.md`
-- the latest `FOLDER_STRUCTURE.md`
+### Step 1 — Establish the actual current codebase
 
-This ensures the next conversation knows the current project structure, avoids assuming file names, and requests existing files before suggesting modifications.
+**Do not assume any proposed changes from this status have been implemented.**
+
+Ask for and review:
+
+1. The latest `FOLDER_STRUCTURE.md`.
+2. `LoginPage.jsx`.
+3. `RegisterPage.jsx`.
+4. `Navbar.jsx`.
+5. `ProtectedRoute.jsx`.
+6. `AuthContext.jsx`.
+7. `AppRouter.jsx`.
+8. `main.jsx`.
+9. Any relevant authentication CSS or styling files.
+
+The next chat should compare the actual files against the Authentication UX roadmap before changing anything.
+
+### Step 2 — Architecture/design review
+
+The first implementation milestone should be:
+
+**Authentication UX Polish.**
+
+Before coding, briefly establish how:
+
+- authentication validation,
+- loading state,
+- guest-only redirects,
+- intended-destination redirects,
+- shared authentication UI,
+- Navbar state,
+
+fit into the existing architecture.
+
+Do not redesign the authentication architecture unless the actual files reveal a concrete need.
+
+### Step 3 — Implement Authentication UX Polish
+
+Implement the remaining authentication UX improvements incrementally and verify each change.
+
+### Step 4 — Move to Marketplace UX
+
+Once authentication UX is verified, proceed to:
+
+1. Seller information.
+2. Listing card/details improvements.
+3. Search and filtering frontend UX.
+4. Pagination.
+5. Sorting.
+6. Image management.
+
+The exact ordering should be reassessed after inspecting the current listing architecture.
+
+---
+
+## Notes for Continuation
+
+The authentication **functionality** is complete, but the authentication **UX polish described above has not yet been implemented**.
+
+This distinction is important. Previous assistant responses provided proposed replacement implementations for Login, Register, Navbar, and ProtectedRoute, but those proposals should **not be treated as code that already exists in the repository**.
+
+The next conversation should therefore inspect the actual files before making changes.
+
+The current known authentication behavior is:
+
+- Registration works.
+- Login works.
+- Logout works.
+- Session restoration works.
+- Navbar updates after authentication changes.
+- Protected routes work.
+- Registration automatically authenticates the new user.
+- Newly registered users can access `/my-listings`.
+
+The following remain planned rather than confirmed implemented:
+
+- Client-side authentication validation.
+- Authentication loading states.
+- Guest-only redirects.
+- Intended-destination redirect after login.
+- Login/Register UI polish.
+- Navbar active states.
+- Navbar loading behavior.
+- Authentication-page accessibility/responsive improvements.
+
+### Marketplace Direction Agreed for Future Work
+
+After authentication UX is finished, the project should continue toward the marketplace feature set:
+
+- Search & filtering.
+- Pagination.
+- Sorting.
+- Image management — delete/set primary.
+- Seller information.
+- Favorites/wishlist.
+- Buyer/seller messaging.
+- Admin moderation.
+- Testing.
+- Docker/PostgreSQL production setup.
+- Cloud hosting/deployment.
+
+Seller information should be implemented on both **listing cards and listing details** as previously discussed.
+
+### Folder Structure Requirement
+
+At the beginning of every continuation chat, request the latest **`FOLDER_STRUCTURE.md`** and use it together with this document and `PROJECT_CHARTER.md`.
+
+Never invent or assume existing file names or locations.
+
+### Workflow Requirement
+
+Continue using the established workflow:
+
+1. Inspect current files.
+2. Explain architecture/theory briefly.
+3. Decide implementation order.
+4. Modify only provided/current files.
+5. Implement incrementally.
+6. Verify after each meaningful step.
+7. Update `CURRENT_STATUS.md` at the end of a major milestone.

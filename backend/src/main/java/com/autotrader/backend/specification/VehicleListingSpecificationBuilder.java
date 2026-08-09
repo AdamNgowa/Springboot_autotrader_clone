@@ -4,6 +4,8 @@ import com.autotrader.backend.dto.vehicleListing.VehicleListingSearchCriteria;
 import com.autotrader.backend.entity.VehicleListing;
 import org.springframework.data.jpa.domain.Specification;
 
+//VehicleListingSpecificationBuilder: Reads incoming search DTO criteria and
+// conditionally strings together predicates into a single, unified Specification.
 public class VehicleListingSpecificationBuilder {
     public static Specification<VehicleListing> build(
             VehicleListingSearchCriteria filter
