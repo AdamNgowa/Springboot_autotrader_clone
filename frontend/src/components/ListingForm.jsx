@@ -96,7 +96,7 @@ function ListingForm({
 
       {/* Description */}
       <div>
-        <label>Description</label>
+        <label className="block mb-1 font-medium">Description</label>
 
         <textarea
           name="description"

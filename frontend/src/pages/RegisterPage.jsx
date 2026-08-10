@@ -5,7 +5,6 @@ import { validateRegister } from "../utils/validateAuth";
 
 function RegisterPage() {
   const navigate = useNavigate();
-
   const { register, isAuthenticated, loading } = useAuth();
   const [validationErrors, setValidationErrors] = useState({});
 
@@ -35,6 +34,12 @@ function RegisterPage() {
       ...current,
       [name]: value,
     }));
+
+    // Clear the error for this specific field as the user types
+    setValidationErrors((current) => ({
+      ...current,
+      [name]: "",
+    }));
   }
 
   async function handleSubmit(event) {
@@ -52,9 +57,7 @@ function RegisterPage() {
 
     try {
       setSubmitting(true);
-
       await register(formData);
-
       navigate("/", { replace: true });
     } catch (error) {
       setRegisterError(error.message);
@@ -85,7 +88,6 @@ function RegisterPage() {
           }
           className="w-full rounded border p-3"
         />
-
         {validationErrors.firstName && (
           <p id="firstName-error" className="text-sm text-red-600">
             {validationErrors.firstName}
@@ -96,7 +98,6 @@ function RegisterPage() {
         <label htmlFor="lastName" className="block text-sm font-medium">
           Last name
         </label>
-
         <input
           id="lastName"
           name="lastName"
@@ -110,7 +111,6 @@ function RegisterPage() {
           }
           className="w-full rounded border p-3"
         />
-
         {validationErrors.lastName && (
           <p id="lastName-error" className="text-sm text-red-600">
             {validationErrors.lastName}
@@ -121,7 +121,6 @@ function RegisterPage() {
         <label htmlFor="email" className="block text-sm font-medium">
           Email
         </label>
-
         <input
           id="email"
           type="email"
@@ -134,7 +133,6 @@ function RegisterPage() {
           aria-describedby={validationErrors.email ? "email-error" : undefined}
           className="w-full rounded border p-3"
         />
-
         {validationErrors.email && (
           <p id="email-error" className="text-sm text-red-600">
             {validationErrors.email}
@@ -142,11 +140,9 @@ function RegisterPage() {
         )}
 
         {/* Password */}
-
         <label htmlFor="password" className="block text-sm font-medium">
           Password
         </label>
-
         <input
           id="password"
           type="password"
@@ -161,7 +157,6 @@ function RegisterPage() {
           }
           className="w-full rounded border p-3"
         />
-
         {validationErrors.password && (
           <p id="password-error" className="text-sm text-red-600">
             {validationErrors.password}
@@ -169,11 +164,9 @@ function RegisterPage() {
         )}
 
         {/* Phone number */}
-
         <label htmlFor="phoneNumber" className="block text-sm font-medium">
           Phone number
         </label>
-
         <input
           id="phoneNumber"
           name="phoneNumber"
@@ -187,12 +180,12 @@ function RegisterPage() {
           }
           className="w-full rounded border p-3"
         />
-
         {validationErrors.phoneNumber && (
           <p id="phoneNumber-error" className="text-sm text-red-600">
             {validationErrors.phoneNumber}
           </p>
         )}
+
         {registerError && <p className="text-red-600">{registerError}</p>}
 
         <button

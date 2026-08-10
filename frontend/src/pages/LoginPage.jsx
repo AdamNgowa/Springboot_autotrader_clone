@@ -4,9 +4,6 @@ import { useAuth } from "../hooks/useAuth";
 import { validateLogin } from "../utils/validateAuth";
 
 function LoginPage() {
-  const location = useLocation();
-  console.log("Login location: ", location);
-
   const { login, isAuthenticated, loading } = useAuth();
 
   const [email, setEmail] = useState("");
@@ -39,14 +36,11 @@ function LoginPage() {
       return;
     }
 
-    console.log("Error: ", validationErrors);
-    console.log("Specific error:", validationErrors.email);
     setValidationErrors({});
     setLoginError("");
 
     try {
       setSubmitting(true);
-
       await login(credentials);
     } catch (error) {
       setLoginError(error.message);
@@ -54,11 +48,13 @@ function LoginPage() {
       setSubmitting(false);
     }
   }
+
   return (
     <main className="mx-auto mt-10 max-w-md rounded-lg border bg-white p-8 shadow">
       <h1 className="mb-6 text-center text-3xl font-bold">Welcome Back</h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Email */}
         <label htmlFor="email" className="block text-sm font-medium">
           Email
         </label>
@@ -68,17 +64,24 @@ function LoginPage() {
           placeholder="Email"
           value={email}
           disabled={submitting}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setValidationErrors((current) => ({
+              ...current,
+              email: "",
+            }));
+          }}
           aria-invalid={Boolean(validationErrors.email)}
           aria-describedby={validationErrors.email ? "email-error" : undefined}
           className="w-full rounded border p-3"
         />
-
         {validationErrors.email && (
           <p id="email-error" className="text-sm text-red-600">
             {validationErrors.email}
           </p>
         )}
+
+        {/* Password */}
         <label htmlFor="password" className="block text-sm font-medium">
           Password
         </label>
@@ -88,7 +91,13 @@ function LoginPage() {
           placeholder="Password"
           value={password}
           disabled={submitting}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value); // Fixed: was setEmail previously
+            setValidationErrors((current) => ({
+              ...current,
+              password: "",
+            }));
+          }}
           aria-invalid={Boolean(validationErrors.password)}
           aria-describedby={
             validationErrors.password ? "password-error" : undefined
