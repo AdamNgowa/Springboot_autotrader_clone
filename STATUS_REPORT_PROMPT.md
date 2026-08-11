@@ -1,384 +1,451 @@
-# AutoTrader Project Status Report Generator
+# AutoTrader — Current Status Report Generator
 
-You are helping maintain continuity for my AutoTrader project.
+You are maintaining continuity for the AutoTrader project.
 
-Your task is to generate a concise but technically accurate `CURRENT_STATUS.md` document describing the **actual state of the project at the end of this conversation**.
+Generate a concise `CURRENT_STATUS.md` that describes the **actual state of the project at the end of the current conversation**.
 
-The document will be pasted into a future conversation together with:
+The purpose of this document is:
 
-- `PROJECT_CHARTER.md`
-- the latest `FOLDER_STRUCTURE.md`
+> Give the next conversation enough accurate context to continue development without re-investigating completed work or accidentally implementing something that already exists.
 
-The purpose of `CURRENT_STATUS.md` is **continuity, not explanation**.
-
-Do not repeat the engineering philosophy or mentoring agreement from `PROJECT_CHARTER.md` unless something has changed.
+This is an **engineering handoff**, not a conversation summary and not a copy of the project charter.
 
 ---
 
-# Source of Truth Rules
+# 1. Source of Truth
 
-The most important requirement is:
+Determine the project's current state using evidence in this order:
 
-> **Describe what actually exists, not what was proposed, discussed, planned, or intended.**
+1. Current source files explicitly provided in this conversation
+2. The latest `FOLDER_STRUCTURE.md`, if provided
+3. Explicit statements from the user about functionality that was tested or confirmed
+4. Earlier project documentation such as `PROJECT_CHARTER.md` or previous `CURRENT_STATUS.md`
 
-Before generating the report, distinguish carefully between:
+### Rules
 
-### Implemented
+- Describe what **actually exists**, not what was merely discussed.
+- Never assume proposed code was implemented.
+- Never reconstruct files or folder structures from memory.
+- If current source code conflicts with older documentation, trust the current source code.
+- If the user explicitly says something was tested successfully, classify it as **Verified**.
+- If code exists but its behavior has not been tested, classify it as **Implemented**, not Verified.
+- If only part of a feature exists, classify it as **Partial**.
+- If a feature has not been implemented, classify it as **Planned**.
+- If the user intentionally postponed something, classify it as **Deferred**.
+- If there is insufficient evidence to determine the state, classify it as **Unverified**.
 
-Code or functionality that was actually provided, modified, created, tested, or explicitly verified during the conversation.
+Use these classifications naturally:
 
-### Existing
+- **Implemented**
+- **Verified**
+- **Partial**
+- **Planned**
+- **Deferred**
+- **Unverified**
 
-Code or functionality that the user explicitly identified as already existing in the current codebase.
-
-### Planned
-
-Functionality that was discussed as future work but has not been confirmed as implemented.
-
-### Deferred
-
-Functionality deliberately postponed.
-
-### Proposed / Unverified
-
-Code or implementation that was suggested during the conversation but whose presence in the actual codebase was not confirmed.
-
-Do **not** describe proposed or unverified work as completed.
-
-If the conversation contains contradictory information, prefer the **latest concrete evidence**, especially:
-
-1. Actual current source files provided by the user.
-2. Actual `FOLDER_STRUCTURE.md` provided by the user.
-3. Explicit verification statements from the user.
-4. Earlier conversation descriptions.
-5. Previous `CURRENT_STATUS.md` documents.
-
-A previous `CURRENT_STATUS.md` is **not proof that code currently exists**.
-
-Never copy completed features from an old status report without checking whether the conversation provides evidence that they remain current.
+Do not force a classification onto every sentence. Use them where they clarify the state.
 
 ---
 
-# Folder Structure Requirement
+# 2. Current Phase
 
-The user wants continuity between conversations without having to repeatedly explain which files exist.
-
-Therefore:
-
-> **Always request the latest `FOLDER_STRUCTURE.md` when generating a status report unless the current conversation already contains it.**
-
-If the user has supplied a current folder structure during this conversation, use it.
-
-The status report should mention important files that were actually created, modified, removed, or relevant during the conversation.
-
-Never invent filenames or assume that a file exists because it existed in an earlier conversation.
-
----
-
-# Status Accuracy Rules
-
-When describing a feature, ask internally:
-
-1. Was this actually implemented?
-2. Was the implementation shown or verified?
-3. Is the current implementation different from an earlier proposed implementation?
-4. Is the feature partially complete?
-5. Is it merely planned?
-
-Use precise language.
+State the current project phase and, where applicable, the current sub-phase.
 
 For example:
 
-**Correct:**
+```text
+Phase 8 — React Frontend & Marketplace UX
 
-> Client-side authentication validation exists in `validateAuth.js`, but its integration into the current Login and Register pages still needs verification.
+Current sub-phase:
+8.3 — Search & Filters
+```
 
-**Incorrect:**
+Briefly state:
 
-> Authentication validation is complete.
+- what is already implemented in the current phase
+- what remains
+- exactly where development should resume
 
-if only a proposed implementation was discussed.
+If the current phase has been completed, identify the next phase instead.
 
-Likewise:
-
-**Correct:**
-
-> The backend supports pagination and the frontend consumes `content` and `totalElements`, but pagination controls have not yet been implemented.
-
-**Incorrect:**
-
-> Frontend pagination is complete.
+Do not reproduce the entire project charter.
 
 ---
 
-# Phase Tracking
+# 3. Project Summary
 
-Use the phase structure from the latest `PROJECT_CHARTER.md`.
+Write one or two short paragraphs describing what the application **currently does**.
 
-If the charter's phase description no longer matches the actual state of the project, identify the discrepancy in `CURRENT_STATUS.md`.
+Only describe implemented functionality.
 
-If a phase was completed during this conversation:
+Do not include:
 
-- explicitly state that it is completed,
-- identify the next phase,
-- summarize what caused the phase to become complete.
-
-Do not artificially keep a phase open simply because the old status document said it was in progress.
-
-Do not mark a phase complete merely because most of its work exists.
-
-Use the phase completion criteria defined by the current charter.
+- future features
+- planned architecture
+- hypothetical functionality
+- features mentioned in the charter but not confirmed
 
 ---
 
-# Required Output Structure
+# 4. Completed Phases
 
-Generate the following document.
+List completed project phases with a short summary.
 
----
+Example:
 
-# CURRENT_STATUS.md
+```text
+## Phase 1 — Authentication Backend
+- User registration and login
+- JWT authentication
+- Spring Security authorization
 
-## Current Phase
+## Phase 2 — Vehicle Listings Backend
+- Listing CRUD
+- Ownership authorization
+- Pagination and filtering
+```
 
-State the current phase.
+Keep these summaries short.
 
-If a phase was completed during this conversation:
+Do not repeat detailed implementation explanations from `PROJECT_CHARTER.md`.
 
-- explicitly state that,
-- state the next phase.
-
-If the current phase contains both completed and unfinished milestones, summarize the exact remaining work.
-
----
-
-## Project Summary
-
-Briefly summarize the application as it actually exists today.
-
-Keep this to one or two paragraphs.
-
-Do not include planned features as though they already exist.
+If a phase is only partially complete, do not list it as completed.
 
 ---
 
-## Completed Phases
+# 5. Current State
 
-List every completed phase.
+Describe the important functionality currently present in the application.
 
-For each phase:
+Group information naturally by area.
 
-- provide a short summary,
-- mention only functionality actually completed.
+For example:
 
-Do not rewrite detailed implementation explanations.
+## Backend
 
----
+- Authentication
+- Listings
+- Validation
+- Image management
+- Pagination/filtering
 
-## Current Architecture
+## Frontend
 
-Summarize the architecture that currently exists.
-
-Include only information useful for continuing development.
-
-Possible areas:
-
-- backend modules
-- frontend modules
-- authentication
-- security
-- persistence
-- storage
+- React architecture
 - API layer
-- routing
-- mapping
-- validation
-- state management
-- testing
-- deployment
+- Routing
+- Marketplace browsing
+- Listing management
 
-Do not include technologies or patterns merely planned for future use.
+## Authentication
+
+- Login
+- Registration
+- Session restoration
+- Logout
+- Protected routes
+
+## Marketplace
+
+- Search
+- Filters
+- Sorting
+- Pagination
+- Listing cards
+- Listing details
+- Seller information
+- Images
+
+Only include areas that are relevant to the current project state.
+
+For partially implemented features, explicitly identify what exists and what does not.
 
 ---
 
-## Important Architectural Decisions
+# 6. Phase/Sub-phase Status
 
-Summarize significant engineering decisions that future development should respect.
+When the current phase contains multiple sub-phases, provide a compact status tree.
+
+Example:
+
+```text
+Phase 8
+│
+├── 8.1 Baseline & Cleanup ............... Completed
+├── 8.2 Authentication UX ................ Verified
+├── 8.3 Search & Filters ................. Partial
+├── 8.4 Sorting & Pagination ............. Partial
+├── 8.5 Listing Cards .................... Partial
+├── 8.6 Listing Details .................. Partial
+├── 8.7 Seller Information .............. Planned
+├── 8.8 Image Management ................. Partial
+└── 8.9 Listing Management UX ........... Partial
+```
+
+Only include sub-phases that actually belong to the current phase.
+
+For each sub-phase, classify its current state based on evidence.
+
+If a sub-phase has already been intentionally excluded or postponed, mark it **Deferred** rather than unfinished.
+
+This section is important because it allows the next conversation to immediately understand the development roadmap.
+
+---
+
+# 7. Remaining Work
+
+List only unfinished work.
+
+Separate it into:
+
+## Immediate
+
+Work that should be done next in the current phase.
+
+Organize it by sub-phase when useful.
+
+For example:
+
+### 8.3 Search & Filters
+
+Already implemented:
+
+- Make filtering
+- City filtering
+- Price filtering
+- Body type filtering
+
+Still required:
+
+- Reset filters
+- Filter UX improvements
+- Responsive filter layout
+- Verification of filter combinations
+
+Do not list functionality that is already implemented as remaining work.
+
+### 8.4 Sorting & Pagination
+
+Still required:
+
+- Frontend pagination controls
+- Current page state
+- Page navigation
+- Reset page when filters change
+- Verify sorting behavior
+
+Continue this pattern for other incomplete sub-phases.
+
+---
+
+## Later
+
+List work that exists in the project roadmap but should **not be implemented yet**.
 
 Examples:
 
-- service responsibilities
-- ownership authorization
-- `AuthContext` as frontend authentication source of truth
-- centralized API communication
-- manual DTO mapping
-- filesystem image storage
-- JPA Specifications
-- validation architecture
-- intentionally postponed abstractions
-- intentionally deferred features
+- Deferred Phase 8 sub-phases
+- Phase 9 marketplace interaction
+- Phase 10 testing
+- Phase 11 Docker/developer tooling
+- Phase 12 deployment
+- Phase 13 production hardening
 
-Do not repeat the entire engineering philosophy from the charter.
+Do not turn planned future work into immediate tasks.
 
 ---
 
-## Remaining Roadmap
+# 8. Important Decisions
 
-Summarize the remaining high-level roadmap.
+Record only decisions that the next conversation must remember.
 
-Separate:
+Examples:
 
-- immediate remaining work,
-- next phase,
-- later phases.
+- Existing architecture should be preserved.
+- Backend pagination/filtering already exists and should be consumed rather than redesigned.
+- Manual DTO mapping was intentionally used before MapStruct.
+- Cloud image storage is intentionally deferred.
+- Advanced image processing is deferred.
+- Authentication implementation is considered complete unless a concrete issue is discovered.
+- A specific debug log is intentionally retained.
 
-Do not include completed functionality in the remaining roadmap.
+Keep this section short.
 
-Do not turn implementation details into roadmap items unless they represent meaningful remaining work.
-
----
-
-## Files and Structure Added During This Chat
-
-List important files that were:
-
-- created,
-- modified,
-- removed,
-- or materially changed
-
-during this conversation.
-
-If the current folder structure is available, use it to verify filenames.
-
-Do not invent files.
-
-Do not list every unchanged file.
+Do not explain general engineering principles here.
 
 ---
 
-## Concepts Learned During This Chat
+# 9. Important Verified Behavior
 
-Summarize major engineering concepts introduced or reinforced during this conversation.
+When the user has explicitly tested functionality during the conversation, record the important verified behavior.
 
-Focus on ideas rather than code.
+For example:
 
-Only include concepts actually discussed.
+```text
+Authentication has been manually verified for:
+
+- Login success
+- Registration success
+- Refresh while authenticated
+- Logout
+- Protected route while logged out
+- Login after protected-route redirect
+- Invalid login credentials
+```
+
+Do not claim tests were performed unless the user explicitly confirmed them.
+
+If a test was proposed but not performed, do not list it as verified.
 
 ---
 
-## Interview Topics Covered
+# 10. Files Changed
 
-List questions or concepts the user should be able to explain after this conversation.
+List important files that were **actually provided or confirmed as changed during the conversation**.
 
-Do not answer the questions.
+Do not invent filenames.
 
-Only include topics actually covered.
+For each file, briefly state what changed if known.
+
+Example:
+
+```text
+- `AuthContext.jsx` — session initialization now rolls back the persisted JWT when `/users/me` fails.
+- `userApi.js` — current-user API request.
+- `listingApi.js` — listing retrieval and filtering API calls.
+```
+
+If the exact filename or change is uncertain, mark it Unverified or omit it.
 
 ---
 
-## Next Recommended Starting Point
+# 11. Next Starting Point
 
-State exactly what should happen at the beginning of the next conversation.
+This section is critical.
+
+Tell the next conversation **exactly what to do first**.
 
 Include:
 
-1. Which files should be requested.
-2. Whether architecture/theory should happen before implementation.
-3. The first implementation milestone.
-4. Any important verification that must occur before coding.
+### First step
 
-If the next step depends on inspecting existing files, say so explicitly.
+The exact sub-phase to resume.
+
+### Before coding
+
+Identify which current files need to be requested or inspected.
+
+Do not assume their contents from previous conversations.
+
+### Architecture/Theory
+
+State whether the next step requires:
+
+- architecture discussion first
+- theory first
+- direct implementation
+- or simply inspection because the concept is already understood
+
+### First implementation task
+
+State the smallest concrete task that should be implemented first.
+
+Example:
+
+```text
+Resume at Phase 8.3 — Search & Filters.
+
+Before modifying anything:
+1. Request the latest `FOLDER_STRUCTURE.md` if unavailable.
+2. Request the current `HomePage` and `SearchFilters`.
+3. Inspect the current `listingApi.getListings()` implementation.
+4. Identify which 8.3 requirements are already satisfied.
+5. Implement only the first missing requirement: Reset Filters.
+
+Do not rewrite existing filtering functionality.
+```
+
+This section should make it possible for a new conversation to begin implementation immediately.
 
 ---
 
-## Notes for Continuation
+# 12. Continuation Notes
 
-Include important context that another conversation needs in order to continue naturally.
+Include only information that prevents the next conversation from making an incorrect assumption.
 
 Examples:
 
-- unfinished discussions
-- partially implemented features
-- proposed but unverified changes
-- intentionally deferred work
-- discrepancies between old documentation and current code
-- workflow changes
-- important implementation constraints
+- A feature is partially implemented.
+- A proposed change was never actually applied.
+- A backend capability already exists and should be reused.
+- A particular console log is intentionally retained.
+- Authentication is already verified and should not be unnecessarily redesigned.
+- A failure-path test was intentionally deferred.
+- Certain sub-phases are intentionally postponed.
 
-This section is especially important when a previous conversation contained proposed code that may not have been applied.
-
----
-
-# Continuity Rules
-
-The generated document must allow a new conversation to continue without relying on the previous conversation's memory.
-
-The next conversation should be able to determine:
-
-- what exists,
-- what does not exist,
-- what is being worked on,
-- what was deliberately deferred,
-- what should happen next,
-- which files must be inspected before modification.
-
-Do not assume the assistant remembers previous conversations.
-
-Do not assume proposed code was applied.
-
-Do not assume filenames.
-
-Do not silently upgrade planned functionality to completed functionality.
+Keep this section concise.
 
 ---
 
-# Current Folder Structure
+# 13. Accuracy Rules
 
-If the user has supplied a current `FOLDER_STRUCTURE.md` or equivalent folder structure in this conversation:
+Before generating the report, perform an internal consistency check:
 
-- use it as evidence of the current repository structure,
-- mention important relevant files,
-- preserve the actual filenames and paths.
+### Do not claim:
 
-If it has not been supplied:
+- "Implemented" without evidence.
+- "Verified" without explicit testing/confirmation.
+- "Completed" when only part of the feature exists.
+- "Remaining" for something already implemented.
+- "Changed" for a file that was never actually provided or confirmed.
+- "Current" based solely on old documentation.
 
-> Request the latest `FOLDER_STRUCTURE.md` before generating the final status report.
+### Prefer:
 
-Do not reconstruct the folder structure from memory.
+```text
+Implemented
+Verified
+Partial
+Planned
+Deferred
+Unverified
+```
+
+over vague statements such as:
+
+```text
+mostly done
+almost complete
+should be working
+probably implemented
+```
+
+When uncertain, say **Unverified**.
 
 ---
 
-# Status Classification
+# 14. Conciseness Rules
 
-Use these classifications when useful:
+The final document should be a **small engineering handoff**.
 
-| Classification  | Meaning                                                               |
-| --------------- | --------------------------------------------------------------------- |
-| **Implemented** | Code exists and implementation is confirmed                           |
-| **Verified**    | Functionality was explicitly tested or confirmed working              |
-| **Partial**     | Some required functionality exists, but the milestone is unfinished   |
-| **Planned**     | Discussed as future work but not implemented                          |
-| **Deferred**    | Deliberately postponed                                                |
-| **Unverified**  | Proposed or believed to exist but not confirmed against current files |
+Do not:
 
-Use these distinctions whenever they prevent ambiguity.
+- write a history of the conversation
+- explain concepts at length
+- reproduce the project charter
+- document every implementation detail
+- repeat the same information in multiple sections
+- list completed work as remaining work
+- include speculative future architecture
 
----
+Do:
 
-# Final Quality Check
+- preserve the current phase/sub-phase structure
+- distinguish implemented from verified
+- identify partial functionality
+- identify intentionally deferred work
+- identify the exact next starting point
+- preserve important engineering decisions
+- give the next conversation enough information to continue safely
 
-Before producing `CURRENT_STATUS.md`, verify:
-
-- [ ] Current phase matches the latest `PROJECT_CHARTER.md`.
-- [ ] Completed phases contain only genuinely completed work.
-- [ ] Planned work is not described as implemented.
-- [ ] Proposed code is not described as existing without evidence.
-- [ ] Current architecture describes only what exists.
-- [ ] Remaining roadmap excludes completed work.
-- [ ] Important current files are based on the latest folder structure.
-- [ ] Contradictions between old documentation and current code are resolved in favor of current concrete evidence.
-- [ ] The next conversation has a clear starting point.
-- [ ] The report is concise enough to be useful as a handoff document.
-
-The goal is to produce an **accurate engineering handoff**, not a historical transcript.
+The final `CURRENT_STATUS.md` should normally be concise enough to read in a few minutes while still being sufficient for another conversation to continue the project without losing context.

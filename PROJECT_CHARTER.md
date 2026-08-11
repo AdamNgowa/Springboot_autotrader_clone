@@ -16,20 +16,6 @@ Success is measured by the ability to confidently explain architectural decision
 
 ---
 
-# Current Project Phase
-
-## Phase 8 — React Frontend & Marketplace UX
-
-The backend foundation is substantially complete.
-
-The frontend has progressed beyond the initial React architecture stage and now includes authentication, protected routing, listing management, image upload, listing cards, listing details, search/filtering, sorting, and consumption of backend pagination data.
-
-The remaining work in Phase 8 is primarily **frontend UX completion and marketplace presentation**, rather than initial React architecture.
-
-Phase 8 should be considered complete when the core marketplace browsing and listing-management experience is usable, responsive, accessible, and consistent.
-
----
-
 # Completed Backend Phases
 
 ## Phase 1 — Authentication Backend
@@ -367,6 +353,35 @@ Phase 8 should be considered complete when:
 
 ---
 
+# Phase 8 — React Frontend & Marketplace UX
+
+The frontend application and core marketplace browsing experience are established.
+
+Implemented:
+
+- React frontend architecture
+- Application routing
+- Centralized API layer
+- Authentication and protected routes
+- Listing management
+- Client-side validation
+- Image upload and gallery integration
+- Listing cards and listing details
+- Search, filtering, and sorting
+- Backend pagination integration
+- Loading, error, and empty states
+
+Remaining:
+
+- Frontend pagination
+- Seller information
+- Listing image management
+- Responsive and accessibility improvements
+
+Phase 8 should be considered complete when the core marketplace experience is usable, responsive, accessible, and consistent.
+
+---
+
 # Phase 9 — Marketplace Features & User Interaction
 
 After Phase 8 is complete, continue with marketplace-specific user interaction.
@@ -402,8 +417,6 @@ Frontend:
 - API mocking
 
 Testing should be introduced after the relevant functionality is stable enough to test meaningfully.
-
----
 
 # Phase 11 — Docker & Developer Tooling
 

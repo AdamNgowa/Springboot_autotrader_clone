@@ -1,408 +1,332 @@
-# CURRENT_STATUS.md
+# AutoTrader — Phase 8 Current Status
 
-## Current Phase
+## Phase 8 — React Frontend & Marketplace UX
 
-**Phase 8 — React Frontend & Marketplace UX**
+Authentication UX (8.1/8.2) is intentionally excluded for now because it has already been implemented and manually verified. Authentication behavior is working as intended, including:
 
-Phase 8 is **in progress**.
+- Login success
+- Registration success
+- Refresh while authenticated
+- Logout
+- Protected route while logged out
+- Login after protected-route redirect
+- Invalid login credentials
+- Authenticated session restoration
+- Token rollback when session initialization fails
 
-The frontend foundation, authentication architecture, listing management, image integration, marketplace browsing, filtering, sorting, and backend pagination consumption are present according to the current project documentation and repository structure.
+One optional failure test for `/users/me` was intentionally deferred and can be performed later.
 
-The remaining work is primarily frontend UX completion and verification:
-
-- Verify authentication validation integration and presentation.
-- Verify guest/protected routing behavior and authentication restoration.
-- Complete frontend pagination controls.
-- Improve marketplace filter/search UX.
-- Improve listing cards and listing details presentation.
-- Replace placeholder seller information with real seller data where required.
-- Complete currently required image-management interactions.
-- Standardize loading, error, and empty states.
-- Verify responsiveness and accessibility.
-- Remove development/debug logging where present.
-- Confirm Phase 8 completion criteria against the actual running application.
-
-Phase 9 — Marketplace Features & User Interaction is the next phase after Phase 8 is genuinely complete.
+The remaining Phase 8 work is focused on marketplace UX.
 
 ---
 
-## Project Summary
+## Phase 8 Sub-phases
 
-AutoTrader is a full-stack vehicle marketplace application with a Spring Boot backend and React frontend. The backend provides authentication, JWT-based security, user and vehicle-listing management, ownership authorization, validation, pagination/filtering, DTO mapping, API documentation, and filesystem-backed vehicle image management.
+Phase 8
+│
+├── 8.3 Search & Filters
+├── 8.4 Sorting & Pagination
+├── 8.5 Listing Cards
+├── 8.6 Listing Details
+├── 8.7 Seller Information
+├── 8.8 Image Management
+└── 8.9 Listing Management UX
 
-The React frontend currently provides authentication flows, protected/guest routing infrastructure, listing creation/editing/deletion, image display/upload integration, marketplace search/filtering/sorting, listing cards, listing details, and consumption of backend pagination data. Phase 8 is not yet complete because several UX capabilities and integrations still require implementation or verification.
+8.10 Global Loading/Error/Empty States,
+8.11 Responsive & Accessibility,
+and 8.12 Integration & Regression Testing
+are intentionally deferred and will be handled later independently.
 
 ---
 
-## Completed Phases
+## Already Implemented
 
-### Phase 1 — Authentication Backend
+### 8.3 Search & Filters
 
-Implemented:
+Currently implemented:
 
-- User registration
-- Login
-- BCrypt password hashing
-- JWT generation and validation
-- Stateless authentication
-- Spring Security
-- User roles
-- Ownership-based authorization
+- Make filtering
+- City filtering
+- Minimum price
+- Maximum price
+- Body type
+- Fuel type
+- Transmission
+- Sort selection
+- Debounced filter requests
+- Backend filtering integration
+- Loading indicator during searches
+- Empty-result message
 
-### Phase 2 — Vehicle Listings Backend
+Current files include:
 
-Implemented:
+- `SearchFilters`
+- `HomePage`
+- `listingApi.getListings()`
 
-- Vehicle listing creation and retrieval
-- Retrieve listing by ID
-- Listing updates
-- Soft deletion
-- Ownership authorization
-- Pagination
-- Dynamic filtering
-- JPA Specifications
+Remaining work:
 
-### Phase 3 — Backend Refactoring
+- Improve filter UX
+- Add Reset Filters
+- Verify filter combinations
+- Improve responsive filter layout
+- Verify filter state behavior
+- Remove unnecessary development/debug logging while preserving the intentional listing URL `console.log()` in `getListings()` because I specifically want that log to remain
+- Verify error behavior
 
-Implemented:
+Do not redesign the backend filtering system.
 
-- `VehicleListingMapper`
-- `CurrentUserService`
-- Service/helper responsibility improvements
-- Reduced duplication
+---
 
-### Phase 4 — Backend Validation
+### 8.4 Sorting & Pagination
 
-Implemented:
+Sorting is already implemented in `SearchFilters`:
 
-- Bean Validation
-- Validation DTOs
-- Global exception handling
-- Structured validation responses
+- Newest
+- Oldest
+- Price ascending
+- Price descending
+- Year newest
+- Year oldest
 
-### Phase 5 — Backend Mapping
+Backend pagination data is already being consumed:
 
-Implemented:
+- `data.content`
+- `data.totalElements`
 
-- Manual DTO mapping
-- Dedicated mapper layer
+Remaining work:
 
-MapStruct remains intentionally deferred.
+- Add frontend pagination controls
+- Add current page state
+- Send the correct page parameter to the backend
+- Handle page changes
+- Reset page appropriately when filters/sorting change
+- Decide whether page size should be exposed
+- Verify sorting behavior against backend results
+- Verify pagination + filtering + sorting combinations
 
-### Phase 6 — API Documentation
+---
 
-Implemented:
+### 8.5 Listing Cards
 
-- SpringDoc OpenAPI
-- Swagger UI
-- JWT authorization integration
-- DTO documentation
+Currently implemented:
 
-### Phase 7 — Image Management Backend
+- Listing title
+- Year
+- Make
+- Model
+- City
+- Price
+- Primary image lookup
+- Image fallback
+- Navigation to listing details
+- Owner Edit action
+- Owner Delete action
+- Click-event propagation handling
 
-Implemented:
+Remaining work:
 
-- `VehicleImage` entity
-- Filesystem image storage
-- Image metadata persistence
-- UUID-based filenames
-- Upload validation
-- Ownership verification
-- Compensating file cleanup
-- Primary image assignment
-- Dedicated image repository queries
-- Static resource handling
-- Public image URLs
+- Improve image presentation
+- Improve fallback presentation
+- Improve visual hierarchy
+- Improve responsive layout
+- Improve accessibility
+- Add seller information once seller data is available
+- Review owner-action presentation
+- Check whether the entire card being clickable is accessible
+- Preserve existing functionality unless a concrete architectural problem is found
 
-Deferred:
+---
 
-- Image deletion
-- Primary image switching
-- Image ordering
-- Cloud storage abstraction
-- Image optimization
+### 8.6 Listing Details
+
+Currently implemented:
+
+- Listing retrieval by ID
+- Loading state
+- Error state
+- Not-found state
+- Image gallery integration
+- Primary image selection
+- Image selection
+- Title
+- Price
+- City
+- Description
+- Vehicle specifications
+- Enum formatting
+- Seller placeholder section
+
+Current components include:
+
+- `ListingDetailsPage`
+- `ImageGallery`
+- `SpecificationCard`
+
+Remaining work:
+
+- Replace seller placeholder with real seller information
+- Improve seller presentation
+- Improve image gallery UX
+- Improve image fallback behavior
+- Improve responsive layout
+- Improve accessibility
+- Review loading/error/empty states
+- Add appropriate marketplace actions if justified
+
+---
+
+### 8.7 Seller Information
+
+Current state:
+
+Seller information is NOT yet implemented.
+
+The listing details page currently displays placeholder content:
+
+"Vehicle Marketplace Seller"
+
+and:
+
+"Contact information will be available in a future update."
+
+Remaining work:
+
+- Determine what seller data the backend listing response already exposes
+- Inspect the actual DTO/entity/API response before changing anything
+- Decide whether seller information should be displayed on:
+  - Listing cards
+  - Listing details
+- Implement seller presentation using existing backend data where possible
+- Avoid introducing unnecessary backend changes if the required information already exists
+- If backend data is insufficient, determine the smallest appropriate backend change
+
+---
+
+### 8.8 Image Management
+
+Current frontend image functionality:
+
+- Image upload integration
+- Image gallery
+- Primary image display
+- Listing image rendering
+
+Backend already supports image storage and primary-image assignment.
+
+Remaining work:
+
+- Delete listing images
+- Set/change primary image
+- Image management UI
+- Image previews
+- Image ordering only if product requirements justify it
+- Upload progress only if useful
+
+Do NOT introduce:
+
+- Cloud storage
+- Advanced image-processing pipelines
 - Background image processing
 
----
+unless requirements change.
 
-## Current Architecture
-
-### Backend
-
-The backend is organized into conventional Spring Boot layers:
-
-- Controllers for HTTP/API boundaries
-- DTOs for request/response contracts
-- Entities for persistence models
-- Repositories for data access
-- Services for business logic
-- Mappers for DTO/entity conversion
-- Specifications for dynamic vehicle-listing filtering
-- Security components for JWT authentication
-- Exception handling through `GlobalExceptionHandler`
-- Configuration for Spring Security, OpenAPI, and web/static-resource handling
-
-Primary backend domains currently include:
-
-- Authentication
-- Users
-- Vehicle listings
-- Vehicle images
-
-### Frontend
-
-The frontend uses React with a feature-oriented structure containing:
-
-- API modules under `src/api`
-- Authentication storage under `src/auth`
-- Shared UI components under `src/components`
-- Authentication state under `src/context`
-- Authentication hook under `src/hooks`
-- Pages under `src/pages`
-- Routing under `src/routes`
-- Validation utilities under `src/utils`
-- Listing enum constants under `src/constants`
-
-Authentication state is centered around `AuthContext` and `useAuth`.
-
-API communication is centralized through `apiClient.js` and domain-specific API modules.
-
-Routing includes both `ProtectedRoute` and `GuestOnlyRoute`.
-
-Current marketplace components include:
-
-- `ListingCard`
-- `ListingForm`
-- `ImageGallery`
-- `SearchFilters`
-- `SpecificationCard`
-- `Navbar`
-
-### Validation
-
-Frontend validation utilities currently exist:
-
-- `frontend/src/utils/validateAuth.js`
-- `frontend/src/utils/validateListing.js`
-
-The supplied validation code includes:
-
-- Login email/password required validation
-- Registration first name, last name, email, password, and phone validation
-- Minimum registration password length of 8 characters
-- Listing title, description, price, year, make, model, mileage, city, fuel type, transmission, and body type validation
-
-The existence of these utilities is confirmed by the supplied current folder structure and code. Their complete integration into the current Login, Register, and Listing forms remains **unverified**.
-
-### Persistence and Storage
-
-The backend uses relational persistence through Spring Data/JPA repositories.
-
-Vehicle images use local filesystem storage with persisted image metadata. Cloud object storage is not currently part of the architecture.
+Before implementing image-management operations, inspect the current image API/backend endpoints and actual files.
 
 ---
 
-## Important Architectural Decisions
+### 8.9 Listing Management UX
 
-- `CurrentUserService` centralizes retrieval of the authenticated user.
-- Ownership authorization is enforced for protected listing/image operations.
-- DTOs are separated from persistence entities.
-- Manual mapping is used through dedicated mapper classes.
-- `VehicleListingSpecification` and its builder support dynamic listing filtering.
-- Frontend HTTP communication is centralized rather than performed directly throughout components.
-- `AuthContext` is the frontend authentication state source.
-- JWT authentication is stateless.
-- Local filesystem storage is used for vehicle images.
-- Image metadata is persisted separately through `VehicleImage`.
-- Advanced image infrastructure remains deferred until product requirements justify it.
-- MapStruct remains deferred after intentionally using manual mapping first.
-- Cloud storage remains deferred.
-- Advanced image processing remains deferred.
-- The backend pagination/filtering implementation should be consumed by the frontend rather than redesigned.
+Existing functionality:
 
----
+- Listing creation
+- Listing editing
+- Listing deletion
+- Reusable `ListingForm`
+- Client-side listing validation
+- Owner-specific listing actions
+- My Listings functionality
+- Image upload integration
 
-## Remaining Roadmap
+Remaining work:
 
-### Immediate — Complete Phase 8
-
-1. Verify authentication UX against the actual current pages/components.
-2. Verify and complete client-side validation integration.
-3. Verify login/register loading and disabled states.
-4. Verify guest-only and protected-route behavior.
-5. Verify intended-destination handling where implemented.
-6. Complete frontend pagination controls and page state.
-7. Improve search/filter/reset UX.
-8. Improve listing-card presentation and accessibility.
-9. Improve listing-details presentation and accessibility.
-10. Replace placeholder seller information where required.
-11. Implement currently required image-management actions.
-12. Standardize loading, error, and empty states.
-13. Verify responsive layouts.
-14. Remove development/debug logging.
-15. Perform a final Phase 8 completion review against the charter criteria.
-
-### Next Phase — Phase 9
-
-Marketplace Features & User Interaction:
-
-- Favorites / wishlist
-- Seller profile improvements
-- Buyer/seller messaging
-- Additional marketplace interaction features justified by requirements
-
-### Later
-
-**Phase 10 — Testing**
-
-- Backend unit/service/repository/controller testing
-- MockMvc
-- Mockito
-- Integration testing
-- React Testing Library
-- Component/hook testing
-- API mocking
-
-**Phase 11 — Docker & Developer Tooling**
-
-- Docker/Docker Compose
-- PostgreSQL containerization
-- Environment configuration
-- Development tooling
-- Formatting/linting
-- Git hooks
-- Project health/developer workflow tooling
-
-**Phase 12 — Deployment**
-
-- Production configuration
-- Secrets management
-- HTTPS
-- Reverse proxy
-- CI/CD
-- Logging
-- Monitoring
-- Health checks
-- Cloud hosting
-
-**Phase 13 — Production Hardening**
-
-Potential future work includes:
-
-- Refresh tokens
-- Email verification
-- Password reset
-- Expanded authorization
-- Rate limiting
-- Database indexing
-- Caching
-- Performance optimization
-- Security hardening
-- Audit logging
-- API versioning
-- Background jobs
-- Cloud object storage
-- Advanced search
+- Review the existing create/edit/delete UX
+- Improve loading/submission states where needed
+- Improve delete confirmation behavior if currently missing
+- Improve error handling
+- Improve success feedback where appropriate
+- Verify owner actions behave correctly
+- Verify image handling within listing creation/editing
+- Ensure navigation after create/edit/delete is consistent
+- Preserve the existing architecture
 
 ---
 
-## Files and Structure Added During This Chat
+# Important Existing Authentication Code
 
-No repository files were actually created, modified, or removed during this conversation.
+`AuthContext` currently implements:
 
-The current repository structure was supplied for continuity and confirms the following important existing frontend files:
+- JWT persistence
+- Session restoration
+- `/users/me` verification
+- Token rollback if session initialization fails
+- Login
+- Registration
+- Logout
+- `isAuthenticated` derived from `user`
 
-- `frontend/src/utils/validateAuth.js`
-- `frontend/src/utils/validateListing.js`
-- `frontend/src/context/AuthContext.jsx`
-- `frontend/src/hooks/useAuth.js`
-- `frontend/src/routes/AppRouter.jsx`
-- `frontend/src/components/ProtectedRoute.jsx`
-- `frontend/src/components/GuestOnlyRoute.jsx`
-- `frontend/src/components/ListingCard.jsx`
-- `frontend/src/components/ListingForm.jsx`
-- `frontend/src/components/ImageGallery.jsx`
-- `frontend/src/components/SearchFilters.jsx`
-- `frontend/src/pages/LoginPage.jsx`
-- `frontend/src/pages/RegisterPage.jsx`
-- `frontend/src/pages/HomePage.jsx`
-- `frontend/src/pages/ListingDetailsPage.jsx`
-- `frontend/src/pages/MyListingsPage.jsx`
+The important session initialization behavior is:
 
-Important backend files include the controllers, DTOs, entities, repositories, services, security classes, mappers, specifications, and configuration shown in the supplied `FOLDER_STRUCTURE.md`.
+1. Save token
+2. Set token in React state
+3. Request `/users/me`
+4. Set authenticated user if successful
+5. If `/users/me` fails:
+   - remove persisted token
+   - clear React token
+   - clear user
+   - rethrow the error
 
-The current folder structure itself was supplied in this conversation and should be treated as the latest available structural reference.
-
----
-
-## Concepts Learned During This Chat
-
-- Client-side validation as a frontend concern separate from backend validation.
-- Required-field validation versus constraint validation such as minimum password length.
-- The distinction between validation utilities and validation integration into UI components.
-- The importance of verifying actual source files before declaring functionality complete.
-- The distinction between implemented, verified, partial, planned, deferred, and unverified work.
-- Frontend consumption of an existing backend pagination/filtering contract.
-- Maintaining continuity through an evidence-based project status document.
+This behavior has already been implemented and should not be changed unless a concrete problem is discovered.
 
 ---
 
-## Interview Topics Covered
+# Important Debug Logging Decision
 
-- Why client-side validation should not replace backend validation.
-- Where frontend validation belongs in a React application.
-- Why validation logic can be extracted into reusable utility functions.
-- Why authentication state should have a centralized source of truth.
-- How protected and guest-only routes differ.
-- How JWT authentication integrates with a stateless Spring Security backend.
-- Why DTOs are separated from persistence entities.
-- Why manual mapping was used before introducing MapStruct.
-- How JPA Specifications support dynamic filtering.
-- Why local filesystem storage was chosen before cloud object storage.
-- How ownership authorization protects listing/image operations.
-- How frontend pagination should consume backend pagination metadata.
+There is currently one intentional `console.log()` in the frontend:
+
+`listingApi.js -> getListings()`
+
+It logs the generated `/listings?...` URL.
+
+I specifically want this console log to remain.
+
+Authentication/debug logging elsewhere should remain removed.
 
 ---
 
-## Next Recommended Starting Point
+# Working Rules
 
-At the beginning of the next conversation:
+Before modifying existing files:
 
-1. Request the latest `FOLDER_STRUCTURE.md` again if it has changed.
-2. Request the current versions of the files involved in the first implementation milestone rather than assuming their contents.
-3. Review architecture/theory before modifying code.
-4. Begin with **Phase 8 authentication UX verification**, unless the user explicitly chooses another remaining Phase 8 milestone.
-5. Inspect at minimum:
-   - `frontend/src/utils/validateAuth.js`
-   - `frontend/src/utils/validateListing.js`
-   - `frontend/src/pages/LoginPage.jsx`
-   - `frontend/src/pages/RegisterPage.jsx`
-   - `frontend/src/components/ListingForm.jsx`
-   - `frontend/src/context/AuthContext.jsx`
-   - `frontend/src/hooks/useAuth.js`
-   - `frontend/src/routes/AppRouter.jsx`
-   - `frontend/src/components/ProtectedRoute.jsx`
-   - `frontend/src/components/GuestOnlyRoute.jsx`
-   - `frontend/src/components/Navbar.jsx`
+1. Ask for the current file if it has not been provided.
+2. Do not reconstruct files from memory.
+3. Preserve the existing architecture.
+4. Make one logical change at a time.
+5. Explain why the change is needed.
+6. After each implementation step, run/compile/test/verify before continuing.
+7. Do not implement deferred 8.10, 8.11, or 8.12 yet.
 
-6. Verify how the existing validation utilities are actually integrated before changing them.
-7. Do not rewrite any existing file from memory; modify only the current source provided for inspection.
+The latest `FOLDER_STRUCTURE.md` should be requested before beginning implementation if it is not already available.
 
 ---
 
-## Notes for Continuation
+# Where To Resume
 
-- Phase 8 remains open. Do not mark it complete merely because most functionality exists.
-- The current charter describes authentication UX and marketplace UX as remaining Phase 8 work; this status preserves that distinction.
-- `validateAuth.js` and `validateListing.js` are present in the current folder structure, and validation code was supplied in this conversation.
-- The supplied validation code contains `validateLogin`, `validateRegister`, and `validateListing`.
-- `validateListing` appeared twice in the supplied code. This should be checked against the actual current file rather than assuming the duplicate exists in the repository.
-- The validation utilities should not automatically be treated as fully integrated into the UI. Their current usage by `LoginPage`, `RegisterPage`, and `ListingForm` still needs inspection.
-- Authentication functionality is described by the project charter as implemented, but authentication UX still requires verification against the actual current files.
-- Backend pagination/filtering is already considered existing and should be consumed by the frontend rather than redesigned.
-- Seller information on the listing details page is still described as placeholder content and therefore should not be treated as complete marketplace functionality.
-- Image-management features beyond upload/display/primary-image handling remain either deferred or unfinished according to the charter.
-- No testing, Docker, deployment, or production-hardening phase should be treated as completed based on the evidence in this conversation.
-- The latest supplied repository structure should be used instead of relying on filenames from older conversations.
-- Before every implementation change, obtain and inspect the current version of the relevant file.
-- Continue the project incrementally: architecture/theory → inspect current files → implement one logical change → compile/run/test/verify → continue.
+Resume with:
+
+## Phase 8.3 — Search & Filters
+
+Before changing code, inspect the current implementation and identify exactly which 8.3 requirements are already satisfied and which are still missing.
+
+Do not rewrite working functionality unnecessarily.

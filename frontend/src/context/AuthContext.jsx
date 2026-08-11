@@ -61,20 +61,29 @@ export function AuthProvider({ children }) {
    *
    * @param {string} token - JWT returned by the backend.
    */
+
   async function initializeSession(token) {
     // Persist the JWT so the session survives browser refreshes.
     saveToken(token);
 
     // Update React state immediately.
     setToken(token);
-    console.log("authcontext token:", token);
 
-    // Load the authenticated user's profile.
-    const currentUser = await getCurrentUser();
+    try {
+      // Load the authenticated user's profile.
+      const currentUser = await getCurrentUser();
 
-    // Store the user in context.
-    setUser(currentUser);
-    console.log("user in authcontext:", currentUser);
+      // Store the authenticated user in context.
+      setUser(currentUser);
+    } catch (error) {
+      // The token cannot establish a valid authenticated session,
+      // so roll back both persistent storage and React state.
+      removeToken();
+      setToken(null);
+      setUser(null);
+
+      throw error;
+    }
   }
 
   async function login(credentials) {
