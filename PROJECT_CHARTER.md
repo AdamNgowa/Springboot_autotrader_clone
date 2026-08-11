@@ -1,8 +1,6 @@
-# PROJECT_CHARTER.md
-
 # AutoTrader Project Charter
 
-> **Purpose:** This document serves as the project's engineering charter, mentoring agreement, architectural guide, learning roadmap, and continuity document. It defines not only _what_ we are building, but _how_ and _why_ we build it this way.
+> **Purpose:** This document serves as the project's engineering charter, mentoring agreement, architectural guide, learning roadmap, and continuity document. It defines not only _what_ we are building, but _how_ and _why_ we build it.
 
 ---
 
@@ -12,19 +10,31 @@ This project is **not** intended to become the largest AutoTrader clone possible
 
 Its purpose is to build a **production-quality full-stack application** while developing the knowledge and engineering habits expected of a professional software engineer.
 
-The primary goal is employability as a **Java Backend Engineer** while gaining strong frontend skills with **React and TypeScript**.
+The primary goal is employability as a **Java Backend Engineer** while gaining strong frontend skills with React and TypeScript.
 
 Success is measured by the ability to confidently explain architectural decisions during technical interviews—not by how quickly features are completed.
 
 ---
 
-# Current Status
+# Current Project Phase
 
-> Update this section whenever a new chat begins.
+## Phase 8 — React Frontend & Marketplace UX
 
-## Completed
+The backend foundation is substantially complete.
 
-### Phase 1 — Authentication
+The frontend has progressed beyond the initial React architecture stage and now includes authentication, protected routing, listing management, image upload, listing cards, listing details, search/filtering, sorting, and consumption of backend pagination data.
+
+The remaining work in Phase 8 is primarily **frontend UX completion and marketplace presentation**, rather than initial React architecture.
+
+Phase 8 should be considered complete when the core marketplace browsing and listing-management experience is usable, responsive, accessible, and consistent.
+
+---
+
+# Completed Backend Phases
+
+## Phase 1 — Authentication Backend
+
+Implemented:
 
 - User registration
 - Login
@@ -32,51 +42,82 @@ Success is measured by the ability to confidently explain architectural decision
 - JWT generation
 - JWT validation
 - Stateless authentication
+- Spring Security
+- User roles
 - Ownership-based authorization
 
-### Phase 2 — Listings
+---
+
+## Phase 2 — Vehicle Listings Backend
+
+Implemented:
 
 - Create listing
 - Retrieve listings
 - Retrieve listing by ID
 - Update listing
-- Soft delete
+- Soft deletion
+- Ownership authorization
 - Pagination
 - Dynamic filtering
 - JPA Specifications
 
-### Phase 3 — Refactoring
+---
 
-- VehicleListingMapper extracted
-- CurrentUserService extracted
-- Helper methods introduced
+## Phase 3 — Backend Refactoring
+
+Implemented:
+
+- `VehicleListingMapper`
+- `CurrentUserService`
+- Helper methods
 - Improved service responsibilities
 - Reduced duplication
 
-### Phase 4 — Validation
+---
+
+## Phase 4 — Backend Validation
+
+Implemented:
 
 - Bean Validation
 - Validation DTOs
 - Global exception handling
 - Structured validation responses
 
-### Phase 5 — Mapping
+---
+
+## Phase 5 — Backend Mapping
+
+Implemented:
 
 - Manual DTO mapping
-- MapStruct intentionally postponed
+- Dedicated mapper layer
 
-### Phase 6 — API Documentation
+Intentionally postponed:
+
+- MapStruct
+
+The manual implementation was chosen first so the mapping mechanism could be understood before introducing code-generation tooling.
+
+---
+
+## Phase 6 — API Documentation
+
+Implemented:
 
 - SpringDoc OpenAPI
 - Swagger UI
 - JWT authorization integration
 - DTO documentation
 
-### Phase 7 — Image Management
+---
+
+## Phase 7 — Image Management Backend
 
 Implemented:
 
-- Dedicated VehicleImage entity
+- Dedicated `VehicleImage` entity
 - Filesystem storage
 - Image metadata persistence
 - UUID filenames
@@ -88,7 +129,7 @@ Implemented:
 - Spring MVC static resource handling
 - Public image URLs
 
-Deferred intentionally:
+Intentionally deferred:
 
 - Image deletion
 - Primary image switching
@@ -97,17 +138,343 @@ Deferred intentionally:
 - Image optimization
 - Background image processing
 
-These deferred features were postponed deliberately because the current implementation satisfies the project's educational goals while keeping the architecture simple and understandable.
+These remain deferred until the product requirements justify the additional complexity.
 
 ---
 
-# Current Phase
+# Phase 8 — React Frontend & Marketplace UX
 
-## Phase 8 — React + TypeScript Frontend
+## Completed / Implemented Areas
 
-The first objective is **not** to write components.
+The frontend currently includes:
 
-The first objective is to design the frontend architecture before implementation begins.
+### Frontend Foundation
+
+- React application
+- React Router
+- Application routing
+- Shared components
+- Feature-oriented frontend structure
+- TailwindCSS styling
+
+### API Layer
+
+- Generic `apiClient`
+- Authentication API module
+- Listing API module
+- User API module
+- Image API module
+- Centralized HTTP communication
+
+### Authentication
+
+Implemented:
+
+- `AuthContext`
+- `useAuth`
+- JWT persistence
+- Session restoration
+- Login
+- Registration
+- Logout
+- Authentication-aware navigation
+- Protected routes
+- Guest-only route infrastructure
+- Automatic authentication after registration
+
+Authentication functionality itself is complete.
+
+Authentication UX should still be verified against the actual current files before Phase 8 is considered complete.
+
+### Listing Management
+
+Implemented:
+
+- Listing creation
+- Listing editing
+- Listing deletion
+- Reusable `ListingForm`
+- Client-side listing validation
+- Owner-specific listing actions
+- My Listings functionality
+
+### Image Integration
+
+Implemented on the frontend:
+
+- Image upload integration
+- Image gallery
+- Primary image display
+- Listing image rendering
+
+Remaining image-management UX:
+
+- Delete listing images
+- Change primary image
+- Image ordering if required
+- Image preview/management improvements
+- Upload progress if justified
+
+Cloud storage and advanced image processing remain deferred.
+
+### Marketplace Browsing
+
+Implemented:
+
+- Listing cards
+- Listing details page
+- Vehicle specifications
+- Search/filter controls
+- Make filtering
+- City filtering
+- Price range filtering
+- Body type filtering
+- Fuel type filtering
+- Transmission filtering
+- Sorting controls
+- Debounced filter requests
+- Backend pagination data consumption
+- Loading states
+- Error states
+- Empty-result states
+
+The backend already provides pagination and dynamic filtering through the listings API.
+
+### Seller Information
+
+The listing details page currently contains a seller section, but it is still placeholder content.
+
+Real seller information has **not yet been completed**.
+
+Seller information should ultimately be available on:
+
+- Listing cards
+- Listing details
+
+---
+
+# Phase 8 Remaining Work
+
+The following work remains before Phase 8 should be considered complete.
+
+## Authentication UX
+
+Verify and complete where necessary:
+
+- Client-side login validation
+- Client-side registration validation
+- Validation error presentation
+- Login/register loading states
+- Disabled controls while submitting
+- Guest-only redirects
+- Redirect authenticated users away from authentication pages
+- Intended-destination preservation
+- Protected-route redirect behavior
+- Navbar authentication-restoration behavior
+- Navbar active-link styling
+- Authentication accessibility
+- Responsive authentication layouts
+- Consistent authentication-page UI
+
+Do not assume proposed authentication implementations exist. Inspect the actual files before modifying them.
+
+---
+
+## Marketplace Browsing UX
+
+Complete:
+
+- Frontend pagination controls
+- Current page state
+- Page navigation
+- Page size handling where appropriate
+- Better filter UX
+- Reset filters
+- Search/filter loading behavior
+- Improved empty states
+- Improved error handling
+- Responsive search/filter layout
+- Verification of sorting behavior
+- Removal of development/debug logging
+
+The backend pagination and filtering implementation already exists and should be consumed rather than redesigned.
+
+---
+
+## Listing Card UX
+
+Improve:
+
+- Image presentation
+- Image fallback behavior
+- Visual hierarchy
+- Responsive layout
+- Accessibility
+- Seller information
+- Owner action presentation
+
+The existing listing-card functionality should be preserved unless the current implementation reveals a concrete architectural problem.
+
+---
+
+## Listing Details UX
+
+Improve:
+
+- Seller information
+- Seller presentation
+- Image gallery experience
+- Image fallback behavior
+- Responsive layout
+- Accessibility
+- Error/loading/empty states
+- Future marketplace actions where appropriate
+
+---
+
+## Image Management UX
+
+Implement only the functionality justified by the current product requirements:
+
+- Delete listing images
+- Set/change primary image
+- Image management UI
+- Image previews
+- Image ordering if required
+- Upload progress if useful
+
+Do not introduce cloud storage or an advanced image-processing pipeline during this phase unless requirements change.
+
+---
+
+## Phase 8 Completion Criteria
+
+Phase 8 should be considered complete when:
+
+- Authentication UX is verified and polished.
+- Guest and protected routing behave correctly.
+- Users can browse listings.
+- Users can search and filter listings.
+- Users can sort listings.
+- Users can paginate listings.
+- Listing cards provide appropriate marketplace information.
+- Listing details provide appropriate marketplace information.
+- Seller information is available where required.
+- Listing images can be managed at the level currently required by the product.
+- Loading, error, and empty states are handled consistently.
+- Major interfaces are responsive.
+- Important interactive elements are accessible.
+
+---
+
+# Phase 9 — Marketplace Features & User Interaction
+
+After Phase 8 is complete, continue with marketplace-specific user interaction.
+
+Planned:
+
+- Favorites / wishlist
+- Seller profile improvements
+- Buyer/seller messaging
+- Additional marketplace interaction features as requirements become clear
+
+Do not implement these prematurely while the core marketplace browsing experience remains unfinished.
+
+---
+
+# Phase 10 — Testing
+
+Backend:
+
+- Unit testing
+- Service tests
+- Repository tests
+- Controller tests
+- MockMvc
+- Mockito
+- Integration testing
+
+Frontend:
+
+- React Testing Library
+- Component testing
+- Hook testing
+- API mocking
+
+Testing should be introduced after the relevant functionality is stable enough to test meaningfully.
+
+---
+
+# Phase 11 — Docker & Developer Tooling
+
+## Docker
+
+Planned:
+
+- Docker images
+- Containers
+- Dockerfiles
+- Docker Compose
+- PostgreSQL containerization
+- Container networking
+- Volumes
+- Environment variables
+
+## Developer Tooling
+
+Planned:
+
+- Project document generator
+- Folder structure generator
+- Current status generator
+- Git hooks
+- Formatting and linting
+- Development scripts
+- Environment validation
+- Dependency auditing
+- Project health reports
+
+The goal is to experience building tools that improve the development workflow, not only applications for end users.
+
+---
+
+# Phase 12 — Deployment
+
+Planned:
+
+- Environment profiles
+- Production configuration
+- Secrets management
+- HTTPS
+- Reverse proxy
+- CI/CD
+- Logging
+- Monitoring
+- Health checks
+- Cloud hosting
+
+---
+
+# Phase 13 — Production Hardening
+
+Potential future work:
+
+- Refresh tokens
+- Email verification
+- Password reset
+- Expanded role-based authorization
+- Rate limiting
+- Database indexing
+- Caching
+- Performance optimization
+- Security hardening
+- Audit logging
+- API versioning
+- Background jobs
+- Cloud object storage
+- Advanced search
+
+These features should only be introduced after explaining the problem they solve and determining that the project actually requires them.
 
 ---
 
@@ -221,6 +588,8 @@ Before modifying an existing class:
 - never rewrite from memory,
 - modify only the code that is provided.
 
+The latest `FOLDER_STRUCTURE.md` should also be requested when beginning a continuation chat.
+
 ---
 
 ## Step 2 — Incremental Implementation
@@ -269,142 +638,9 @@ Discuss how the implementation might evolve in larger systems.
 
 Include at least one interview-style discussion question.
 
-Examples:
-
-- Why did we use a dedicated FileStorageService?
-- Why did we prefer lazy loading?
-- Why did we separate metadata from binary storage?
-- What trade-offs exist between our implementation and alternatives?
-
 ## Suggested Git Commit Message
 
 Provide a meaningful commit message.
-
----
-
-# React Phase Philosophy
-
-Before writing a single React component, design the frontend architecture.
-
-Topics include:
-
-- folder structure,
-- routing,
-- authentication flow,
-- API layer,
-- component organization,
-- state ownership,
-- reusable UI,
-- error handling,
-- loading states,
-- TypeScript organization.
-
-Architecture should precede implementation exactly as it did for the backend.
-
----
-
-# Long-Term Roadmap
-
-## Phase 8
-
-React + TypeScript
-
-## Phase 9
-
-Testing
-
-Backend:
-
-- Unit testing
-- Integration testing
-- Repository tests
-- Service tests
-- Controller tests
-- MockMvc
-- Mockito
-
-Frontend:
-
-- React Testing Library
-- Hook testing
-- Component testing
-- API mocking
-
----
-
-## Phase 10
-
-Docker
-
-- Images
-- Containers
-- Dockerfiles
-- Docker Compose
-- Networking
-- Volumes
-- Environment variables
-
----
-
-## Phase 11
-
-Developer Tooling
-
-Build internal tooling that improves the development experience and keeps the project maintainable.
-
-Potential topics:
-
-- Project document generator
-- Automatic folder structure generator
-- Current status generator
-- Git hooks
-- Code formatting and linting
-- Build automation
-- Development scripts
-- Environment validation
-- Dependency auditing
-- Project health reports
-
-## The goal of this phase is to experience building tools that developers use, not just applications for end users.
-
-## Phase 12
-
-Deployment
-
-- Profiles
-- Production configuration
-- Secrets
-- HTTPS
-- Reverse proxy
-- CI/CD
-- Logging
-- Monitoring
-- Health checks
-
----
-
-## Phase 12
-
-Production Improvements
-
-Potential topics:
-
-- Refresh tokens
-- Email verification
-- Password reset
-- Role-based authorization
-- Rate limiting
-- Caching
-- Database indexing
-- Performance optimization
-- Security hardening
-- Audit logging
-- API versioning
-- Background jobs
-- Amazon S3
-- Search improvements
-
-Deferred features should be introduced only after explaining the problem they solve.
 
 ---
 
@@ -429,17 +665,20 @@ This context should supplement—not replace—the implementation we build.
 
 # Repository Structure
 
-The intended repository layout is:
+The repository currently follows a two-application structure:
 
 ```text
 AutoTrader/
-│
-├── .idea/
 ├── backend/
 ├── frontend/
+├── uploads/
+├── CURRENT_STATUS.md
+├── FOLDER_STRUCTURE.md
 ├── PROJECT_CHARTER.md
-
+└── STATUS_REPORT_PROMPT.md
 ```
+
+The exact file structure must always be taken from the latest `FOLDER_STRUCTURE.md` rather than assumed from this document.
 
 ---
 
@@ -455,5 +694,3 @@ Whenever requirements evolve, we should treat the codebase as a real product:
 - explain why previous solutions were appropriate,
 - justify new changes based on new requirements,
 - continuously improve both the software and the engineering process.
-
----

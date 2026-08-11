@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Navigate, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { validateRegister } from "../utils/validateAuth";
 
 function RegisterPage() {
   const navigate = useNavigate();
+
   const { register, isAuthenticated, loading } = useAuth();
+
   const [validationErrors, setValidationErrors] = useState({});
 
   const [formData, setFormData] = useState({
@@ -20,11 +22,15 @@ function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
 
   if (loading) {
-    return <p className="p-6 text-center">Loading...</p>;
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-gray-50">
+        <p className="text-gray-600">Loading...</p>
+      </main>
+    );
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return null;
   }
 
   function handleChange(event) {
@@ -35,7 +41,7 @@ function RegisterPage() {
       [name]: value,
     }));
 
-    // Clear the error for this specific field as the user types
+    // Clear the error for this specific field as the user types.
     setValidationErrors((current) => ({
       ...current,
       [name]: "",
@@ -57,7 +63,9 @@ function RegisterPage() {
 
     try {
       setSubmitting(true);
+
       await register(formData);
+
       navigate("/", { replace: true });
     } catch (error) {
       setRegisterError(error.message);
@@ -67,144 +75,200 @@ function RegisterPage() {
   }
 
   return (
-    <main className="mx-auto mt-10 max-w-xl rounded-lg border bg-white p-8 shadow">
-      <h1 className="mb-6 text-center text-3xl font-bold">Create Account</h1>
+    <main className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12">
+      <section className="w-full max-w-md rounded-xl bg-white p-8 shadow-md">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Create your account
+          </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* First name */}
-        <label htmlFor="firstName" className="block text-sm font-medium">
-          First name
-        </label>
-        <input
-          id="firstName"
-          name="firstName"
-          placeholder="First name"
-          value={formData.firstName}
-          disabled={submitting}
-          onChange={handleChange}
-          aria-invalid={Boolean(validationErrors.firstName)}
-          aria-describedby={
-            validationErrors.firstName ? "firstName-error" : undefined
-          }
-          className="w-full rounded border p-3"
-        />
-        {validationErrors.firstName && (
-          <p id="firstName-error" className="text-sm text-red-600">
-            {validationErrors.firstName}
+          <p className="mt-2 text-sm text-gray-600">
+            Join AutoTrader and start buying or selling vehicles.
           </p>
-        )}
+        </div>
 
-        {/* Last name */}
-        <label htmlFor="lastName" className="block text-sm font-medium">
-          Last name
-        </label>
-        <input
-          id="lastName"
-          name="lastName"
-          placeholder="Last name"
-          value={formData.lastName}
-          disabled={submitting}
-          onChange={handleChange}
-          aria-invalid={Boolean(validationErrors.lastName)}
-          aria-describedby={
-            validationErrors.lastName ? "lastName-error" : undefined
-          }
-          className="w-full rounded border p-3"
-        />
-        {validationErrors.lastName && (
-          <p id="lastName-error" className="text-sm text-red-600">
-            {validationErrors.lastName}
-          </p>
-        )}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* First name */}
+          <div>
+            <label
+              htmlFor="firstName"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              First name
+            </label>
 
-        {/* Email */}
-        <label htmlFor="email" className="block text-sm font-medium">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          disabled={submitting}
-          onChange={handleChange}
-          aria-invalid={Boolean(validationErrors.email)}
-          aria-describedby={validationErrors.email ? "email-error" : undefined}
-          className="w-full rounded border p-3"
-        />
-        {validationErrors.email && (
-          <p id="email-error" className="text-sm text-red-600">
-            {validationErrors.email}
-          </p>
-        )}
+            <input
+              id="firstName"
+              name="firstName"
+              placeholder="Enter your first name"
+              value={formData.firstName}
+              disabled={submitting}
+              onChange={handleChange}
+              aria-invalid={Boolean(validationErrors.firstName)}
+              aria-describedby={
+                validationErrors.firstName ? "firstName-error" : undefined
+              }
+              className="w-full rounded-md border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
 
-        {/* Password */}
-        <label htmlFor="password" className="block text-sm font-medium">
-          Password
-        </label>
-        <input
-          id="password"
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          disabled={submitting}
-          onChange={handleChange}
-          aria-invalid={Boolean(validationErrors.password)}
-          aria-describedby={
-            validationErrors.password ? "password-error" : undefined
-          }
-          className="w-full rounded border p-3"
-        />
-        {validationErrors.password && (
-          <p id="password-error" className="text-sm text-red-600">
-            {validationErrors.password}
-          </p>
-        )}
+            {validationErrors.firstName && (
+              <p id="firstName-error" className="mt-1 text-sm text-red-600">
+                {validationErrors.firstName}
+              </p>
+            )}
+          </div>
 
-        {/* Phone number */}
-        <label htmlFor="phoneNumber" className="block text-sm font-medium">
-          Phone number
-        </label>
-        <input
-          id="phoneNumber"
-          name="phoneNumber"
-          placeholder="Phone number"
-          value={formData.phoneNumber}
-          disabled={submitting}
-          onChange={handleChange}
-          aria-invalid={Boolean(validationErrors.phoneNumber)}
-          aria-describedby={
-            validationErrors.phoneNumber ? "phoneNumber-error" : undefined
-          }
-          className="w-full rounded border p-3"
-        />
-        {validationErrors.phoneNumber && (
-          <p id="phoneNumber-error" className="text-sm text-red-600">
-            {validationErrors.phoneNumber}
-          </p>
-        )}
+          {/* Last name */}
+          <div>
+            <label
+              htmlFor="lastName"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Last name
+            </label>
 
-        {registerError && <p className="text-red-600">{registerError}</p>}
+            <input
+              id="lastName"
+              name="lastName"
+              placeholder="Enter your last name"
+              value={formData.lastName}
+              disabled={submitting}
+              onChange={handleChange}
+              aria-invalid={Boolean(validationErrors.lastName)}
+              aria-describedby={
+                validationErrors.lastName ? "lastName-error" : undefined
+              }
+              className="w-full rounded-md border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
 
-        <button
-          disabled={submitting}
-          className="w-full rounded bg-blue-600 p-3 text-white hover:bg-blue-700 disabled:opacity-50"
-        >
-          {submitting ? "Creating account..." : "Register"}
-        </button>
-      </form>
+            {validationErrors.lastName && (
+              <p id="lastName-error" className="mt-1 text-sm text-red-600">
+                {validationErrors.lastName}
+              </p>
+            )}
+          </div>
 
-      <p className="mt-6 text-center text-sm">
-        Already have an account?{" "}
-        <Link
-          to="/login"
-          className="font-semibold text-blue-600 hover:underline"
-        >
-          Login
-        </Link>
-      </p>
+          {/* Email */}
+          <div>
+            <label
+              htmlFor="email"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Email
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              disabled={submitting}
+              onChange={handleChange}
+              aria-invalid={Boolean(validationErrors.email)}
+              aria-describedby={
+                validationErrors.email ? "email-error" : undefined
+              }
+              className="w-full rounded-md border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
+
+            {validationErrors.email && (
+              <p id="email-error" className="mt-1 text-sm text-red-600">
+                {validationErrors.email}
+              </p>
+            )}
+          </div>
+
+          {/* Password */}
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+
+            <input
+              id="password"
+              type="password"
+              name="password"
+              placeholder="Create a password"
+              value={formData.password}
+              disabled={submitting}
+              onChange={handleChange}
+              aria-invalid={Boolean(validationErrors.password)}
+              aria-describedby={
+                validationErrors.password ? "password-error" : undefined
+              }
+              className="w-full rounded-md border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
+
+            {validationErrors.password && (
+              <p id="password-error" className="mt-1 text-sm text-red-600">
+                {validationErrors.password}
+              </p>
+            )}
+          </div>
+
+          {/* Phone number */}
+          <div>
+            <label
+              htmlFor="phoneNumber"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Phone number
+            </label>
+
+            <input
+              id="phoneNumber"
+              name="phoneNumber"
+              placeholder="Enter your phone number"
+              value={formData.phoneNumber}
+              disabled={submitting}
+              onChange={handleChange}
+              aria-invalid={Boolean(validationErrors.phoneNumber)}
+              aria-describedby={
+                validationErrors.phoneNumber ? "phoneNumber-error" : undefined
+              }
+              className="w-full rounded-md border border-gray-300 p-3 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-gray-100"
+            />
+
+            {validationErrors.phoneNumber && (
+              <p id="phoneNumber-error" className="mt-1 text-sm text-red-600">
+                {validationErrors.phoneNumber}
+              </p>
+            )}
+          </div>
+
+          {/* Server/API error */}
+          {registerError && (
+            <p
+              role="alert"
+              className="rounded-md bg-red-50 p-3 text-sm text-red-600"
+            >
+              {registerError}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="w-full rounded-md bg-blue-600 p-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {submitting ? "Creating account..." : "Register"}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link
+            to="/login"
+            className="font-semibold text-blue-600 hover:underline"
+          >
+            Login
+          </Link>
+        </p>
+      </section>
     </main>
   );
 }
