@@ -4,9 +4,9 @@ import {
   TRANSMISSIONS,
 } from "../constants/listingEnums";
 
-function SearchFilters({ filters, setFilters }) {
+function SearchFilters({ filters, setFilters, onReset }) {
   return (
-    <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
       {/* Sort */}
       <select
         value={filters.sort}
@@ -25,6 +25,7 @@ function SearchFilters({ filters, setFilters }) {
         <option value="year,desc">Year: Newest</option>
         <option value="year,asc">Year: Oldest</option>
       </select>
+
       {/* Make */}
       <input
         type="text"
@@ -38,6 +39,8 @@ function SearchFilters({ filters, setFilters }) {
         }
         className="w-full rounded-lg border p-3"
       />
+
+      {/* City */}
       <input
         type="text"
         placeholder="City..."
@@ -50,6 +53,8 @@ function SearchFilters({ filters, setFilters }) {
         }
         className="w-full rounded-lg border p-3"
       />
+
+      {/* Price range */}
       <div className="grid grid-cols-2 gap-4">
         <input
           type="number"
@@ -77,6 +82,7 @@ function SearchFilters({ filters, setFilters }) {
           className="rounded-lg border p-3"
         />
       </div>
+
       <div className="grid grid-cols-3 gap-4">
         {/* Body types */}
         <select
@@ -97,7 +103,8 @@ function SearchFilters({ filters, setFilters }) {
             </option>
           ))}
         </select>
-        {/* Fuel Types */}
+
+        {/* Fuel types */}
         <select
           value={filters.fuelType}
           onChange={(event) =>
@@ -116,6 +123,7 @@ function SearchFilters({ filters, setFilters }) {
             </option>
           ))}
         </select>
+
         {/* Transmission */}
         <select
           value={filters.transmission}
@@ -136,6 +144,14 @@ function SearchFilters({ filters, setFilters }) {
           ))}
         </select>
       </div>
+
+      <button
+        type="button"
+        onClick={onReset}
+        className="rounded-lg border px-4 py-3 font-medium text-white bg-blue-500 hover:bg-blue-600"
+      >
+        Reset Filters
+      </button>
     </div>
   );
 }

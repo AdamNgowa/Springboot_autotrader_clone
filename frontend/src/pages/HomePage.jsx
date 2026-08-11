@@ -3,19 +3,21 @@ import { getListings } from "../api/listingApi";
 import ListingCard from "../components/ListingCard";
 import SearchFilters from "../components/SearchFilters";
 
+const INITIAL_FILTERS = {
+  make: "",
+  city: "",
+  minPrice: "",
+  maxPrice: "",
+  bodyType: "",
+  fuelType: "",
+  transmission: "",
+  year: "",
+  sort: "createdAt,desc",
+};
+
 function HomePage() {
   const [listings, setListings] = useState([]);
-  const [filters, setFilters] = useState({
-    make: "",
-    city: "",
-    minPrice: "",
-    maxPrice: "",
-    bodyType: "",
-    fuelType: "",
-    transmission: "",
-    year: "",
-    sort: "createdAt,desc",
-  });
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [debouncedFilters, setDebouncedFilters] = useState(filters);
@@ -33,6 +35,7 @@ function HomePage() {
     async function loadListings() {
       setLoading(true);
       setError(null);
+
       try {
         const data = await getListings(debouncedFilters);
         setListings(data.content);
@@ -47,6 +50,10 @@ function HomePage() {
     loadListings();
   }, [debouncedFilters]);
 
+  function resetFilters() {
+    setFilters(INITIAL_FILTERS);
+  }
+
   if (loading && listings.length === 0) {
     return (
       <main className="max-w-6xl mx-auto p-6">
@@ -58,11 +65,17 @@ function HomePage() {
   return (
     <main className="max-w-6xl mx-auto p-6">
       <h1 className="mb-6 text-3xl font-bold">Latest Vehicles</h1>
+
       <p className="mb-6 text-gray-500">
         Showing {totalListings} vehicle
         {totalListings !== 1 && "s"}
       </p>
-      <SearchFilters filters={filters} setFilters={setFilters} />
+
+      <SearchFilters
+        filters={filters}
+        setFilters={setFilters}
+        onReset={resetFilters}
+      />
 
       {loading && <p className="mb-4 text-sm text-gray-500">Searching...</p>}
 
