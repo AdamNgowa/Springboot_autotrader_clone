@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { updateListing, getListing } from "../api/listingApi";
 import ListingForm from "../components/ListingForm";
 import { validateListing } from "../utils/validateListing";
+import { uploadImage } from "../api/imageApi";
 
 function EditListingPage() {
   const { id } = useParams();
@@ -40,10 +41,17 @@ function EditListingPage() {
     loadListing();
   }, [id]);
 
-  async function handleSubmit(updatedListing) {
+  async function handleSubmit(updatedListing, selectedFiles) {
     const clientValidationErrors = validateListing(updatedListing);
+    //Object.keys(clientValidationErrors).length > 0: It takes the clientValidationErrors object, extracts an array of its keys,
+    //  and checks if the count of keys is greater than 0 (meaning errors exist).
     if (Object.keys(clientValidationErrors).length > 0) {
+      //If errors exist, it passes the full clientValidationErrors object to a React state updating function (setValidationErrors),
+      // so the UI can render them.
       setValidationErrors(clientValidationErrors);
+      //It stops the execution of the current function immediately and
+      // returns undefined (an empty return used to exit early and prevent further code from running, such as making an API call).
+
       return;
     }
     try {
@@ -51,6 +59,12 @@ function EditListingPage() {
       setSaving(true);
 
       await updateListing(id, updatedListing);
+      //Loops through the selected images and performs actual upload one after the other until all the images selected are finished
+      // for...of is specifically,instead of for each,because this loop ensure the upload finishes before moving to the next one
+      //and the navigation only happens after all the files have been uploaded
+      for (const file of selectedFiles) {
+        await uploadImage(updatedListing.id, file);
+      }
 
       setSuccess("Listing updated successfully.");
 

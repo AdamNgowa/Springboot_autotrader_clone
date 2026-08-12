@@ -26,7 +26,7 @@ function HomePage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedFilters(filters);
-    }, 400);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [filters]);
