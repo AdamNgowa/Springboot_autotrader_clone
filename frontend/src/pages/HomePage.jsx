@@ -77,9 +77,16 @@ function HomePage() {
         onReset={resetFilters}
       />
 
+      {error && (
+        <p className="mb-4 text-red-600">
+          Unable to load listings. Please try again
+        </p>
+      )}
+
       {loading && <p className="mb-4 text-sm text-gray-500">Searching...</p>}
 
-      {listings.length === 0 ? (
+      {/* No listings message only appears when there is no error and no listings matching the criteria */}
+      {!error && listings.length === 0 ? (
         <p className="text-center text-gray-500">
           No listings match your current filters.
         </p>
