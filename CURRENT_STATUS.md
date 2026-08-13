@@ -1,144 +1,130 @@
-# AutoTrader — Phase 8 Current Status
+# AutoTrader — Current Status
 
-## Phase 8 — React Frontend & Marketplace UX
+## Current Position
 
-Authentication UX (8.1/8.2) is intentionally excluded for now because it has already been implemented and manually verified. Authentication behavior is working as intended, including:
+Phase 8 — React Frontend & Marketplace UX
 
-- Login success
-- Registration success
-- Refresh while authenticated
-- Logout
-- Protected route while logged out
-- Login after protected-route redirect
-- Invalid login credentials
-- Authenticated session restoration
-- Token rollback when session initialization fails
+Authentication UX (8.1/8.2) is intentionally excluded from the current work because the implemented authentication behavior has already been manually verified.
 
-One optional failure test for `/users/me` was intentionally deferred and can be performed later.
+Current focus:
 
-The remaining Phase 8 work is focused on marketplace UX.
+- 8.3 Search & Filters
+- 8.4 Sorting & Pagination
+- 8.5 Listing Cards
+- 8.6 Listing Details
+- 8.7 Seller Information
+- 8.8 Image Management
+- 8.9 Listing Management UX
 
----
+Deferred until later:
 
-## Phase 8 Sub-phases
+- 8.10 Global Loading/Error/Empty States
+- 8.11 Responsive & Accessibility
+- 8.12 Integration & Regression Testing
 
-Phase 8
-│
-├── 8.3 Search & Filters
-├── 8.4 Sorting & Pagination
-├── 8.5 Listing Cards
-├── 8.6 Listing Details
-├── 8.7 Seller Information
-├── 8.8 Image Management
-└── 8.9 Listing Management UX
-
-8.10 Global Loading/Error/Empty States,
-8.11 Responsive & Accessibility,
-and 8.12 Integration & Regression Testing
-are intentionally deferred and will be handled later independently.
+The current resume point is Phase 8.6 — Listing Details.
 
 ---
 
-## Already Implemented
+## Phase 8 Progress
 
 ### 8.3 Search & Filters
 
-Currently implemented:
+Implemented and working:
 
-- Make filtering
-- City filtering
-- Minimum price
-- Maximum price
-- Body type
-- Fuel type
-- Transmission
-- Sort selection
-- Debounced filter requests
+- Make, city, price, body type, fuel type, and transmission filters
+- Sorting selection
 - Backend filtering integration
-- Loading indicator during searches
-- Empty-result message
+- Explicit Apply Filters button
+- Explicit Reset Filters button
+- Separate editable filter state and applied filter state
+- Pagination reset when filters are applied or reset
+- Loading and empty-result handling
 
-Current files include:
+Current behavior:
 
-- `SearchFilters`
-- `HomePage`
-- `listingApi.getListings()`
+- Editing filters does not automatically send requests.
+- Apply Filters copies the editable filter state into the active query state.
+- Reset Filters restores the initial filters and default sort order.
+- The backend filtering system should not be redesigned unless a concrete problem is discovered.
 
-Remaining work:
+Remaining:
 
-- Improve filter UX
-- Add Reset Filters
-- Verify filter combinations
-- Improve responsive filter layout
-- Verify filter state behavior
-- Remove unnecessary development/debug logging while preserving the intentional listing URL `console.log()` in `getListings()` because I specifically want that log to remain
 - Verify error behavior
+- Remove unnecessary debug logging while preserving the intentional generated listing URL log in `listingApi.js -> getListings()`
+- Make further UX changes only when justified by a concrete issue
 
-Do not redesign the backend filtering system.
+Note: `apiClient.js` was recently inspected and still contains temporary response logging that should be removed separately. The intentional listing URL `console.log()` in `getListings()` must remain.
 
 ---
 
 ### 8.4 Sorting & Pagination
 
-Sorting is already implemented in `SearchFilters`:
+Completed and manually verified.
 
-- Newest
-- Oldest
-- Price ascending
-- Price descending
-- Year newest
-- Year oldest
+Implemented:
 
-Backend pagination data is already being consumed:
+- Backend pagination data consumption
+- `currentPage` state
+- `totalPages` state
+- Previous and Next controls
+- Numbered page controls
+- Disabled Previous on the first page
+- Disabled Next on the last page
+- Active page indication
+- Preservation of active filters and sorting when changing pages
+- Pagination reset when filters are applied or reset
 
-- `data.content`
-- `data.totalElements`
+Current backend page size:
 
-Remaining work:
+```text
+5
+```
 
-- Add frontend pagination controls
-- Add current page state
-- Send the correct page parameter to the backend
-- Handle page changes
-- Reset page appropriately when filters/sorting change
-- Decide whether page size should be exposed
-- Verify sorting behavior against backend results
-- Verify pagination + filtering + sorting combinations
+Manual verification confirmed correct backend pagination metadata and page navigation with the current dataset.
+
+No further changes are currently justified unless a concrete issue is discovered.
 
 ---
 
 ### 8.5 Listing Cards
 
-Currently implemented:
+Completed for the current scope and manually verified.
 
-- Listing title
-- Year
-- Make
-- Model
-- City
-- Price
+Implemented and refined:
+
+- Vehicle identity and location display
+- Price display
 - Primary image lookup
-- Image fallback
-- Navigation to listing details
+- Missing-image fallback
+- Full-width image presentation across the upper card area
+- Listing details navigation
 - Owner Edit action
 - Owner Delete action
-- Click-event propagation handling
+- Improved spacing and visual hierarchy
+- Semantic React Router `Link` navigation
+- Keyboard-accessible listing navigation
+- Independent owner actions outside the listing link
 
-Remaining work:
+Current design decisions:
 
-- Improve image presentation
-- Improve fallback presentation
-- Improve visual hierarchy
-- Improve responsive layout
-- Improve accessibility
-- Add seller information once seller data is available
-- Review owner-action presentation
-- Check whether the entire card being clickable is accessible
-- Preserve existing functionality unless a concrete architectural problem is found
+- The primary image occupies the complete upper portion of the card.
+- The card container controls rounded image corners using `overflow-hidden`.
+- The fallback states `No image available`.
+- Listing navigation uses a real link rather than a clickable non-interactive `<article>`.
+- Edit and Delete do not depend on event propagation handling.
+
+Seller information remains outside the current Listing Card implementation and will be handled after inspecting actual backend seller data in Phase 8.7.
+
+Broader responsive and accessibility review remains deferred to 8.11.
+
+No further Listing Card changes are currently justified unless a concrete issue is discovered.
 
 ---
 
 ### 8.6 Listing Details
+
+Next implementation area.
 
 Currently implemented:
 
@@ -157,64 +143,69 @@ Currently implemented:
 - Enum formatting
 - Seller placeholder section
 
-Current components include:
+Current components:
 
 - `ListingDetailsPage`
 - `ImageGallery`
 - `SpecificationCard`
 
-Remaining work:
+Before making changes:
 
-- Replace seller placeholder with real seller information
-- Improve seller presentation
-- Improve image gallery UX
-- Improve image fallback behavior
-- Improve responsive layout
-- Improve accessibility
-- Review loading/error/empty states
-- Add appropriate marketplace actions if justified
+1. Request and inspect the current `frontend/src/pages/ListingDetailsPage.jsx`.
+2. Do not reconstruct the file from memory.
+3. Inspect the current data flow and existing component responsibilities.
+4. Identify the next concrete UX issue before changing code.
+
+Likely review areas:
+
+- Image gallery UX
+- Image fallback behavior
+- Seller placeholder replacement after backend data inspection
+- Listing information presentation
+- Existing loading/error/not-found behavior
+- Appropriate marketplace actions only if justified
+
+Do not implement seller information blindly. First inspect the actual listing response, DTOs, and existing API data.
+
+Do not perform deferred 8.10, 8.11, or 8.12 work while reviewing this phase.
 
 ---
 
 ### 8.7 Seller Information
 
-Current state:
+Not implemented yet.
 
-Seller information is NOT yet implemented.
+The current listing details page contains placeholder seller content.
 
-The listing details page currently displays placeholder content:
+Before implementation:
 
-"Vehicle Marketplace Seller"
+- Inspect the actual listing response.
+- Inspect `VehicleListingResponse`.
+- Inspect relevant user/listing DTO relationships.
+- Determine exactly what seller information is already exposed.
+- Use existing backend data where possible.
+- Avoid backend changes unless the existing response is genuinely insufficient.
+- If a backend change is required, choose the smallest appropriate change.
 
-and:
+After the available data is understood, decide whether seller information should appear on:
 
-"Contact information will be available in a future update."
+- Listing details
+- Listing cards
 
-Remaining work:
-
-- Determine what seller data the backend listing response already exposes
-- Inspect the actual DTO/entity/API response before changing anything
-- Decide whether seller information should be displayed on:
-  - Listing cards
-  - Listing details
-- Implement seller presentation using existing backend data where possible
-- Avoid introducing unnecessary backend changes if the required information already exists
-- If backend data is insufficient, determine the smallest appropriate backend change
+Do not invent a seller-data contract before inspecting the actual backend implementation.
 
 ---
 
 ### 8.8 Image Management
 
-Current frontend image functionality:
+Current functionality:
 
 - Image upload integration
 - Image gallery
 - Primary image display
 - Listing image rendering
 
-Backend already supports image storage and primary-image assignment.
-
-Remaining work:
+Remaining possibilities:
 
 - Delete listing images
 - Set/change primary image
@@ -223,15 +214,21 @@ Remaining work:
 - Image ordering only if product requirements justify it
 - Upload progress only if useful
 
-Do NOT introduce:
+Before implementing any operation:
+
+1. Inspect the current image API.
+2. Inspect the backend controller and service.
+3. Inspect the existing frontend image integration.
+4. Confirm which endpoints already exist.
+5. Do not assume delete or primary-image switching endpoints are available.
+
+Do not introduce:
 
 - Cloud storage
-- Advanced image-processing pipelines
+- Advanced image processing
 - Background image processing
 
 unless requirements change.
-
-Before implementing image-management operations, inspect the current image API/backend endpoints and actual files.
 
 ---
 
@@ -248,23 +245,28 @@ Existing functionality:
 - My Listings functionality
 - Image upload integration
 
-Remaining work:
+Before making changes, inspect the current files and actual behavior.
 
-- Review the existing create/edit/delete UX
-- Improve loading/submission states where needed
-- Improve delete confirmation behavior if currently missing
-- Improve error handling
-- Improve success feedback where appropriate
-- Verify owner actions behave correctly
-- Verify image handling within listing creation/editing
-- Ensure navigation after create/edit/delete is consistent
-- Preserve the existing architecture
+Review:
+
+- Create submission/loading behavior
+- Edit submission/loading behavior
+- Delete confirmation behavior
+- Error presentation
+- Success feedback where justified
+- Owner action behavior
+- Image handling during create/edit
+- Navigation consistency after create/edit/delete
+
+Preserve the existing architecture unless a concrete problem justifies a change.
 
 ---
 
 # Important Existing Authentication Code
 
-`AuthContext` currently implements:
+Authentication behavior is currently considered implemented and manually verified.
+
+`AuthContext` currently handles:
 
 - JWT persistence
 - Session restoration
@@ -277,56 +279,102 @@ Remaining work:
 
 The important session initialization behavior is:
 
-1. Save token
-2. Set token in React state
-3. Request `/users/me`
-4. Set authenticated user if successful
+1. Save token.
+2. Set token in React state.
+3. Request `/users/me`.
+4. Set the authenticated user if successful.
 5. If `/users/me` fails:
-   - remove persisted token
-   - clear React token
-   - clear user
+   - remove the persisted token
+   - clear the React token
+   - clear the user
    - rethrow the error
 
-This behavior has already been implemented and should not be changed unless a concrete problem is discovered.
+Do not change this behavior unless a concrete problem is discovered.
+
+One optional `/users/me` failure test remains deferred.
 
 ---
 
 # Important Debug Logging Decision
 
-There is currently one intentional `console.log()` in the frontend:
+One intentional frontend log must remain:
 
 `listingApi.js -> getListings()`
 
 It logs the generated `/listings?...` URL.
 
-I specifically want this console log to remain.
+This log is intentionally retained.
 
-Authentication/debug logging elsewhere should remain removed.
+Temporary response-inspection and development logs elsewhere should be removed unless deliberately required.
+
+The current `apiClient.js` should be reviewed separately because temporary `console.log("data", data)` logging was observed during the latest inspection.
 
 ---
 
 # Working Rules
 
-Before modifying existing files:
+Before modifying an existing file:
 
-1. Ask for the current file if it has not been provided.
+1. Request the current file if it has not been provided.
 2. Do not reconstruct files from memory.
 3. Preserve the existing architecture.
-4. Make one logical change at a time.
-5. Explain why the change is needed.
-6. After each implementation step, run/compile/test/verify before continuing.
-7. Do not implement deferred 8.10, 8.11, or 8.12 yet.
+4. Identify a concrete reason for the change.
+5. Make one logical change at a time unless several changes are tightly coupled within the same reviewed component.
+6. Explain why the change is needed.
+7. After implementation, run, compile, test, and manually verify before continuing.
+8. Do not implement deferred 8.10, 8.11, or 8.12 work.
+9. Preserve the intentional listing URL log in `listingApi.js -> getListings()`.
 
-The latest `FOLDER_STRUCTURE.md` should be requested before beginning implementation if it is not already available.
+The latest `FOLDER_STRUCTURE.md` should be requested at the beginning of a continuation chat when it is not already available.
 
 ---
 
 # Where To Resume
 
-Resume with:
+## Phase 8.6 — Listing Details
 
-## Phase 8.3 — Search & Filters
+Start by requesting:
 
-Before changing code, inspect the current implementation and identify exactly which 8.3 requirements are already satisfied and which are still missing.
+```text
+frontend/src/pages/ListingDetailsPage.jsx
+```
 
-Do not rewrite working functionality unnecessarily.
+Then inspect the actual current implementation before proposing changes.
+
+Current high-level data flow:
+
+```text
+Route
+  ↓
+ListingDetailsPage
+  ↓
+getListing(id)
+  ↓
+Listing response
+  ├── vehicle information
+  ├── images → ImageGallery
+  └── specifications → SpecificationCard
+```
+
+The immediate objective is not to redesign the page. It is to inspect what already exists, identify the next justified improvement, and preserve the current architecture.
+
+Seller information should remain placeholder work until the actual backend response and DTO structure have been inspected.
+
+---
+
+# Repository Structure
+
+The repository uses a two-application structure:
+
+```text
+AutoTrader/
+├── backend/
+├── frontend/
+├── uploads/
+├── CURRENT_STATUS.md
+├── FOLDER_STRUCTURE.md
+├── PROJECT_CHARTER.md
+└── STATUS_REPORT_PROMPT.md
+```
+
+The exact structure must always be taken from the latest `FOLDER_STRUCTURE.md` rather than assumed from this summary.
