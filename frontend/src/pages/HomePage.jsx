@@ -19,6 +19,8 @@ function HomePage() {
   const [listings, setListings] = useState([]);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const [activeFilters, setActiveFilters] = useState(filters);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalListings, setTotalListings] = useState(0);
@@ -29,9 +31,14 @@ function HomePage() {
       setError(null);
 
       try {
-        const data = await getListings(activeFilters);
+        const data = await getListings({
+          ...activeFilters,
+          page: currentPage,
+        });
+
         setListings(data.content);
         setTotalListings(data.totalElements);
+        setTotalPages(data.totalPages);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -40,15 +47,17 @@ function HomePage() {
     }
 
     loadListings();
-  }, [activeFilters]);
+  }, [activeFilters, currentPage]);
 
   function applyFilters() {
     setActiveFilters({ ...filters });
+    setCurrentPage(0);
   }
 
   function resetFilters() {
     setFilters(INITIAL_FILTERS);
     setActiveFilters(INITIAL_FILTERS);
+    setCurrentPage(0);
   }
 
   if (loading && listings.length === 0) {
@@ -70,6 +79,7 @@ function HomePage() {
             onReset={resetFilters}
           />
         </aside>
+
         <section>
           <h1 className="mb-6 text-3xl font-bold">Latest Vehicles</h1>
 
@@ -85,20 +95,27 @@ function HomePage() {
           )}
 
           {loading && (
-            <p className="mb-4 text-sm text-gray-500">Searching...</p>
+            <p className="mb-4 text-sm text-gray-500">Loading listings...</p>
           )}
 
-          {/* No listings message only appears when there is no error and no listings matching the criteria */}
           {!error && listings.length === 0 ? (
             <p className="text-center text-gray-500">
               No listings match your current filters.
             </p>
           ) : (
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {listings.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {listings.map((listing) => (
+                  <ListingCard key={listing.id} listing={listing} />
+                ))}
+              </div>
+
+              {totalPages > 1 && (
+                <p className="mt-6 text-sm text-gray-500">
+                  Page {currentPage + 1} of {totalPages}
+                </p>
+              )}
+            </>
           )}
         </section>
       </div>
