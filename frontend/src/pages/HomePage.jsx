@@ -15,6 +15,8 @@ const INITIAL_FILTERS = {
   sort: "createdAt,desc",
 };
 
+const PAGE_SIZE = 5;
+
 function HomePage() {
   const [listings, setListings] = useState([]);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
@@ -25,6 +27,8 @@ function HomePage() {
   const [error, setError] = useState(null);
   const [totalListings, setTotalListings] = useState(0);
 
+  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index);
+
   useEffect(() => {
     async function loadListings() {
       setLoading(true);
@@ -34,6 +38,7 @@ function HomePage() {
         const data = await getListings({
           ...activeFilters,
           page: currentPage,
+          size: PAGE_SIZE,
         });
 
         setListings(data.content);
@@ -58,6 +63,18 @@ function HomePage() {
     setFilters(INITIAL_FILTERS);
     setActiveFilters(INITIAL_FILTERS);
     setCurrentPage(0);
+  }
+
+  function goToPreviousPage() {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  }
+
+  function goToNextPage() {
+    if (currentPage < totalPages - 1) {
+      setCurrentPage(currentPage + 1);
+    }
   }
 
   if (loading && listings.length === 0) {
@@ -111,9 +128,46 @@ function HomePage() {
               </div>
 
               {totalPages > 1 && (
-                <p className="mt-6 text-sm text-gray-500">
-                  Page {currentPage + 1} of {totalPages}
-                </p>
+                <nav
+                  className="mt-8 flex flex-wrap items-center justify-center gap-2"
+                  aria-label="Pagination"
+                >
+                  <button
+                    type="button"
+                    onClick={goToPreviousPage}
+                    disabled={currentPage === 0}
+                    className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+
+                  {pageNumbers.map((pageNumber) => (
+                    <button
+                      key={pageNumber}
+                      type="button"
+                      onClick={() => setCurrentPage(pageNumber)}
+                      aria-current={
+                        currentPage === pageNumber ? "page" : undefined
+                      }
+                      className={`rounded-lg border px-4 py-2 ${
+                        currentPage === pageNumber
+                          ? "bg-blue-500 font-medium text-white"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {pageNumber + 1}
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages - 1}
+                    className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </nav>
               )}
             </>
           )}
