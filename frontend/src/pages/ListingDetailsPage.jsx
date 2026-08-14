@@ -1,18 +1,21 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getListing } from "../api/listingApi";
+import { useParams, useNavigate } from "react-router-dom";
+import { getListing, deleteListing } from "../api/listingApi";
+import { useAuth } from "../hooks/useAuth";
 import SpecificationCard from "../components/SpecificationCard";
 import ImageGallery from "../components/ImageGallery";
 
 function ListingDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
-  //When the id changes,trigger the code inside this effect
   useEffect(() => {
     async function loadListing() {
       try {
@@ -32,6 +35,7 @@ function ListingDetailsPage() {
         setLoading(false);
       }
     }
+
     loadListing();
   }, [id]);
 
@@ -63,7 +67,34 @@ function ListingDetailsPage() {
     );
   }
 
+  const isOwner = user && listing.seller && user.id === listing.seller.id;
+
   const formattedPrice = new Intl.NumberFormat().format(listing.price);
+
+  function handleEdit() {
+    navigate(`/listings/${listing.id}/edit`);
+  }
+
+  async function handleDelete() {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this listing? This action will remove it from the marketplace.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+
+      await deleteListing(listing.id);
+
+      navigate("/my-listings");
+    } catch (error) {
+      setError(error.message);
+      setDeleting(false);
+    }
+  }
 
   function formatEnum(value) {
     if (!value) return "";
@@ -91,6 +122,38 @@ function ListingDetailsPage() {
         <p className="text-lg text-slate-500">{listing.city}</p>
       </section>
 
+      {isOwner && (
+        <section className="rounded-xl border border-blue-200 bg-blue-50 p-5">
+          <h2 className="text-lg font-semibold text-slate-900">
+            Listing Management
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-600">
+            You are the owner of this listing.
+          </p>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleEdit}
+              disabled={deleting}
+              className="rounded-lg bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Edit Listing
+            </button>
+
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={deleting}
+              className="rounded-lg bg-red-600 px-5 py-3 font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {deleting ? "Deleting..." : "Delete Listing"}
+            </button>
+          </div>
+        </section>
+      )}
+
       <section>
         <h2 className="mb-3 text-2xl font-semibold">Description</h2>
 
@@ -102,9 +165,7 @@ function ListingDetailsPage() {
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
           <SpecificationCard label="Year" value={listing.year} />
-
           <SpecificationCard label="Make" value={listing.make} />
-
           <SpecificationCard label="Model" value={listing.model} />
 
           <SpecificationCard

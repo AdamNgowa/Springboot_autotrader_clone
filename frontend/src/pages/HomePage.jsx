@@ -88,6 +88,8 @@ function HomePage() {
   return (
     <main className="mx-auto max-w-7xl p-4 md:p-6">
       <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
+        {/* Search filters section */}
+
         <aside>
           <SearchFilters
             filters={filters}
@@ -96,6 +98,8 @@ function HomePage() {
             onReset={resetFilters}
           />
         </aside>
+
+        {/* Listings section */}
 
         <section>
           <h1 className="mb-6 text-3xl font-bold">Latest Vehicles</h1>
@@ -126,6 +130,8 @@ function HomePage() {
                   <ListingCard key={listing.id} listing={listing} />
                 ))}
               </div>
+
+              {/* Pagination */}
 
               {totalPages > 1 && (
                 <nav

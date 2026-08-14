@@ -70,6 +70,7 @@ function MyListingsPage() {
             listing={listing}
             onDelete={handleDelete}
             // showOwnerActions here is the same as saying showOwnerActions={true}
+            //Used for conditional rendering
             showOwnerActions
           />
         ))}
