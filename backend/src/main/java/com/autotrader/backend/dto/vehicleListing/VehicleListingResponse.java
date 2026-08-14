@@ -1,6 +1,7 @@
 package com.autotrader.backend.dto.vehicleListing;
 
 import com.autotrader.backend.dto.image.ImageResponse;
+import com.autotrader.backend.dto.user.SellerResponse;
 import com.autotrader.backend.entity.Enums.BodyType;
 import com.autotrader.backend.entity.Enums.FuelType;
 import com.autotrader.backend.entity.Enums.Transmission;
@@ -28,6 +29,8 @@ public class VehicleListingResponse {
 
     private List<ImageResponse> images;
 
+    private SellerResponse seller;
+
     // Default Constructor
     public VehicleListingResponse() {
     }
@@ -41,7 +44,7 @@ public class VehicleListingResponse {
             String model,
             Integer year,
             String city
-            ) {
+    ) {
 
         this.id = id;
         this.title = title;
@@ -164,12 +167,20 @@ public class VehicleListingResponse {
     }
 
     //Images
-    public List<ImageResponse> getImages(){
+    public List<ImageResponse> getImages() {
         return images;
     }
 
-    public void setImages(List<ImageResponse> images){
+    public void setImages(List<ImageResponse> images) {
         this.images = images;
     }
 
+    // Seller
+    public SellerResponse getSeller() {
+        return seller;
+    }
+
+    public void setSeller(SellerResponse seller) {
+        this.seller = seller;
+    }
 }

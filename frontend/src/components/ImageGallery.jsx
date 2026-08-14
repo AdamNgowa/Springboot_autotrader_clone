@@ -1,4 +1,4 @@
-function ImageGallery({ images, selectedImage, setSelectedImage, title }) {
+function ImageGallery({ images = [], selectedImage, setSelectedImage, title }) {
   return (
     <>
       <div className="aspect-[16/9] w-full overflow-hidden rounded-xl bg-slate-200 shadow-sm">

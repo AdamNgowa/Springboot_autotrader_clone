@@ -1,9 +1,11 @@
 package com.autotrader.backend.mapper;
 
 import com.autotrader.backend.dto.image.ImageResponse;
+import com.autotrader.backend.dto.user.SellerResponse;
 import com.autotrader.backend.dto.vehicleListing.CreateListingRequest;
 import com.autotrader.backend.dto.vehicleListing.UpdateListingRequest;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingResponse;
+import com.autotrader.backend.entity.User;
 import com.autotrader.backend.entity.VehicleImage;
 import com.autotrader.backend.entity.VehicleListing;
 import org.springframework.stereotype.Component;
@@ -42,6 +44,10 @@ public class VehicleListingMapper {
 
         response.setCity(listing.getCity());
 
+        response.setSeller(
+                toSellerResponse(listing.getSeller())
+        );
+
 
         response.setImages(
                 toImageResponses(listing.getImages())
@@ -49,6 +55,16 @@ public class VehicleListingMapper {
 
         return response;
 
+    }
+
+    // Converts a listing seller into the seller information exposed to marketplace clients
+    private SellerResponse toSellerResponse(User seller) {
+        return new SellerResponse(
+                seller.getId(),
+                seller.getFirstName(),
+                seller.getLastName(),
+                seller.getPhoneNumber()
+        );
     }
 
     //Converts a vehicleImage entity into a imageResponse DTO

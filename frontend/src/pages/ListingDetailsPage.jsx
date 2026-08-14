@@ -135,11 +135,32 @@ function ListingDetailsPage() {
         <h2 className="mb-4 text-2xl font-semibold">Seller</h2>
 
         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold">Vehicle Marketplace Seller</h3>
+          {listing.seller ? (
+            <div className="flex flex-col gap-4">
+              <div>
+                <h3 className="text-lg font-semibold">
+                  {listing.seller.firstName} {listing.seller.lastName}
+                </h3>
 
-          <p className="mt-2 text-slate-600">
-            Contact information will be available in a future update.
-          </p>
+                <p className="mt-2 text-slate-600">
+                  Phone: {listing.seller.phoneNumber || "Not provided"}
+                </p>
+              </div>
+
+              {listing.seller.phoneNumber && (
+                <a
+                  href={`tel:${listing.seller.phoneNumber}`}
+                  className="inline-flex w-fit items-center rounded-lg bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700"
+                >
+                  Contact Seller
+                </a>
+              )}
+            </div>
+          ) : (
+            <p className="text-slate-500">
+              Seller information is not available.
+            </p>
+          )}
         </div>
       </section>
     </main>
