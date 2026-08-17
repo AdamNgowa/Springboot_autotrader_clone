@@ -63,7 +63,7 @@ function EditListingPage() {
       // for...of is specifically,instead of for each,because this loop ensure the upload finishes before moving to the next one
       //and the navigation only happens after all the files have been uploaded
       for (const file of selectedFiles) {
-        await uploadImage(updatedListing.id, file);
+        await uploadImage(id, file);
       }
 
       setSuccess("Listing updated successfully.");

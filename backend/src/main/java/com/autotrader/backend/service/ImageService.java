@@ -45,7 +45,7 @@ public class ImageService {
         }
 
         String contentType = file.getContentType();
-        if(contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
+        if (contentType == null || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
             throw new IllegalArgumentException("Only JPEG,PNG and WEBP images are supported");
         }
 
@@ -56,24 +56,22 @@ public class ImageService {
         User authenticatedUser = currentUserService.getAuthenticatedUser();
 
         //Ensure the authenticated user owns the listing
-        vehicleListingService.verifyOwnership(listing,authenticatedUser);
+        vehicleListingService.verifyOwnership(listing, authenticatedUser);
 
         String storageFilename = generateStorageFilename(file);
 
         /*
-        Here is where we actually save th image itself
-
-        Try adding the file to the file system (Could be local .i.e on disk or remote like amazon S3)
-
+        Here is where we actually save the image itself.
+        Try adding the file to the file system (Could be local .i.e on disk or remote like amazon S3),
         If saving file to file system fails throw an exception, here we throw an IOException
          */
         try {
-                fileStorageService.saveFile(
-                        file.getInputStream(),
-                        storageFilename
-                );
+            fileStorageService.saveFile(
+                    file.getInputStream(),
+                    storageFilename
+            );
         } catch (IOException e) {
-            throw new RuntimeException("Failed to read upload file",e);
+            throw new RuntimeException("Failed to read upload file", e);
         }
 
         //vehicleImageRepository.existsByVehicleListing(listing) returns true or false
@@ -92,7 +90,7 @@ public class ImageService {
         We call deleteFile from file storage here as for the sake of double persistence
          */
         try {
-            VehicleImage vehicleImage = createVehicleImage(listing,file,storageFilename,primaryImage);
+            VehicleImage vehicleImage = createVehicleImage(listing, file, storageFilename, primaryImage);
             vehicleImageRepository.save(vehicleImage);
 
         } catch (Exception e) {
@@ -101,21 +99,26 @@ public class ImageService {
         }
     }
 
+    // Helper method to generate a unique, sanitized filename for disk/S3 storage
     private String generateStorageFilename(MultipartFile file) {
-        //Get original file name supplied by the client
+
+        // Extract the original filename provided by the client (e.g., "my_car.png")
         String originalFilename = file.getOriginalFilename();
-        if(originalFilename == null || !originalFilename.contains(".")) {
+
+        // Validate that the filename exists and contains an extension dot
+        if (originalFilename == null || !originalFilename.contains(".")) {
             throw new IllegalArgumentException("Uploaded file must have a valid filename");
         }
 
+        // Extract the file extension by cutting the string from the last dot to the end (e.g., ".png")
         String extension =
                 originalFilename.substring(
                         originalFilename.lastIndexOf(".")
                 );
 
+        // Concatenate a random 128-bit UUID with the file extension to ensure a unique storage name
+        // (e.g., "c9bf9e57-1685-4c89-bafb-ff5af830be8a.png")
         return UUID.randomUUID() + extension;
-
-
     }
 
     private VehicleImage createVehicleImage(
@@ -123,7 +126,7 @@ public class ImageService {
             MultipartFile file,
             String storageFilename,
             boolean primaryImage
-    ){
+    ) {
         //Create new vehicle image object
         VehicleImage vehicleImage = new VehicleImage();
 

@@ -32,16 +32,30 @@ public class ImageController {
                     Supported image formats are JPEG, PNG and WEBP.
                     """
     )
+    // Maps HTTP POST requests to this method and restricts acceptance
+    // strictly to multipart/form-data content (matching the FormData sent from JS).
     @PostMapping(
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
+    // Declares a public handler returning ResponseEntity<Void>,
+    // indicating an HTTP response with no response body payload.
     public ResponseEntity<Void> uploadImage(
+            // Extracts the dynamic {listingId} segment from the URL path
+            // (e.g., /listings/42/images) and converts it to a Java Long.
             @PathVariable Long listingId,
+
+            // Extracts the binary payload sent under the key "file"
+            // (from formData.append("file", file)) and wraps it into a Spring MultipartFile.
             @RequestParam("file") MultipartFile file
     ) {
 
+        // Delegates core logic (authorization, file validation, S3/disk saving,
+        // and database updates) to the service layer.
         imageService.uploadImage(listingId, file);
 
+        // Constructs and returns an HTTP 204 No Content response to signal
+        // successful processing without sending unnecessary data back.
         return ResponseEntity.noContent().build();
     }
+
 }
