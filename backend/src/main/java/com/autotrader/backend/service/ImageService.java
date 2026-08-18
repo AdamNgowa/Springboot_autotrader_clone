@@ -137,9 +137,6 @@ public class ImageService {
             Long listingId,
             Long imageId
     ) {
-        System.out.println("DELETE IMAGE REQUEST");
-        System.out.println("listingId = " + listingId);
-        System.out.println("imageId = " + imageId);
 
         VehicleListing listing =
                 getOwnedListingWithImages(listingId);
