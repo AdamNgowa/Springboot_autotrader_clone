@@ -13,6 +13,7 @@ function ListingForm({
   saving,
   validationErrors = {},
   clearValidationError,
+  showImageUpload = true,
 }) {
   const [formData, setFormData] = useState(initialValues);
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -276,21 +277,24 @@ function ListingForm({
           </p>
         )}
       </div>
-      {/* files */}
-      <div>
-        <label className="block mb-1 font-medium">Images</label>
-        <input
-          type="file"
-          multiple
-          accept="image/png,image/jpeg,image/webp"
-          onChange={handleFileChange}
-          disabled={saving}
-        />
 
-        <p className="mt-1 text-sm text-gray-500">
-          You can select one or more JPEG,PNG or WEBP images
-        </p>
-      </div>
+      {/* files */}
+      {showImageUpload && (
+        <div>
+          <label className="block mb-1 font-medium">Images</label>
+          <input
+            type="file"
+            multiple
+            accept="image/png,image/jpeg,image/webp"
+            onChange={handleFileChange}
+            disabled={saving}
+          />
+
+          <p className="mt-1 text-sm text-gray-500">
+            You can select one or more JPEG,PNG or WEBP images
+          </p>
+        </div>
+      )}
 
       {/* When saving is false, render --> <button></button>
       When saving is true , render --> <button disabled></button> */}

@@ -10,6 +10,7 @@ import com.autotrader.backend.entity.VehicleImage;
 import com.autotrader.backend.entity.VehicleListing;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 
 //@Component registers this mapper as a Spring managed-bean
@@ -79,23 +80,28 @@ public class VehicleListingMapper {
         return response;
     }
 
-    // Converts a collection of VehicleImage entities into image response DTOs
-    private List<ImageResponse> toImageResponses(List<VehicleImage> images) {
-
-        // 1. .stream() turns the 'images' list into a Stream (like a conveyor belt).
-        //    Instead of dealing with the whole list at once, it lets us process
-        //    each individual VehicleImage object one by one as it flows down the line.
+    // Converts a collection of VehicleImage entities into image response DTOs, sorted by display order
+    private List<ImageResponse> toImageResponses(
+            List<VehicleImage> images
+    ) {
+        // 1. .stream() converts the 'images' collection into a sequential Stream (conveyor belt)
         return images.stream()
-
-                // 2. .map() is a transformation step. It takes whatever is on the conveyor belt,
-                //    changes it, and passes the new version forward.
-                //    'this::toImageResponse' tells Java: "Take the current VehicleImage, pass it
-                //    into our single 'toImageResponse' method, and output the resulting ImageResponse."
+                // 2. .sorted() reorders the stream items before passing them down the pipeline
+                .sorted(
+                        // Comparator.comparing extracts the property we want to sort by
+                        Comparator.comparing(
+                                // Extract the 'displayOrder' value from each VehicleImage
+                                VehicleImage::getDisplayOrder,
+                                // Safe comparison handler that prevents NullPointerExceptions
+                                Comparator.nullsLast(
+                                        // Sort non-null display orders in ascending numerical order (1, 2, 3...)
+                                        Comparator.naturalOrder()
+                                )
+                        )
+                )
+                // 3. .map() transforms each now-sorted VehicleImage entity into an ImageResponse DTO
                 .map(this::toImageResponse)
-
-                // 3. .toList() is the final step. It stops the conveyor belt, collects all
-                //    the newly created ImageResponse objects, and gathers them into a
-                //    brand-new List that gets returned by the method.
+                // 4. .toList() collects the transformed, ordered ImageResponse DTOs into an unmodifiable List
                 .toList();
     }
 

@@ -2,13 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateListing, getListing } from "../api/listingApi";
 import ListingForm from "../components/ListingForm";
+import ImageManager from "../components/ImageManager";
 import { validateListing } from "../utils/validateListing";
-import { uploadImage } from "../api/imageApi";
 
 function EditListingPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const SUCCESS_MESSAGE_DURATION = 3000;
 
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +24,6 @@ function EditListingPage() {
     });
   }
 
-  //Whenever the id changes , run the effect (runs getListing api call)
   useEffect(() => {
     async function loadListing() {
       try {
@@ -41,38 +39,27 @@ function EditListingPage() {
     loadListing();
   }, [id]);
 
-  async function handleSubmit(updatedListing, selectedFiles) {
+  async function handleSubmit(updatedListing) {
     const clientValidationErrors = validateListing(updatedListing);
-    //Object.keys(clientValidationErrors).length > 0: It takes the clientValidationErrors object, extracts an array of its keys,
-    //  and checks if the count of keys is greater than 0 (meaning errors exist).
-    if (Object.keys(clientValidationErrors).length > 0) {
-      //If errors exist, it passes the full clientValidationErrors object to a React state updating function (setValidationErrors),
-      // so the UI can render them.
-      setValidationErrors(clientValidationErrors);
-      //It stops the execution of the current function immediately and
-      // returns undefined (an empty return used to exit early and prevent further code from running, such as making an API call).
 
+    if (Object.keys(clientValidationErrors).length > 0) {
+      setValidationErrors(clientValidationErrors);
       return;
     }
+
     try {
       setSuccess("");
+      setError(null);
       setSaving(true);
 
-      await updateListing(id, updatedListing);
-      //Loops through the selected images and performs actual upload one after the other until all the images selected are finished
-      // for...of is specifically,instead of for each,because this loop ensure the upload finishes before moving to the next one
-      //and the navigation only happens after all the files have been uploaded
-      for (const file of selectedFiles) {
-        await uploadImage(id, file);
-      }
+      const updated = await updateListing(id, updatedListing);
+
+      setListing((current) => ({
+        ...current,
+        ...updated,
+      }));
 
       setSuccess("Listing updated successfully.");
-
-      // setTimeout(functionToRunLater, milliseconds);
-      setTimeout(() => {
-        setSuccess("");
-        navigate("/my-listings");
-      }, SUCCESS_MESSAGE_DURATION);
     } catch (error) {
       if (error.data?.validationErrors) {
         const fieldErrors = {};
@@ -90,40 +77,65 @@ function EditListingPage() {
     }
   }
 
+  async function refreshListing() {
+    try {
+      const data = await getListing(id);
+      setListing(data);
+    } catch (error) {
+      setError(error.message);
+    }
+  }
+
   if (loading) {
     return <p>Loading listing...</p>;
   }
 
-  if (error) {
+  if (error && !listing) {
     return <p>Error: {error}</p>;
   }
 
   return (
-    <main className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Edit Listing</h1>
-      {success && (
-        <div
-          className="mb-4 flex items-center justify-between rounded-md
-               bg-green-100 p-3 text-green-800"
+    <main className="mx-auto max-w-4xl p-6">
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Edit Listing</h1>
+
+        <button
+          type="button"
+          onClick={() => navigate(`/listings/${id}`)}
+          className="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100"
         >
-          <span>{success}</span>
-          <button
-            type="button"
-            onClick={() => setSuccess("")}
-            className="font-bold hover:text-green-950"
-          >
-            X
-          </button>
+          View Listing
+        </button>
+      </div>
+
+      {error && (
+        <div className="mb-4 rounded bg-red-100 p-3 text-red-700">{error}</div>
+      )}
+
+      {success && (
+        <div className="mb-4 rounded-md bg-green-100 p-3 text-green-800">
+          {success}
         </div>
       )}
-      <ListingForm
-        initialValues={listing}
-        onSubmit={handleSubmit}
-        submitText="Update listing"
-        saving={saving}
-        validationErrors={validationErrors}
-        clearValidationError={clearValidationError}
-      />
+
+      <div className="space-y-8">
+        <ListingForm
+          initialValues={listing}
+          onSubmit={handleSubmit}
+          submitText="Update listing"
+          saving={saving}
+          validationErrors={validationErrors}
+          clearValidationError={clearValidationError}
+          showImageUpload={false}
+        />
+
+        <ImageManager
+          listingId={listing.id}
+          existingImages={listing.images || []}
+          disabled={saving}
+          onImagesChange={refreshListing}
+        />
+      </div>
     </main>
   );
 }

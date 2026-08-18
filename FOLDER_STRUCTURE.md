@@ -27,8 +27,10 @@ autotrader/
 │ │ │ │ │ │ ├── ErrorResponse.java
 │ │ │ │ │ │ └── ValidationError.java
 │ │ │ │ │ ├── image/
-│ │ │ │ │ │ └── ImageResponse.java
+│ │ │ │ │ │ ├── ImageResponse.java
+│ │ │ │ │ │ └── ReorderImagesRequest.java
 │ │ │ │ │ ├── user/
+│ │ │ │ │ │ ├── SellerResponse.java
 │ │ │ │ │ │ └── UserResponse.java
 │ │ │ │ │ └── vehicleListing/
 │ │ │ │ │ ├── CreateListingRequest.java
@@ -49,10 +51,12 @@ autotrader/
 │ │ │ │ │ ├── AuthenticatedUserNotFoundException.java
 │ │ │ │ │ ├── EmailAlreadyExistsException.java
 │ │ │ │ │ ├── GlobalExceptionHandler.java
+│ │ │ │ │ ├── ImageNotFoundException.java
 │ │ │ │ │ ├── InvalidCredentialsException.java
 │ │ │ │ │ ├── ListingNotFoundException.java
 │ │ │ │ │ └── UnauthorizedListingAccessException.java
 │ │ │ │ ├── mapper/
+│ │ │ │ │ ├── ImageMapper.java
 │ │ │ │ │ ├── UserMapper.java
 │ │ │ │ │ └── VehicleListingMapper.java
 │ │ │ │ ├── repository/
@@ -74,6 +78,9 @@ autotrader/
 │ │ │ │ │ └── VehicleListingSpecificationBuilder.java
 │ │ │ │ └── BackendApplication.java
 │ │ │ └── resources/
+│ │ │ ├── static/
+│ │ │ ├── templates/
+│ │ │ └── application.properties
 │ │ └── test/
 │ ├── .gitattributes
 │ ├── .gitignore
@@ -98,6 +105,7 @@ autotrader/
 │ │ ├── components/
 │ │ │ ├── GuestOnlyRoute.jsx
 │ │ │ ├── ImageGallery.jsx
+│ │ │ ├── ImageManager.jsx
 │ │ │ ├── ListingCard.jsx
 │ │ │ ├── ListingForm.jsx
 │ │ │ ├── Navbar.jsx
@@ -122,6 +130,7 @@ autotrader/
 │ │ ├── routes/
 │ │ │ └── AppRouter.jsx
 │ │ ├── utils/
+│ │ │ ├── getImageUrl.js
 │ │ │ ├── validateAuth.js
 │ │ │ └── validateListing.js
 │ │ ├── App.css

@@ -93,7 +93,31 @@ public class GlobalExceptionHandler {
     }
 
     // ==========================================
-    // 4. SECURITY RULE HANDLER: ILLEGAL ACCESS REJECTIONS
+    // 4. DATABASE RULE HANDLER: MISSING IMAGES
+    // ==========================================
+
+    // Intercepts ImageNotFoundException
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleImageNotFoundException(
+            ImageNotFoundException ex,
+            HttpServletRequest request
+    ) {
+        //Construct standard error layout identifying resource layout gaps
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),               //Inject numeric Http status code 404
+                HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(),//Inject standard Http description String("Not Found")
+                ex.getMessage(),                            //Message stating "Image not found"
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(error);
+    }
+
+    // ==========================================
+    // 5. SECURITY RULE HANDLER: ILLEGAL ACCESS REJECTIONS
     // ==========================================
 
     // Intercepts UnauthorizedListingAccessException triggered when users try to update/delete listings owned by other people
@@ -101,7 +125,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnauthorizedListingAccess(
             UnauthorizedListingAccessException ex,
             HttpServletRequest request
-    ){
+    ) {
         // Compile standard forbidden notification blocking data access corruption attempts
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
@@ -118,7 +142,7 @@ public class GlobalExceptionHandler {
     }
 
     // ==========================================
-    // 5. SECURITY CONTEXT HANDLER: GHOST USER DETECTION
+    // 6. SECURITY CONTEXT HANDLER: GHOST USER DETECTION
     // ==========================================
 
     // Intercepts AuthenticatedUserNotFoundException if a client presents a signed valid JWT token but their account was deleted from the database
@@ -143,7 +167,7 @@ public class GlobalExceptionHandler {
     }
 
     // ==========================================
-    // 6. CORE JSR-380 ENGINE HANDLER: DTO VALIDATION CRIMES
+    // 7. CORE JSR-380 ENGINE HANDLER: DTO VALIDATION CRIMES
     // ==========================================
 
     // Intercepts MethodArgumentNotValidException which triggers automatically when incoming controller DTO criteria validation checks break down

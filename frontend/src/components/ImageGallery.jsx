@@ -1,10 +1,12 @@
+import { getImageUrl } from "../utils/getImageUrl";
+
 function ImageGallery({ images = [], selectedImage, setSelectedImage, title }) {
   return (
     <>
       <div className="aspect-[16/9] w-full overflow-hidden rounded-xl bg-slate-200 shadow-sm">
         {selectedImage ? (
           <img
-            src={`http://localhost:8080${selectedImage.imageUrl}`}
+            src={getImageUrl(selectedImage.imageUrl)}
             alt={title}
             className="h-full w-full object-cover transition-opacity duration-200"
           />
@@ -31,7 +33,7 @@ function ImageGallery({ images = [], selectedImage, setSelectedImage, title }) {
                 }`}
             >
               <img
-                src={`http://localhost:8080${image.imageUrl}`}
+                src={getImageUrl(image.imageUrl)}
                 alt={title}
                 className="h-20 w-28 object-cover"
               />

@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { getImageUrl } from "../utils/getImageUrl";
 
 function ListingCard({ listing, onDelete, showOwnerActions = false }) {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ function ListingCard({ listing, onDelete, showOwnerActions = false }) {
         <div className="flex h-48 items-center justify-center bg-gray-200">
           {primaryImage ? (
             <img
-              src={`http://localhost:8080${primaryImage.imageUrl}`}
+              src={getImageUrl(primaryImage.imageUrl)}
               alt={listing.title}
               className="h-full w-full object-cover"
             />
