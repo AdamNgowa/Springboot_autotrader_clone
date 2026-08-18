@@ -137,6 +137,10 @@ public class ImageService {
             Long listingId,
             Long imageId
     ) {
+        System.out.println("DELETE IMAGE REQUEST");
+        System.out.println("listingId = " + listingId);
+        System.out.println("imageId = " + imageId);
+
         VehicleListing listing =
                 getOwnedListingWithImages(listingId);
 
@@ -145,13 +149,13 @@ public class ImageService {
 
         String storageFilename =
                 image.getStorageFilename();
-
         vehicleImageRepository.delete(image);
+        vehicleImageRepository.flush();
 
         fileStorageService.deleteFile(storageFilename);
 
-        // Re-number remaining images so displayOrder indices stay contiguous (0, 1, 2...)
         normalizeImages(listing);
+
     }
 
     /**
