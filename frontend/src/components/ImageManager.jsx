@@ -19,6 +19,7 @@ function ImageManager({
   const [uploading, setUploading] = useState(false);
   const [deletingImageId, setDeletingImageId] = useState(null);
   const [primaryImageId, setPrimaryImageId] = useState(null);
+  const [failedImageIds, setFailedImageIds] = useState([]);
   const [error, setError] = useState("");
 
   // ==========================================
@@ -162,20 +163,28 @@ function ImageManager({
       return;
     }
 
+    const previousImages = images;
+    const previousPrimaryImageId = primaryImageId;
+
     try {
       setDeletingImageId(imageId);
       setError("");
 
-      await deleteImage(listingId, imageId);
+      setImages((current) =>
+        current.filter((image) => String(image.id) !== String(imageId)),
+      );
 
-      setImages((current) => current.filter((image) => image.id !== imageId));
-
-      if (primaryImageId === imageId) {
+      if (String(primaryImageId) === String(imageId)) {
         setPrimaryImageId(null);
       }
 
-      onImagesChange?.();
+      await deleteImage(listingId, imageId);
+
+      onImagesChange?.(imageId);
     } catch (error) {
+      setImages(previousImages);
+      setPrimaryImageId(previousPrimaryImageId);
+
       setError(error.message || "Failed to delete image.");
     } finally {
       setDeletingImageId(null);
@@ -255,6 +264,10 @@ function ImageManager({
     };
   }, [selectedFiles]);
 
+  const visibleImages = images.filter(
+    (image) => !failedImageIds.includes(image.id),
+  );
+
   return (
     <section className="space-y-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
       <div>
@@ -276,12 +289,12 @@ function ImageManager({
           EXISTING IMAGES
       ======================================== */}
 
-      {images.length > 0 && (
+      {visibleImages.length > 0 && (
         <div>
           <h3 className="mb-3 font-medium text-slate-800">Current images</h3>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {images.map((image, index) => {
+            {visibleImages.map((image, index) => {
               const imageUrl = getImageUrl(
                 image.url || image.imageUrl || image.storageFilename,
               );
@@ -301,6 +314,13 @@ function ImageManager({
                       src={imageUrl}
                       alt={image.originalFilename || "Vehicle"}
                       className="h-full w-full object-cover"
+                      onError={() =>
+                        setFailedImageIds((current) =>
+                          current.includes(image.id)
+                            ? current
+                            : [...current, image.id],
+                        )
+                      }
                     />
 
                     {isPrimary && (

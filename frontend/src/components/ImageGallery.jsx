@@ -1,14 +1,46 @@
+import { useState } from "react";
 import { getImageUrl } from "../utils/getImageUrl";
 
 function ImageGallery({ images = [], selectedImage, setSelectedImage, title }) {
+  const [failedImageIds, setFailedImageIds] = useState([]);
+
+  const visibleImages = images.filter(
+    (image) =>
+      (image.imageUrl || image.url || image.storageFilename) &&
+      !failedImageIds.includes(image.id),
+  );
+
+  const displayedImage = visibleImages.some(
+    (image) => image.id === selectedImage?.id,
+  )
+    ? selectedImage
+    : visibleImages[0] || null;
+
+  function handleImageError(imageId) {
+    setFailedImageIds((current) =>
+      current.includes(imageId) ? current : [...current, imageId],
+    );
+
+    if (selectedImage?.id === imageId) {
+      setSelectedImage(
+        visibleImages.find((image) => image.id !== imageId) || null,
+      );
+    }
+  }
+
   return (
     <>
       <div className="aspect-[16/9] w-full overflow-hidden rounded-xl bg-slate-200 shadow-sm">
-        {selectedImage ? (
+        {displayedImage ? (
           <img
-            src={getImageUrl(selectedImage.imageUrl)}
+            src={getImageUrl(
+              displayedImage.imageUrl ||
+                displayedImage.url ||
+                displayedImage.storageFilename,
+            )}
             alt={title}
             className="h-full w-full object-cover transition-opacity duration-200"
+            onError={() => handleImageError(displayedImage.id)}
           />
         ) : (
           <div className="flex h-full items-center justify-center text-slate-500">
@@ -17,9 +49,9 @@ function ImageGallery({ images = [], selectedImage, setSelectedImage, title }) {
         )}
       </div>
 
-      {images.length > 1 && (
+      {visibleImages.length > 1 && (
         <div className="flex gap-3 overflow-x-auto pb-2">
-          {images.map((image) => (
+          {visibleImages.map((image) => (
             <button
               key={image.id}
               type="button"
@@ -33,9 +65,12 @@ function ImageGallery({ images = [], selectedImage, setSelectedImage, title }) {
                 }`}
             >
               <img
-                src={getImageUrl(image.imageUrl)}
+                src={getImageUrl(
+                  image.imageUrl || image.url || image.storageFilename,
+                )}
                 alt={title}
                 className="h-20 w-28 object-cover"
+                onError={() => handleImageError(image.id)}
               />
             </button>
           ))}

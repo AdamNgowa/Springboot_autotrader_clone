@@ -77,9 +77,16 @@ function EditListingPage() {
     }
   }
 
-  async function refreshListing() {
+  async function refreshListing(deletedImageId) {
     try {
       const data = await getListing(id);
+
+      if (deletedImageId) {
+        data.images = (data.images || []).filter(
+          (image) => String(image.id) !== String(deletedImageId),
+        );
+      }
+
       setListing(data);
     } catch (error) {
       setError(error.message);
