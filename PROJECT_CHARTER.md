@@ -101,25 +101,27 @@ Implemented:
 
 ## Phase 7 — Image Management Backend
 
+**Updated 2026-08-19:** A direct inspection of `ImageController.java`, `ImageService.java`, `VehicleImageRepository.java`, and `VehicleImage.java` confirmed that several items previously recorded as "intentionally deferred" are in fact implemented. This section has been corrected accordingly.
+
 Implemented:
 
-- Dedicated `VehicleImage` entity
+- Dedicated `VehicleImage` entity (includes `displayOrder` and `primaryImage` fields)
 - Filesystem storage
 - Image metadata persistence
 - UUID filenames
-- Upload validation
+- Upload validation (JPEG/PNG/WEBP content-type check)
 - Ownership verification
-- Compensating file cleanup
-- Primary image assignment
+- Compensating file cleanup (storage rollback if metadata persistence fails)
+- Primary image assignment (first uploaded image, and explicit switching)
 - Dedicated image repository queries
 - Spring MVC static resource handling
 - Public image URLs
+- **Image deletion** — `DELETE /listings/{listingId}/images/{imageId}`, removes the DB record and physical file, then re-normalizes remaining images' display order
+- **Primary image switching** — `PATCH /listings/{listingId}/images/{imageId}/primary`, moves target to display order 0 and re-indexes the rest
+- **Image ordering** — `PUT /listings/{listingId}/images/order`, bulk reorder with validation that the request contains exactly the listing's current image IDs with no duplicates
 
-Intentionally deferred:
+Still intentionally deferred:
 
-- Image deletion
-- Primary image switching
-- Image ordering
 - Cloud storage abstraction
 - Image optimization
 - Background image processing
@@ -186,20 +188,23 @@ Implemented:
 
 ### Image Integration
 
+**Updated 2026-08-19:** Inspection of `imageApi.js`, `ImageGallery.jsx`, and the presence of a previously undocumented `ImageManager.jsx` component shows the frontend image layer is more complete than previously recorded.
+
 Implemented on the frontend:
 
-- Image upload integration
-- Image gallery
+- Image upload integration, including **upload progress** (`imageApi.js -> uploadImage` uses `XMLHttpRequest` with an `onProgress` callback — this was previously listed as "only if useful" and is in fact already built)
+- Image gallery (`ImageGallery.jsx` — read-only viewing, main image + thumbnails, per-image error fallback)
 - Primary image display
 - Listing image rendering
+- **Frontend API functions for delete, set-primary, and reorder** (`imageApi.js -> deleteImage`, `setPrimaryImage`, `reorderImages`) — all call real, implemented backend endpoints
+- An `ImageManager.jsx` component exists in the repository. Its contents and page integration have not yet been inspected — see Phase 8 Remaining Work below.
 
-Remaining image-management UX:
+Remaining image-management UX (revised — this is a verification/wiring task, not a build task):
 
-- Delete listing images
-- Change primary image
-- Image ordering if required
-- Image preview/management improvements
-- Upload progress if justified
+- Confirm what `ImageManager.jsx` implements
+- Confirm which page(s) render it (create, edit, and/or listing details for the owner)
+- Manually verify delete, set-primary, reorder, and upload-progress end-to-end in the running app
+- Only implement additional UI if inspection reveals a genuine gap
 
 Cloud storage and advanced image processing remain deferred.
 
@@ -228,14 +233,7 @@ The backend already provides pagination and dynamic filtering through the listin
 
 ### Seller Information
 
-The listing details page currently contains a seller section, but it is still placeholder content.
-
-Real seller information has **not yet been completed**.
-
-Seller information should ultimately be available on:
-
-- Listing cards
-- Listing details
+Real seller information is implemented and displayed on the Listing Details page, sourced through `SellerResponse` / `VehicleListingMapper` / `VehicleListingResponse`. It is not currently added to Listing Cards.
 
 ---
 
@@ -320,14 +318,12 @@ Improve:
 
 ## Image Management UX
 
-Implement only the functionality justified by the current product requirements:
+**Revised 2026-08-19:** The backend and frontend API functions for delete, set-primary, and reorder are already implemented — do not re-implement them. The remaining work is:
 
-- Delete listing images
-- Set/change primary image
-- Image management UI
-- Image previews
-- Image ordering if required
-- Upload progress if useful
+- Inspect `ImageManager.jsx` to confirm what it currently does
+- Confirm which page(s) actually render it
+- Manually verify delete / set-primary / reorder / upload-progress end-to-end
+- Close any genuine UI wiring gap found — nothing more
 
 Do not introduce cloud storage or an advanced image-processing pipeline during this phase unless requirements change.
 
@@ -346,7 +342,7 @@ Phase 8 should be considered complete when:
 - Listing cards provide appropriate marketplace information.
 - Listing details provide appropriate marketplace information.
 - Seller information is available where required.
-- Listing images can be managed at the level currently required by the product.
+- Owners can manage listing images (upload, delete, set primary, reorder) through a confirmed, tested UI path — the underlying capability already exists and needs verification, not construction.
 - Loading, error, and empty states are handled consistently.
 - Major interfaces are responsive.
 - Important interactive elements are accessible.
@@ -365,17 +361,17 @@ Implemented:
 - Authentication and protected routes
 - Listing management
 - Client-side validation
-- Image upload and gallery integration
+- Image upload (with progress) and gallery integration
+- Image delete/set-primary/reorder API functions and backend endpoints
 - Listing cards and listing details
 - Search, filtering, and sorting
 - Backend pagination integration
 - Loading, error, and empty states
-
-Remaining:
-
 - Frontend pagination
-- Seller information
-- Listing image management
+- Image management UI wiring/verification
+
+Deferred:
+
 - Responsive and accessibility improvements
 
 Phase 8 should be considered complete when the core marketplace experience is usable, responsive, accessible, and consistent.
@@ -392,8 +388,6 @@ Planned:
 - Seller profile improvements
 - Buyer/seller messaging
 - Additional marketplace interaction features as requirements become clear
-
-Do not implement these prematurely while the core marketplace browsing experience remains unfinished.
 
 ---
 
@@ -525,6 +519,7 @@ We:
 - Revisit concepts when they become relevant in a new context.
 - Treat the project as if it were being built by a small professional software team.
 - Optimize for understanding that would hold up during a technical interview.
+- **Verify documentation against actual source files rather than trusting prior status summaries**, since this project has already shown that status documents can drift from the real codebase.
 
 ---
 
