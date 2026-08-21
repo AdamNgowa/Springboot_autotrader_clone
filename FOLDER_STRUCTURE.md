@@ -1,6 +1,7 @@
 autotrader/
 ├── backend/
 │ ├── .gradle/
+│ ├── bin/
 │ ├── build/
 │ ├── gradle/
 │ ├── src/
@@ -78,9 +79,6 @@ autotrader/
 │ │ │ │ │ └── VehicleListingSpecificationBuilder.java
 │ │ │ │ └── BackendApplication.java
 │ │ │ └── resources/
-│ │ │ ├── static/
-│ │ │ ├── templates/
-│ │ │ └── application.properties
 │ │ └── test/
 │ ├── .gitattributes
 │ ├── .gitignore
@@ -90,6 +88,7 @@ autotrader/
 │ ├── HELP.md
 │ └── settings.gradle
 ├── frontend/
+│ ├── dist/
 │ ├── node_modules/
 │ ├── public/
 │ ├── src/
@@ -145,6 +144,7 @@ autotrader/
 │ ├── README.md
 │ └── vite.config.js
 ├── uploads/
+├── .gitignore
 ├── CURRENT_STATUS.md
 ├── FOLDER_STRUCTURE.md
 ├── PROJECT_CHARTER.md
