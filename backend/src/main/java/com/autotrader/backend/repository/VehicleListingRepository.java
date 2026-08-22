@@ -1,5 +1,4 @@
 package com.autotrader.backend.repository;
-
 import com.autotrader.backend.entity.Enums.ListingStatus;
 import com.autotrader.backend.entity.User;
 import com.autotrader.backend.entity.VehicleListing;
