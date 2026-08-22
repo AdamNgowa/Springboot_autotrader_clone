@@ -170,10 +170,6 @@ Implemented:
 - Guest-only route infrastructure
 - Automatic authentication after registration
 
-Authentication functionality itself is complete.
-
-Authentication UX should still be verified against the actual current files before Phase 8 is considered complete.
-
 ### Listing Management
 
 Implemented:
@@ -185,26 +181,7 @@ Implemented:
 - Client-side listing validation
 - Owner-specific listing actions
 - My Listings functionality
-
-### Image Integration
-
-**Updated 2026-08-19:** Inspection of `imageApi.js`, `ImageGallery.jsx`, and the presence of a previously undocumented `ImageManager.jsx` component shows the frontend image layer is more complete than previously recorded.
-
-Implemented on the frontend:
-
-- Image upload integration, including **upload progress** (`imageApi.js -> uploadImage` uses `XMLHttpRequest` with an `onProgress` callback — this was previously listed as "only if useful" and is in fact already built)
-- Image gallery (`ImageGallery.jsx` — read-only viewing, main image + thumbnails, per-image error fallback)
-- Primary image display
-- Listing image rendering
-- **Frontend API functions for delete, set-primary, and reorder** (`imageApi.js -> deleteImage`, `setPrimaryImage`, `reorderImages`) — all call real, implemented backend endpoints
-- An `ImageManager.jsx` component exists in the repository. Its contents and page integration have not yet been inspected — see Phase 8 Remaining Work below.
-
-Remaining image-management UX (revised — this is a verification/wiring task, not a build task):
-
-- Confirm what `ImageManager.jsx` implements
-- Confirm which page(s) render it (create, edit, and/or listing details for the owner)
-- Manually verify delete, set-primary, reorder, and upload-progress end-to-end in the running app
-- Only implement additional UI if inspection reveals a genuine gap
+- Image Integration
 
 Cloud storage and advanced image processing remain deferred.
 
@@ -229,38 +206,11 @@ Implemented:
 - Error states
 - Empty-result states
 
-The backend already provides pagination and dynamic filtering through the listings API.
+The backend provides pagination and dynamic filtering through the listings API.
 
 ### Seller Information
 
-Real seller information is implemented and displayed on the Listing Details page, sourced through `SellerResponse` / `VehicleListingMapper` / `VehicleListingResponse`. It is not currently added to Listing Cards.
-
----
-
-# Phase 8 Remaining Work
-
-The following work remains before Phase 8 should be considered complete.
-
-## Authentication UX
-
-Verify and complete where necessary:
-
-- Client-side login validation
-- Client-side registration validation
-- Validation error presentation
-- Login/register loading states
-- Disabled controls while submitting
-- Guest-only redirects
-- Redirect authenticated users away from authentication pages
-- Intended-destination preservation
-- Protected-route redirect behavior
-- Navbar authentication-restoration behavior
-- Navbar active-link styling
-- Authentication accessibility
-- Responsive authentication layouts
-- Consistent authentication-page UI
-
-Do not assume proposed authentication implementations exist. Inspect the actual files before modifying them.
+Seller info is displayed on `ListingDetailsPage.jsx`
 
 ---
 
@@ -278,74 +228,20 @@ Complete:
 - Improved empty states
 - Improved error handling
 - Responsive search/filter layout
-- Verification of sorting behavior
-- Removal of development/debug logging
-
-The backend pagination and filtering implementation already exists and should be consumed rather than redesigned.
 
 ---
 
-## Listing Card UX
+## Listing Card UX - Implemented
 
-Improve:
-
-- Image presentation
-- Image fallback behavior
-- Visual hierarchy
-- Responsive layout
-- Accessibility
-- Seller information
-- Owner action presentation
-
-The existing listing-card functionality should be preserved unless the current implementation reveals a concrete architectural problem.
-
----
-
-## Listing Details UX
-
-Improve:
-
-- Seller information
-- Seller presentation
-- Image gallery experience
-- Image fallback behavior
-- Responsive layout
-- Accessibility
-- Error/loading/empty states
-- Future marketplace actions where appropriate
+## Listing Details UX - Implemented
 
 ---
 
 ## Image Management UX
 
-**Revised 2026-08-19:** The backend and frontend API functions for delete, set-primary, and reorder are already implemented — do not re-implement them. The remaining work is:
-
-- Inspect `ImageManager.jsx` to confirm what it currently does
-- Confirm which page(s) actually render it
-- Manually verify delete / set-primary / reorder / upload-progress end-to-end
-- Close any genuine UI wiring gap found — nothing more
+Image management is done through `ImageManager.jsx`
 
 Do not introduce cloud storage or an advanced image-processing pipeline during this phase unless requirements change.
-
----
-
-## Phase 8 Completion Criteria
-
-Phase 8 should be considered complete when:
-
-- Authentication UX is verified and polished.
-- Guest and protected routing behave correctly.
-- Users can browse listings.
-- Users can search and filter listings.
-- Users can sort listings.
-- Users can paginate listings.
-- Listing cards provide appropriate marketplace information.
-- Listing details provide appropriate marketplace information.
-- Seller information is available where required.
-- Owners can manage listing images (upload, delete, set primary, reorder) through a confirmed, tested UI path — the underlying capability already exists and needs verification, not construction.
-- Loading, error, and empty states are handled consistently.
-- Major interfaces are responsive.
-- Important interactive elements are accessible.
 
 ---
 
@@ -369,12 +265,6 @@ Implemented:
 - Loading, error, and empty states
 - Frontend pagination
 - Image management UI wiring/verification
-
-Deferred:
-
-- Responsive and accessibility improvements
-
-Phase 8 should be considered complete when the core marketplace experience is usable, responsive, accessible, and consistent.
 
 ---
 

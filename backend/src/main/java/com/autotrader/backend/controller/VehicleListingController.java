@@ -112,23 +112,6 @@ public class VehicleListingController {
     }
 
     @Operation(
-            summary = "Retrieve a vehicle listing",
-            description = """
-                    Returns a single ACTIVE vehicle listing by its identifier.
-                    Soft-deleted listings are treated as not found.
-                    """
-    )
-    @GetMapping("/{id}")
-    public ResponseEntity<VehicleListingResponse> getListingById(
-            @PathVariable Long id) {
-
-        VehicleListingResponse listing =
-                vehicleListingService.getListingById(id);
-
-        return ResponseEntity.ok(listing);
-    }
-
-    @Operation(
             summary = "Retrieve current user's listings",
             description = """
                     Returns all ACTIVE vehicle listings owned by
@@ -145,6 +128,24 @@ public class VehicleListingController {
 
         return ResponseEntity.ok(listings);
     }
+
+    @Operation(
+            summary = "Retrieve a vehicle listing",
+            description = """
+                    Returns a single ACTIVE vehicle listing by its identifier.
+                    Soft-deleted listings are treated as not found.
+                    """
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<VehicleListingResponse> getListingById(
+            @PathVariable Long id) {
+
+        VehicleListingResponse listing =
+                vehicleListingService.getListingById(id);
+
+        return ResponseEntity.ok(listing);
+    }
+
 
     @Operation(
             summary = "Update a vehicle listing",

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -62,7 +63,9 @@ public class ImageController {
         // Delegate image upload processing and return the response metadata object
         ImageResponse uploadedImage = imageService.uploadImage(listingId, file);
 
-        return ResponseEntity.ok(uploadedImage);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(uploadedImage);
     }
 
     /**
