@@ -16,6 +16,7 @@ autotrader/
 │ │ │ │ │ └── WebConfig.java
 │ │ │ │ ├── controller/
 │ │ │ │ │ ├── AuthController.java
+│ │ │ │ │ ├── FavoriteController.java
 │ │ │ │ │ ├── ImageController.java
 │ │ │ │ │ ├── UserController.java
 │ │ │ │ │ └── VehicleListingController.java
@@ -27,6 +28,9 @@ autotrader/
 │ │ │ │ │ ├── error/
 │ │ │ │ │ │ ├── ErrorResponse.java
 │ │ │ │ │ │ └── ValidationError.java
+│ │ │ │ │ ├── favorite/
+│ │ │ │ │ │ ├── FavoriteResponse.java
+│ │ │ │ │ │ └── FavoriteStatusResponse.java
 │ │ │ │ │ ├── image/
 │ │ │ │ │ │ ├── ImageResponse.java
 │ │ │ │ │ │ └── ReorderImagesRequest.java
@@ -45,6 +49,7 @@ autotrader/
 │ │ │ │ │ │ ├── ListingStatus.java
 │ │ │ │ │ │ ├── Transmission.java
 │ │ │ │ │ │ └── UserRole.java
+│ │ │ │ │ ├── Favorite.java
 │ │ │ │ │ ├── User.java
 │ │ │ │ │ ├── VehicleImage.java
 │ │ │ │ │ └── VehicleListing.java
@@ -57,10 +62,12 @@ autotrader/
 │ │ │ │ │ ├── ListingNotFoundException.java
 │ │ │ │ │ └── UnauthorizedListingAccessException.java
 │ │ │ │ ├── mapper/
+│ │ │ │ │ ├── FavoriteMapper.java
 │ │ │ │ │ ├── ImageMapper.java
 │ │ │ │ │ ├── UserMapper.java
 │ │ │ │ │ └── VehicleListingMapper.java
 │ │ │ │ ├── repository/
+│ │ │ │ │ ├── FavoriteRepository.java
 │ │ │ │ │ ├── UserRepository.java
 │ │ │ │ │ ├── VehicleImageRepository.java
 │ │ │ │ │ └── VehicleListingRepository.java
@@ -71,6 +78,7 @@ autotrader/
 │ │ │ │ ├── service/
 │ │ │ │ │ ├── AuthService.java
 │ │ │ │ │ ├── CurrentUserService.java
+│ │ │ │ │ ├── FavoriteService.java
 │ │ │ │ │ ├── FileStorageService.java
 │ │ │ │ │ ├── ImageService.java
 │ │ │ │ │ └── VehicleListingService.java
@@ -95,6 +103,7 @@ autotrader/
 │ │ ├── api/
 │ │ │ ├── apiClient.js
 │ │ │ ├── authApi.js
+│ │ │ ├── favoriteApi.js
 │ │ │ ├── imageApi.js
 │ │ │ ├── listingApi.js
 │ │ │ └── userApi.js
@@ -121,6 +130,7 @@ autotrader/
 │ │ │ ├── CreateListingPage.jsx
 │ │ │ ├── DashboardPage.jsx
 │ │ │ ├── EditListingPage.jsx
+│ │ │ ├── FavoritesPage.jsx
 │ │ │ ├── HomePage.jsx
 │ │ │ ├── ListingDetailsPage.jsx
 │ │ │ ├── LoginPage.jsx

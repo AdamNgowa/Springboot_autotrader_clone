@@ -10,6 +10,7 @@ import ListingDetailsPage from "../pages/ListingDetailsPage";
 import Navbar from "../components/Navbar";
 import RegisterPage from "../pages/RegisterPage";
 import GuestOnlyRoute from "../components/GuestOnlyRoute";
+import FavoritesPage from "../pages/FavoritesPage";
 
 function AppRouter() {
   return (
@@ -18,7 +19,6 @@ function AppRouter() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/listings/:id" element={<ListingDetailsPage />} />
-
         <Route
           path="/login"
           element={
@@ -27,7 +27,6 @@ function AppRouter() {
             </GuestOnlyRoute>
           }
         />
-
         <Route
           path="/register"
           element={
@@ -36,7 +35,14 @@ function AppRouter() {
             </GuestOnlyRoute>
           }
         />
-
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <FavoritesPage />
+            </ProtectedRoute>
+          }
+        />{" "}
         {/* Protected routes */}
         <Route
           path="/dashboard"

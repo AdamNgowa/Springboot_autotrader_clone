@@ -43,6 +43,10 @@ function Navbar() {
               <NavLink to="/listings/new" className={navClass}>
                 Sell Vehicle
               </NavLink>
+
+              <NavLink to="/favorites" className={navClass}>
+                Favorites
+              </NavLink>
             </>
           )}
         </div>

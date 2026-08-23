@@ -27,6 +27,8 @@ public class VehicleListingResponse {
 
     private String city;
 
+    private boolean favorited;
+
     private List<ImageResponse> images;
 
     private SellerResponse seller;
@@ -43,7 +45,8 @@ public class VehicleListingResponse {
             String make,
             String model,
             Integer year,
-            String city
+            String city,
+            boolean favorited
     ) {
 
         this.id = id;
@@ -53,6 +56,7 @@ public class VehicleListingResponse {
         this.model = model;
         this.year = year;
         this.city = city;
+        this.favorited = favorited;
 
     }
 
@@ -182,5 +186,17 @@ public class VehicleListingResponse {
 
     public void setSeller(SellerResponse seller) {
         this.seller = seller;
+    }
+
+    // Favorite status for the currently authenticated user
+    // Here we use isFavorited instead of getFavorited because that's JavaBean naming convention for a boolean property
+    //Jackson/Spring can still serialize this as:
+    //"favorited": true
+    public boolean isFavorited() {
+        return favorited;
+    }
+
+    public void setFavorited(boolean favorited) {
+        this.favorited = favorited;
     }
 }
