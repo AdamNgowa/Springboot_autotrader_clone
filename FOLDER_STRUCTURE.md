@@ -60,7 +60,8 @@ autotrader/
 │ │ │ │ │ ├── ImageNotFoundException.java
 │ │ │ │ │ ├── InvalidCredentialsException.java
 │ │ │ │ │ ├── ListingNotFoundException.java
-│ │ │ │ │ └── UnauthorizedListingAccessException.java
+│ │ │ │ │ ├── UnauthorizedListingAccessException.java
+│ │ │ │ │ └── UserNotFoundException.java
 │ │ │ │ ├── mapper/
 │ │ │ │ │ ├── FavoriteMapper.java
 │ │ │ │ │ ├── ImageMapper.java
@@ -81,6 +82,7 @@ autotrader/
 │ │ │ │ │ ├── FavoriteService.java
 │ │ │ │ │ ├── FileStorageService.java
 │ │ │ │ │ ├── ImageService.java
+│ │ │ │ │ ├── UserService.java
 │ │ │ │ │ └── VehicleListingService.java
 │ │ │ │ ├── specification/
 │ │ │ │ │ ├── VehicleListingSpecification.java

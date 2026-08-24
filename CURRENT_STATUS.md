@@ -1,78 +1,267 @@
-CURRENT_STATUS.md
+# CURRENT STATUS
 
-Phase 9
-│
+## Phase 9
+
 ├── 9.1 Favorites / Wishlist
-│
-├── 9.2 Seller profile improvements
-│
-├── 9.3 Buyer/Seller messaging
-│
-└── 9.4 Additional marketplace interactions
+
+├── 9.2 Seller Profile Improvements
+
+├── 9.3 Buyer/Seller Messaging
+
+└── 9.4 Additional Marketplace Interactions
 
 ---
 
-Phase 9.1 implementation
+# Phase 9.1 — Favorites / Wishlist
 
-9.1.1 Domain/database model - implemented
-9.1.2 Repository - implemented
-9.1.3 Service - implmented
-9.1.4 Controller/API - implemented
-9.1.5 DTO - implemented
-9.1.6 Backend verification - verified
-9.1.7 Frontend API - implemented
-9.1.8 Favorites page - implemented
-9.1.9 Listing-card favorite interaction - implemented
-9.1.10 UX/error/loading handling
-9.1.11 Testing
+## Implementation Status
 
----
+9.1.1 Domain/database model — implemented
 
-Files created in 9.1 so far:
-Backend:
+9.1.2 Repository — implemented
+
+9.1.3 Service — implemented
+
+9.1.4 Controller/API — implemented
+
+9.1.5 DTO — implemented
+
+9.1.6 Backend verification — verified
+
+9.1.7 Frontend API — implemented
+
+9.1.8 Favorites page — implemented
+
+9.1.9 Listing-card favorite interaction — implemented
+
+9.1.10 UX/error/loading handling — implemented
+
+9.1.11 Testing — verified
+
+## Files Created in 9.1
+
+### Backend
 
 - controller/FavoriteController.java
-
 - dto/favorite/FavoriteResponse.java
-- dto/favorite/FavoriteResponse.java
-
+- dto/favorite/FavoriteStatusResponse.java
 - entity/Favorite.java
-
 - mapper/FavoriteMapper.java
-
 - repository/FavoriteRepository.java
 
-- service/ImageService.java
-
-Frontend:
+### Frontend
 
 - api/favoriteApi.js
 - pages/FavoritesPage.jsx
 
----
+## Files Modified in 9.1
 
-Files modified in 9.1 so far
+### Backend
 
-- VehicleListingResponse.java
+- dto/vehicleListing/VehicleListingResponse.java
+
+### Frontend
 
 - components/ListingCard.jsx
-- components/NavBar.jsx
-
+- components/Navbar.jsx
 - routes/AppRouter.jsx
+
+## 9.1 Verified Functionality
+
+- Authenticated user can add an active listing to favorites
+- Duplicate favorites are prevented
+- Authenticated user can remove a favorite
+- Favorite status can be queried
+- Authenticated user can retrieve their favorites
+- Unauthenticated favorite requests are rejected with `401`
+- Nonexistent listings are handled correctly
+- Inactive listings are rejected
+- Users can only retrieve their own favorites
+- Listing-card favorite toggle works
+- Favorites page works
+- Favorite loading/error handling works
+- Favorite API integration works
+- `FavoriteResponse` is returned instead of exposing the `Favorite` entity
+- `FavoriteMapper` converts `Favorite` entities to `FavoriteResponse`
+- Frontend and backend integration verified
+
+## 9.1 Status
+
+**COMPLETE**
 
 ---
 
-Phase 9.2 implemenation
+# Phase 9.2 — Seller Profile Improvements
 
-Phase 9.2 Seller Profile Improvements
+## Implementation Status
 
-├── 9.2.1 Seller profile/API assessment
-├── 9.2.2 Seller public profile endpoint
-├── 9.2.3 Seller response DTO
-├── 9.2.4 Seller's active listings
-├── 9.2.5 Frontend seller API
-├── 9.2.6 Seller profile page
-├── 9.2.7 Seller information on listing details
-├── 9.2.8 Navigation to seller profile
-├── 9.2.9 Loading/error/empty states
-└── 9.2.10 Testing
+9.2.1 Seller profile/API assessment — verified
+
+9.2.2 Seller public profile endpoint — implemented
+
+9.2.3 Seller response DTO — already implemented
+
+9.2.4 Seller's active listings — implemented
+
+9.2.5 Frontend seller API — implemented
+
+9.2.6 Seller profile page — implemented
+
+9.2.7 Seller information on listing details — implemented
+
+9.2.8 Navigation to seller profile — implemented
+
+9.2.9 Loading/error/empty states — implemented
+
+9.2.10 Testing — verified
+
+## Files Created in 9.2
+
+### Frontend
+
+- api/sellerApi.js
+- pages/SellerProfilePage.jsx
+
+## Files Modified in 9.2
+
+### Frontend
+
+- routes/AppRouter.jsx
+- pages/ListingDetailsPage.jsx
+
+## 9.2 Verified Functionality
+
+- Public seller profile can be retrieved
+- Seller profile displays seller information
+- Seller's active listings can be retrieved
+- Seller listings are paginated
+- Seller profile page works
+- Seller profile loading state works
+- Seller profile error state works
+- Seller listings loading state works
+- Seller listings error state works
+- Empty seller listings state works
+- Seller profile is accessible without authentication
+- Seller listing cards reuse the existing `ListingCard` component
+- Listing details display seller information
+- Listing details provide navigation to the seller profile
+- Seller profile route works
+- Seller profile API integration works
+- Existing listing functionality remains operational
+- Frontend and backend integration verified
+- Complete Phase 9.2 flow tested successfully
+
+## 9.2 Status
+
+**COMPLETE**
+
+---
+
+# Phase 9.3 — Buyer/Seller Messaging
+
+## Planned Implementation
+
+9.3.1 Messaging architecture/API assessment — next
+
+9.3.2 Domain/database model — pending
+
+9.3.3 Repository — pending
+
+9.3.4 Service — pending
+
+9.3.5 Controller/API — pending
+
+9.3.6 DTOs — pending
+
+9.3.7 Backend verification — pending
+
+9.3.8 Frontend messaging API — pending
+
+9.3.9 Conversation/message UI — pending
+
+9.3.10 Listing-to-seller messaging entry point — pending
+
+9.3.11 Conversation list/inbox — pending
+
+9.3.12 Message loading/error/empty states — pending
+
+9.3.13 Testing — pending
+
+## 9.3 Current Approach
+
+The existing authentication, user, seller, and vehicle-listing architecture will be inspected before implementation.
+
+The messaging design should avoid unnecessary duplication and should establish a clear relationship between:
+
+- Buyer
+- Seller
+- Vehicle listing
+- Conversation
+- Individual message
+
+The existing JWT authentication and `CurrentUserService` will be reused for identifying the authenticated participant.
+
+The implementation should ensure that users can only access conversations in which they are participants.
+
+## Existing Relevant Backend Files
+
+- entity/User.java
+- entity/VehicleListing.java
+- service/CurrentUserService.java
+- service/UserService.java
+- service/VehicleListingService.java
+- repository/UserRepository.java
+- repository/VehicleListingRepository.java
+- security/JwtAuthenticationFilter.java
+- security/JwtService.java
+- controller/UserController.java
+- controller/VehicleListingController.java
+- dto/user/SellerResponse.java
+- dto/vehicleListing/VehicleListingResponse.java
+- exception/GlobalExceptionHandler.java
+
+## Existing Relevant Frontend Files
+
+- api/apiClient.js
+- api/userApi.js
+- api/sellerApi.js
+- api/listingApi.js
+- auth/authStorage.js
+- context/AuthContext.jsx
+- hooks/useAuth.js
+- components/ListingCard.jsx
+- pages/ListingDetailsPage.jsx
+- routes/AppRouter.jsx
+
+## 9.3 Security Requirements
+
+Messaging endpoints must require authentication.
+
+Users must only be able to:
+
+- View their own conversations
+- View messages belonging to their conversations
+- Send messages to conversation participants
+- Create conversations according to the marketplace messaging rules
+
+A user must not be able to access another user's conversations by changing an ID in the request URL.
+
+## NEXT STEP
+
+**9.3.1 — Buyer/Seller Messaging architecture/API assessment**
+
+---
+
+# Phase 9.4 — Additional Marketplace Interactions
+
+## Planned
+
+Not started.
+
+---
+
+# Current Phase
+
+**Phase 9.3 — Buyer/Seller Messaging**
+
+**Next task: 9.3.1 Messaging architecture/API assessment**

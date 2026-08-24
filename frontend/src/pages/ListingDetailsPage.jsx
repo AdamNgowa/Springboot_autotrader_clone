@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { getListing, deleteListing } from "../api/listingApi";
 import { useAuth } from "../hooks/useAuth";
 import SpecificationCard from "../components/SpecificationCard";
@@ -199,9 +199,12 @@ function ListingDetailsPage() {
           {listing.seller ? (
             <div className="flex flex-col gap-4">
               <div>
-                <h3 className="text-lg font-semibold">
+                <Link
+                  to={`/sellers/${listing.seller.id}`}
+                  className="text-lg font-semibold text-blue-600 hover:text-blue-700 hover:underline"
+                >
                   {listing.seller.firstName} {listing.seller.lastName}
-                </h3>
+                </Link>
 
                 <p className="mt-2 text-slate-600">
                   Phone: {listing.seller.phoneNumber || "Not provided"}

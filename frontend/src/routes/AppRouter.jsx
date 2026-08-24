@@ -11,6 +11,7 @@ import Navbar from "../components/Navbar";
 import RegisterPage from "../pages/RegisterPage";
 import GuestOnlyRoute from "../components/GuestOnlyRoute";
 import FavoritesPage from "../pages/FavoritesPage";
+import SellerProfilePage from "../pages/SellerProfilePage";
 
 function AppRouter() {
   return (
@@ -19,6 +20,7 @@ function AppRouter() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/listings/:id" element={<ListingDetailsPage />} />
+        <Route path="/sellers/:id" element={<SellerProfilePage />} />
         <Route
           path="/login"
           element={

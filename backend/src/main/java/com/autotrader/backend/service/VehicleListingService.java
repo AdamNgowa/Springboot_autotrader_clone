@@ -81,13 +81,26 @@ public class VehicleListingService {
     }
 
     public Page<VehicleListingResponse> getCurrentUserListings(
-            Pageable pageable){
+            Pageable pageable) {
         User authenticatedUser =
                 currentUserService.getAuthenticatedUser();
 
         Page<VehicleListing> listings =
                 vehicleListingRepository.findBySellerAndStatus(
                         authenticatedUser,
+                        ListingStatus.ACTIVE,
+                        pageable);
+
+        return listings.map(vehicleListingMapper::toResponse);
+    }
+
+    public Page<VehicleListingResponse> getSellerActiveListings(
+            User seller,
+            Pageable pageable) {
+
+        Page<VehicleListing> listings =
+                vehicleListingRepository.findBySellerAndStatus(
+                        seller,
                         ListingStatus.ACTIVE,
                         pageable);
 
@@ -162,18 +175,17 @@ public class VehicleListingService {
     }
 
     //Queries an active listing together with these images in a single database query
-    public VehicleListing getActiveListingWithImages(Long listingId){
+    public VehicleListing getActiveListingWithImages(Long listingId) {
         VehicleListing listing = vehicleListingRepository.findByIdWithImages(listingId)
                 .orElseThrow(() ->
                         new ListingNotFoundException("Listing not found"));
 
-        if(listing.getStatus() == ListingStatus.DELETED) {
+        if (listing.getStatus() == ListingStatus.DELETED) {
             throw new ListingNotFoundException("Listing not found");
         }
 
         return listing;
     }
-
 
 
     // Halts processing and throws an unauthorized exception if the context user doesn't own the targeting listing

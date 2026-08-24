@@ -167,7 +167,10 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/listings/*")
                         .permitAll()
-
+                        .requestMatchers(HttpMethod.GET, "/users/*")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.GET, "/users/*/listings")
+                        .permitAll()
                         /*
                          3. Global Lockdown:
                          This closes the loop on your authorization rules. For any other request besides
