@@ -108,6 +108,7 @@ autotrader/
 │ │ │ ├── favoriteApi.js
 │ │ │ ├── imageApi.js
 │ │ │ ├── listingApi.js
+│ │ │ ├── sellerApi.js
 │ │ │ └── userApi.js
 │ │ ├── assets/
 │ │ ├── auth/
@@ -137,7 +138,8 @@ autotrader/
 │ │ │ ├── ListingDetailsPage.jsx
 │ │ │ ├── LoginPage.jsx
 │ │ │ ├── MyListingsPage.jsx
-│ │ │ └── RegisterPage.jsx
+│ │ │ ├── RegisterPage.jsx
+│ │ │ └── SellerProfilePage.jsx
 │ │ ├── routes/
 │ │ │ └── AppRouter.jsx
 │ │ ├── utils/
