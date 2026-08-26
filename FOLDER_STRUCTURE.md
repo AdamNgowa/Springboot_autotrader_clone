@@ -16,8 +16,10 @@ autotrader/
 │ │ │ │ │ └── WebConfig.java
 │ │ │ │ ├── controller/
 │ │ │ │ │ ├── AuthController.java
+│ │ │ │ │ ├── ConversationController.java
 │ │ │ │ │ ├── FavoriteController.java
 │ │ │ │ │ ├── ImageController.java
+│ │ │ │ │ ├── MessageController.java
 │ │ │ │ │ ├── UserController.java
 │ │ │ │ │ └── VehicleListingController.java
 │ │ │ │ ├── dto/
@@ -34,6 +36,11 @@ autotrader/
 │ │ │ │ │ ├── image/
 │ │ │ │ │ │ ├── ImageResponse.java
 │ │ │ │ │ │ └── ReorderImagesRequest.java
+│ │ │ │ │ ├── messaging/
+│ │ │ │ │ │ ├── ConversationResponse.java
+│ │ │ │ │ │ ├── CreateConversationRequest.java
+│ │ │ │ │ │ ├── CreateMessageRequest.java
+│ │ │ │ │ │ └── MessageResponse.java
 │ │ │ │ │ ├── user/
 │ │ │ │ │ │ ├── SellerResponse.java
 │ │ │ │ │ │ └── UserResponse.java
@@ -49,7 +56,9 @@ autotrader/
 │ │ │ │ │ │ ├── ListingStatus.java
 │ │ │ │ │ │ ├── Transmission.java
 │ │ │ │ │ │ └── UserRole.java
+│ │ │ │ │ ├── Conversation.java
 │ │ │ │ │ ├── Favorite.java
+│ │ │ │ │ ├── Message.java
 │ │ │ │ │ ├── User.java
 │ │ │ │ │ ├── VehicleImage.java
 │ │ │ │ │ └── VehicleListing.java
@@ -60,15 +69,20 @@ autotrader/
 │ │ │ │ │ ├── ImageNotFoundException.java
 │ │ │ │ │ ├── InvalidCredentialsException.java
 │ │ │ │ │ ├── ListingNotFoundException.java
+│ │ │ │ │ ├── UnauthorizedConversationAccessException.java
 │ │ │ │ │ ├── UnauthorizedListingAccessException.java
 │ │ │ │ │ └── UserNotFoundException.java
 │ │ │ │ ├── mapper/
+│ │ │ │ │ ├── ConversationMapper.java
 │ │ │ │ │ ├── FavoriteMapper.java
 │ │ │ │ │ ├── ImageMapper.java
+│ │ │ │ │ ├── MessageMapper.java
 │ │ │ │ │ ├── UserMapper.java
 │ │ │ │ │ └── VehicleListingMapper.java
 │ │ │ │ ├── repository/
+│ │ │ │ │ ├── ConversationRepository.java
 │ │ │ │ │ ├── FavoriteRepository.java
+│ │ │ │ │ ├── MessageRepository.java
 │ │ │ │ │ ├── UserRepository.java
 │ │ │ │ │ ├── VehicleImageRepository.java
 │ │ │ │ │ └── VehicleListingRepository.java
@@ -78,10 +92,12 @@ autotrader/
 │ │ │ │ │ └── JwtService.java
 │ │ │ │ ├── service/
 │ │ │ │ │ ├── AuthService.java
+│ │ │ │ │ ├── ConversationService.java
 │ │ │ │ │ ├── CurrentUserService.java
 │ │ │ │ │ ├── FavoriteService.java
 │ │ │ │ │ ├── FileStorageService.java
 │ │ │ │ │ ├── ImageService.java
+│ │ │ │ │ ├── MessageService.java
 │ │ │ │ │ ├── UserService.java
 │ │ │ │ │ └── VehicleListingService.java
 │ │ │ │ ├── specification/
