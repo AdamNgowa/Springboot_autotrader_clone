@@ -1,17 +1,19 @@
 package com.autotrader.backend.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(
         name = "messages",
         indexes = {
+                // COMPOSITE INDEX: Optimizes queries searching for messages in a specific conversation,
+                // ordered by creation time (e.g., SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at)
                 @Index(
                         name = "idx_message_conversation_created_at",
                         columnList = "conversation_id, created_at"
                 ),
+                // INDEX: Speeds up looking up all messages sent by a particular user
                 @Index(
                         name = "idx_message_sender",
                         columnList = "sender_id"
@@ -32,12 +34,14 @@ public class Message {
     @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
+    // Column definition TEXT allows for variable-length message content beyond default 255 chars
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Automatically assigns the timestamp before inserting the entity into the database
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {

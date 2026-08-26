@@ -1,12 +1,13 @@
 package com.autotrader.backend.entity;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
 @Table(
         name = "conversations",
+        // UNIQUE CONSTRAINT: Guarantees business rules at the database level.
+        // Prevents duplicate chat rooms for the same buyer, seller, and vehicle listing.
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_conversation_buyer_seller_listing",
@@ -17,15 +18,19 @@ import java.time.LocalDateTime;
                         }
                 )
         },
+        // INDEXES: Speed up database read operations.
         indexes = {
+                // Speeds up queries like: "Get all conversations where user X is the buyer"
                 @Index(
                         name = "idx_conversation_buyer",
                         columnList = "buyer_id"
                 ),
+                // Speeds up queries like: "Get all conversations where user X is the seller"
                 @Index(
                         name = "idx_conversation_seller",
                         columnList = "seller_id"
                 ),
+                // Speeds up queries like: "Get all active conversations for a specific vehicle listing"
                 @Index(
                         name = "idx_conversation_listing",
                         columnList = "listing_id"
@@ -38,6 +43,7 @@ public class Conversation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // FetchType.LAZY ensures user details are only loaded when explicitly needed, saving memory
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_id", nullable = false)
     private User buyer;
@@ -53,6 +59,7 @@ public class Conversation {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // Automatically assigns the timestamp before inserting the entity into the database
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {
