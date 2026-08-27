@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getListing, deleteListing } from "../api/listingApi";
+import { createOrGetConversation } from "../api/messagingApi";
 import { useAuth } from "../hooks/useAuth";
 import SpecificationCard from "../components/SpecificationCard";
 import ImageGallery from "../components/ImageGallery";
@@ -8,13 +9,15 @@ import ImageGallery from "../components/ImageGallery";
 function ListingDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [messagingSeller, setMessagingSeller] = useState(false);
+  const [messageError, setMessageError] = useState(null);
 
   useEffect(() => {
     async function loadListing() {
@@ -93,6 +96,29 @@ function ListingDetailsPage() {
     } catch (error) {
       setError(error.message);
       setDeleting(false);
+    }
+  }
+
+  async function handleMessageSeller() {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    if (messagingSeller) {
+      return;
+    }
+
+    try {
+      setMessagingSeller(true);
+      setMessageError(null);
+
+      const conversation = await createOrGetConversation(listing.id);
+
+      navigate(`/conversations/${conversation.id}`);
+    } catch (error) {
+      setMessageError(error.message);
+      setMessagingSeller(false);
     }
   }
 
@@ -211,13 +237,34 @@ function ListingDetailsPage() {
                 </p>
               </div>
 
-              {listing.seller.phoneNumber && (
-                <a
-                  href={`tel:${listing.seller.phoneNumber}`}
-                  className="inline-flex w-fit items-center rounded-lg bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700"
-                >
-                  Contact Seller
-                </a>
+              {!isOwner && (
+                <div className="flex flex-wrap gap-3">
+                  {listing.seller.phoneNumber && (
+                    <a
+                      href={`tel:${listing.seller.phoneNumber}`}
+                      className="inline-flex w-fit items-center rounded-lg bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700"
+                    >
+                      Contact Seller
+                    </a>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={handleMessageSeller}
+                    disabled={messagingSeller}
+                    className="inline-flex w-fit items-center rounded-lg border border-blue-600 px-5 py-3 font-medium text-blue-600 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {messagingSeller
+                      ? "Starting conversation..."
+                      : "Message Seller"}
+                  </button>
+                </div>
+              )}
+
+              {messageError && (
+                <p className="text-sm text-red-600">
+                  Unable to start conversation: {messageError}
+                </p>
               )}
             </div>
           ) : (

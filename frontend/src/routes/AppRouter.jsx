@@ -12,6 +12,9 @@ import RegisterPage from "../pages/RegisterPage";
 import GuestOnlyRoute from "../components/GuestOnlyRoute";
 import FavoritesPage from "../pages/FavoritesPage";
 import SellerProfilePage from "../pages/SellerProfilePage";
+import ConversationPage from "../pages/ConversationPage";
+import ConversationsPage from "../pages/ConversationsPage";
+import FloatingMessagesButton from "../components/FloatingMessagesButton";
 
 function AppRouter() {
   return (
@@ -80,7 +83,24 @@ function AppRouter() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/conversations"
+          element={
+            <ProtectedRoute>
+              <ConversationsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/conversations/:id"
+          element={
+            <ProtectedRoute>
+              <ConversationPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
+      <FloatingMessagesButton />
     </BrowserRouter>
   );
 }
