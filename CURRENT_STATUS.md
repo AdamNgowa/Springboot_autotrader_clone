@@ -161,21 +161,21 @@
 
 ## Planned Implementation
 
-9.3.1 Messaging architecture/API assessment — next
+9.3.1 Messaging architecture/API assessment — implemented
 
-9.3.2 Domain/database model — pending
+9.3.2 Domain/database model — implemented
 
-9.3.3 Repository — pending
+9.3.3 Repository — implemented
 
-9.3.4 Service — pending
+9.3.4 Service — implemented
 
-9.3.5 Controller/API — pending
+9.3.5 Controller/API — implemented
 
-9.3.6 DTOs — pending
+9.3.6 DTOs — implemented
 
-9.3.7 Backend verification — pending
+9.3.7 Backend verification — backend verified
 
-9.3.8 Frontend messaging API — pending
+9.3.8 Frontend messaging API — next
 
 9.3.9 Conversation/message UI — pending
 
@@ -203,35 +203,25 @@ The existing JWT authentication and `CurrentUserService` will be reused for iden
 
 The implementation should ensure that users can only access conversations in which they are participants.
 
-## Existing Relevant Backend Files
+## Files Created in 9.3
 
-- entity/User.java
-- entity/VehicleListing.java
-- service/CurrentUserService.java
-- service/UserService.java
-- service/VehicleListingService.java
-- repository/UserRepository.java
-- repository/VehicleListingRepository.java
-- security/JwtAuthenticationFilter.java
-- security/JwtService.java
-- controller/UserController.java
-- controller/VehicleListingController.java
-- dto/user/SellerResponse.java
-- dto/vehicleListing/VehicleListingResponse.java
-- exception/GlobalExceptionHandler.java
+### Backend
 
-## Existing Relevant Frontend Files
-
-- api/apiClient.js
-- api/userApi.js
-- api/sellerApi.js
-- api/listingApi.js
-- auth/authStorage.js
-- context/AuthContext.jsx
-- hooks/useAuth.js
-- components/ListingCard.jsx
-- pages/ListingDetailsPage.jsx
-- routes/AppRouter.jsx
+- controller/ConversationController.java
+- controller/MessageController.java
+- dto/messaging/ConversationResponse.java
+- dto/messaging/CreateConversationRequest.java
+- dto/messaging/CreateMessageRequest.java
+- dto/messaging/MessageResponse.java
+- entity/Conversation.java
+- entity/Message.java
+- exception/UnauthorizedConversationAccessException.java
+- mapper/ConversationMapper.java
+- mapper/MessageMapper.java
+- repository/ConversationRepository.java
+- repository/MessageRepository.java
+- service/ConversationService.java
+- service/MessageService.java
 
 ## 9.3 Security Requirements
 
@@ -248,7 +238,9 @@ A user must not be able to access another user's conversations by changing an ID
 
 ## NEXT STEP
 
-**9.3.1 — Buyer/Seller Messaging architecture/API assessment**
+**9.3.8 — Frontend messaging API**
+
+You can use the files added during this phase and folder structure files to ask for any additional files you feel are required.
 
 ---
 
@@ -264,4 +256,4 @@ Not started.
 
 **Phase 9.3 — Buyer/Seller Messaging**
 
-**Next task: 9.3.1 Messaging architecture/API assessment**
+**Next task: 9.3.8 Frontend messaging API**
