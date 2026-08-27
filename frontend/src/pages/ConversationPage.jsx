@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 
 import { getConversation, getMessages, sendMessage } from "../api/messagingApi";
 import { useAuth } from "../hooks/useAuth";
@@ -30,6 +30,10 @@ function ConversationPage() {
 
   // Load the conversation (participants, listing) once on mount.
   useEffect(() => {
+    if (!id) {
+      return;
+    }
+
     async function loadConversation() {
       setLoadingConversation(true);
       setConversationError(null);
@@ -50,6 +54,10 @@ function ConversationPage() {
   // On mount, figure out how many pages of messages exist, then land
   // on the LAST page — the most recent messages — like a real chat.
   useEffect(() => {
+    if (!id) {
+      return;
+    }
+
     async function loadInitialMessages() {
       setLoadingMessages(true);
       setMessagesError(null);
@@ -78,7 +86,6 @@ function ConversationPage() {
     }
 
     loadInitialMessages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   // Scroll to bottom whenever the message list changes because of an
@@ -91,6 +98,13 @@ function ConversationPage() {
       shouldScrollToBottom.current = false;
     }
   }, [messages]);
+
+  // All hooks above run unconditionally on every render, satisfying the
+  // Rules of Hooks. Only now — after every hook has been declared — do
+  // we branch on whether "id" is actually present.
+  if (!id) {
+    return <Navigate to="/conversations" replace />;
+  }
 
   async function loadEarlierMessages() {
     if (currentPage === 0 || loadingOlder) {
@@ -108,7 +122,6 @@ function ConversationPage() {
 
       setMessages((existing) => [...(olderPage.content ?? []), ...existing]);
       setCurrentPage(currentPage - 1);
-
       // Preserve the reader's position: after prepending older messages,
       // the container grows taller above the current viewport, so we
       // push scrollTop forward by exactly how much the content grew.
