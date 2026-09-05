@@ -175,17 +175,17 @@
 
 9.3.7 Backend verification — backend verified
 
-9.3.8 Frontend messaging API — next
+9.3.8 Frontend messaging API — implemented
 
-9.3.9 Conversation/message UI — pending
+9.3.9 Conversation/message UI — implemented
 
-9.3.10 Listing-to-seller messaging entry point — pending
+9.3.10 Listing-to-seller messaging entry point — implemented
 
-9.3.11 Conversation list/inbox — pending
+9.3.11 Conversation list/inbox — implemented
 
-9.3.12 Message loading/error/empty states — pending
+9.3.12 Message loading/error/empty states — implemented
 
-9.3.13 Testing — pending
+9.3.13 Testing — done
 
 ## 9.3 Current Approach
 
@@ -236,24 +236,10 @@ Users must only be able to:
 
 A user must not be able to access another user's conversations by changing an ID in the request URL.
 
+## Current phase status
+
+Phase 9 can be considered complete for now.
+
 ## NEXT STEP
 
-**9.3.8 — Frontend messaging API**
-
-You can use the files added during this phase and folder structure files to ask for any additional files you feel are required.
-
----
-
-# Phase 9.4 — Additional Marketplace Interactions
-
-## Planned
-
-Not started.
-
----
-
-# Current Phase
-
-**Phase 9.3 — Buyer/Seller Messaging**
-
-**Next task: 9.3.8 Frontend messaging API**
+Proceed to phase 10

@@ -15,7 +15,7 @@ const INITIAL_FILTERS = {
   sort: "createdAt,desc",
 };
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 6;
 
 function HomePage() {
   const [listings, setListings] = useState([]);
