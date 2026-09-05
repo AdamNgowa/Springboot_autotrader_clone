@@ -270,14 +270,64 @@ Implemented:
 
 # Phase 9 — Marketplace Features & User Interaction
 
-After Phase 8 is complete, continue with marketplace-specific user interaction.
+Marketplace interaction features building on top of listings, users, and auth are established.
 
-Planned:
+## Phase 9.1 — Favorites / Wishlist
 
-- Favorites / wishlist
-- Seller profile improvements
-- Buyer/seller messaging
-- Additional marketplace interaction features as requirements become clear
+Implemented:
+
+- Favoriting an active listing
+- Duplicate-favorite prevention
+- Removing a favorite
+- Querying favorite status
+- Retrieving a user's own favorites
+- Ownership scoping (users can only see and manage their own favorites)
+- Rejection of favorites on inactive or nonexistent listings
+- Authentication enforcement on favorite actions
+- Listing-card favorite toggle
+- Dedicated favorites page
+- Favorite-related loading and error handling
+
+**Status: COMPLETE**
+
+## Phase 9.2 — Seller Profile Improvements
+
+Implemented:
+
+- Public seller profile (viewable without authentication)
+- Seller's active listings, paginated
+- Seller profile page
+- Seller information surfaced on listing details
+- Navigation from listing details to the seller's profile
+- Reuse of existing listing card presentation for a seller's listings
+- Loading, error, and empty states for seller profile and seller listings
+
+**Status: COMPLETE**
+
+## Phase 9.3 — Buyer/Seller Messaging
+
+Implemented:
+
+- Conversations between a buyer and seller, scoped to a vehicle listing
+- Sending and retrieving messages within a conversation
+- Conversation list / inbox
+- Starting a conversation directly from a listing
+- Participant-only access (a user cannot view or act on a conversation they're not part of, including by manipulating a URL/ID)
+- Authentication enforcement on all messaging actions
+- Reuse of the existing authentication and current-user identification mechanism to identify the authenticated participant
+- Messaging UI, including loading, error, and empty states
+
+**Status: COMPLETE**
+
+## Phase 9.4 — Additional Marketplace Interactions
+
+Not yet scoped. Held open for future marketplace interaction features as requirements become clear.
+
+---
+
+**Phase 9 overall status: COMPLETE (for now)**
+
+**Next step: Phase 10 — Testing**
 
 ---
 

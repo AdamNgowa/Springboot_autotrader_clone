@@ -242,4 +242,4 @@ Phase 9 can be considered complete for now.
 
 ## NEXT STEP
 
-Proceed to phase 10
+Proceed to phase 10 - Testing
