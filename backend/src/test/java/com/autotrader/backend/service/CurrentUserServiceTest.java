@@ -38,6 +38,10 @@ import static org.mockito.Mockito.when;
  * the database. Instead, we control the SecurityContext manually and
  * replace UserRepository with a Mockito mock.
  */
+
+//@Extend with is a JUnit annotation
+//It tells JUnit -> when running this test class,activate Mockito's JUnit intergration
+//Without the mockito extensin,those annotations won't automatically behave as intended.
 @ExtendWith(MockitoExtension.class)
 class CurrentUserServiceTest {
 
@@ -48,6 +52,9 @@ class CurrentUserServiceTest {
      * Individual tests can define exactly what the repository should
      * return using Mockito's when(...).thenReturn(...) syntax.
      */
+
+    // @Mock is a Mockito annotation
+    // @Mock tells Mockito to create a fake userRepository
     @Mock
     private UserRepository userRepository;
 
@@ -58,6 +65,9 @@ class CurrentUserServiceTest {
      * This is important: we are testing the actual service logic,
      * not a mocked CurrentUserService.
      */
+
+    //@InjectMocks is a Mockito annotation
+    //It creates the real CurrentUserService and injects it with mocked dependencies.
     @InjectMocks
     private CurrentUserService currentUserService;
 
@@ -68,6 +78,9 @@ class CurrentUserServiceTest {
      * leave the security context clean so that one test cannot
      * accidentally influence another test.
      */
+
+    //@AfterEach is a JUnit annotation
+    //It means run this method after every test.
     @AfterEach
     void tearDown() {
         SecurityContextHolder.clearContext();
@@ -84,8 +97,13 @@ class CurrentUserServiceTest {
      *       ↓
      * User is returned
      */
+    //@Test is a JUnit annotation
+    //Tells JUnit : execute this method as a test.
     @Test
     void shouldReturnAuthenticatedUser() {
+        //Creates Mockito mock of the User entity
+        //We don't create the real user here because this particular
+        //unit test is not concerned with that.
         User expectedUser = mock(User.class);
 
         // Simulate Spring Security having authenticated this email.
@@ -97,6 +115,22 @@ class CurrentUserServiceTest {
          * We are telling Mockito:
          * "If CurrentUserService asks for this email, pretend the
          * database returned expectedUser."
+         */
+        /*
+         * when().thenReturn() is Mockito syntax
+         * You can read it as : when this method is called with this argument
+         * return this value.
+         * so when the repository receives userRepository.findByEmail(...),
+         * then pretend it returned this result->(Optional.of(expectedUser))
+         *
+         * So we are defining the mock's behavior as:
+
+           findByEmail("user@example.com")
+              │
+              ▼
+           Optional.of(expectedUser)
+
+         * this is called stubbing
          */
         when(userRepository.findByEmail("user@example.com"))
                 .thenReturn(Optional.of(expectedUser));
@@ -110,11 +144,33 @@ class CurrentUserServiceTest {
          * The service should return the exact User object supplied by
          * the repository rather than creating or replacing it.
          */
+
+        /*
+        - assertSame is a JUnit assertion
+        - We're saying the object returned by the service must be the exact same,
+        object that the repository gave it.
+         */
         assertSame(expectedUser, actualUser);
 
         /*
          * Verify that the service actually looked up the authenticated
          * user's email in the repository.
+         */
+        /*
+         - verify is Mockito verification
+         - It asks: did the service actually call the repository with this exact email?
+         - Protects against implementation that somehow returned a user
+         without looking it up.
+
+         ------------
+
+         So our test checks two things:
+          RESULT:
+            Did we get the correct user?
+          INTERACTION:
+            Did we query the repository with the correct email?
+
+         -----------
          */
         verify(userRepository).findByEmail("user@example.com");
     }
@@ -135,16 +191,23 @@ class CurrentUserServiceTest {
      */
     @Test
     void shouldThrowExceptionWhenAuthenticationIsMissing() {
+        // 1. Arrange: Clear authentication from thread-local context to simulate an unauthenticated request.
         SecurityContextHolder.clearContext();
 
+    /*
+        Assert throws just means , you expect this code to throw this exception.
+        - Passes if AuthenticatedUserNotFoundException (or a subclass) is thrown.
+        - Fails if no exception is thrown, or if a different exception occurs.
+     */
         assertThrows(
                 AuthenticatedUserNotFoundException.class,
                 () -> currentUserService.getAuthenticatedUser()
         );
 
-        // Authentication failed before a repository lookup was necessary.
+        // 2. Verify Side Effects: Confirms authentication failed fast before a repository lookup was necessary.
         verifyNoInteractions(userRepository);
     }
+
 
     /*
      * Verifies the case where an Authentication object exists but
