@@ -204,7 +204,7 @@ class MessageServiceTest {
                 conversationId
         )).thenReturn(conversation);
 
-        when(messageRepository.findByConversationOrderByCreatedAtAsc(
+        when(messageRepository.findByConversationOrderByCreatedAtAscIdAsc(
                 conversation,
                 pageable
         )).thenReturn(page);
@@ -246,7 +246,7 @@ class MessageServiceTest {
                 );
 
         verify(messageRepository)
-                .findByConversationOrderByCreatedAtAsc(
+                .findByConversationOrderByCreatedAtAscIdAsc(
                         conversation,
                         pageable
                 );

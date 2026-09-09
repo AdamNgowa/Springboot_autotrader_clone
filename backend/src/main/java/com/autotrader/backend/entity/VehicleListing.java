@@ -28,6 +28,8 @@ public class VehicleListing {
     @Column(nullable = false)
     private BigDecimal price;
 
+    // Explicit database column name because "year" is reserved in H2
+    @Column(name = "vehicle_year", nullable = false)
     private int year;
 
     private String make;
@@ -54,15 +56,28 @@ public class VehicleListing {
     @Column(nullable = false)
     private ListingStatus status;
 
-    //Seller relationship
+    // ==========================================
+    // SELLER RELATIONSHIP
+    // ==========================================
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;
 
-    //Image relationship
-    // mappedBy = "vehicleListing" tells spring not to create another foreign key
-    //Instead it should use the relationship already defined by the vehicleListing field inside vehicleImage
-    // That's why the string is "vehicleListing" it literally refers to this field
+    // ==========================================
+    // IMAGE RELATIONSHIP
+    // ==========================================
+
+    /*
+     * mappedBy = "vehicleListing" means VehicleImage.vehicleListing
+     * owns the database relationship.
+     *
+     * cascade = CascadeType.ALL means images can be persisted,
+     * updated and deleted together with the listing.
+     *
+     * orphanRemoval = true means removing an image from this
+     * collection will remove it from the database.
+     */
     @OneToMany(
             mappedBy = "vehicleListing",
             cascade = CascadeType.ALL,
@@ -70,6 +85,9 @@ public class VehicleListing {
     )
     private List<VehicleImage> images = new ArrayList<>();
 
+    // ==========================================
+    // TIMESTAMPS
+    // ==========================================
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -77,15 +95,22 @@ public class VehicleListing {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
+
         if (this.status == null) {
             this.status = ListingStatus.ACTIVE;
         }
     }
 
+    // ==========================================
+    // CONSTRUCTOR
+    // ==========================================
+
     public VehicleListing() {
     }
 
-    // --- GETTERS AND SETTERS ---
+    // ==========================================
+    // GETTERS AND SETTERS
+    // ==========================================
 
     public Long getId() {
         return id;
@@ -205,5 +230,29 @@ public class VehicleListing {
 
     public void setImages(List<VehicleImage> images) {
         this.images = images;
+    }
+
+    // ==========================================
+    // IMAGE HELPER METHODS
+    // ==========================================
+
+    /*
+     * Keeps both sides of the bidirectional relationship
+     * synchronized.
+     *
+     * This is important because VehicleImage.vehicleListing
+     * is the owning side of the JPA relationship.
+     */
+    public void addImage(VehicleImage image) {
+        images.add(image);
+        image.setVehicleListing(this);
+    }
+
+    /*
+     * Removes an image from both sides of the relationship.
+     */
+    public void removeImage(VehicleImage image) {
+        images.remove(image);
+        image.setVehicleListing(null);
     }
 }

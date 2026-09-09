@@ -69,7 +69,7 @@ public class MessageService {
                 );
 
         Page<Message> messages =
-                messageRepository.findByConversationOrderByCreatedAtAsc(
+                messageRepository.findByConversationOrderByCreatedAtAscIdAsc(
                         conversation,
                         pageable
                 );

@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MessageRepository
         extends JpaRepository<Message, Long> {
 
-    Page<Message> findByConversationOrderByCreatedAtAsc(
+    Page<Message> findByConversationOrderByCreatedAtAscIdAsc(
             Conversation conversation,
             Pageable pageable
     );
