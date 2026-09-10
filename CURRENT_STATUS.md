@@ -1,245 +1,132 @@
 # CURRENT STATUS
 
-## Phase 9
+## Phase 10
 
-├── 9.1 Favorites / Wishlist
-
-├── 9.2 Seller Profile Improvements
-
-├── 9.3 Buyer/Seller Messaging
-
-└── 9.4 Additional Marketplace Interactions
-
----
-
-# Phase 9.1 — Favorites / Wishlist
-
-## Implementation Status
-
-9.1.1 Domain/database model — implemented
-
-9.1.2 Repository — implemented
-
-9.1.3 Service — implemented
-
-9.1.4 Controller/API — implemented
-
-9.1.5 DTO — implemented
-
-9.1.6 Backend verification — verified
-
-9.1.7 Frontend API — implemented
-
-9.1.8 Favorites page — implemented
-
-9.1.9 Listing-card favorite interaction — implemented
-
-9.1.10 UX/error/loading handling — implemented
-
-9.1.11 Testing — verified
-
-## Files Created in 9.1
-
-### Backend
-
-- controller/FavoriteController.java
-- dto/favorite/FavoriteResponse.java
-- dto/favorite/FavoriteStatusResponse.java
-- entity/Favorite.java
-- mapper/FavoriteMapper.java
-- repository/FavoriteRepository.java
-
-### Frontend
-
-- api/favoriteApi.js
-- pages/FavoritesPage.jsx
-
-## Files Modified in 9.1
-
-### Backend
-
-- dto/vehicleListing/VehicleListingResponse.java
-
-### Frontend
-
-- components/ListingCard.jsx
-- components/Navbar.jsx
-- routes/AppRouter.jsx
-
-## 9.1 Verified Functionality
-
-- Authenticated user can add an active listing to favorites
-- Duplicate favorites are prevented
-- Authenticated user can remove a favorite
-- Favorite status can be queried
-- Authenticated user can retrieve their favorites
-- Unauthenticated favorite requests are rejected with `401`
-- Nonexistent listings are handled correctly
-- Inactive listings are rejected
-- Users can only retrieve their own favorites
-- Listing-card favorite toggle works
-- Favorites page works
-- Favorite loading/error handling works
-- Favorite API integration works
-- `FavoriteResponse` is returned instead of exposing the `Favorite` entity
-- `FavoriteMapper` converts `Favorite` entities to `FavoriteResponse`
-- Frontend and backend integration verified
-
-## 9.1 Status
-
-**COMPLETE**
+├── 10.1 Testing Architecture & Strategy
+├── 10.2 Backend Unit & Service Testing
+│   ├── 10.2.1 CurrentUserService Unit Testing
+│   │   ├── Authentication-state behavior tested
+│   │   ├── Authenticated user lookup tested
+│   │   ├── Missing database user tested
+│   │   ├── Mockito repository interaction verification
+│   │   └── SecurityContext cleanup between tests
+│   ├── 10.2.2 AuthService Unit Testing
+│   │   ├── Successful registration tested
+│   │   ├── Duplicate email registration tested
+│   │   ├── Successful login tested
+│   │   ├── Missing user login tested
+│   │   └── Incorrect password login tested
+│   ├── 10.2.3 VehicleListingService Unit Testing
+│   │   ├── Listing creation tested
+│   │   ├── Active listing retrieval tested
+│   │   ├── Current user listings tested
+│   │   ├── Seller listings tested
+│   │   ├── Listing ownership during update tested
+│   │   ├── Unauthorized update tested
+│   │   ├── Soft deletion tested
+│   │   ├── Missing listing behavior tested
+│   │   └── Deleted listing behavior tested
+│   ├── 10.2.4 FavoriteService Unit Testing
+│   │   ├── Favorite creation tested
+│   │   ├── Duplicate favorite prevention tested
+│   │   ├── Favorite removal tested
+│   │   ├── Favorite status lookup tested
+│   │   └── Current user favorites retrieval tested
+│   ├── 10.2.5 ConversationService Unit Testing
+│   │   ├── Conversation creation tested
+│   │   ├── Existing conversation reuse tested
+│   │   ├── Self-conversation prevention tested
+│   │   ├── Current user conversation retrieval tested
+│   │   ├── Participant conversation access tested
+│   │   └── Unauthorized conversation access tested
+│   └── 10.2.6 MessageService Unit Testing
+│       ├── Message sending tested
+│       ├── Message retrieval tested
+│       └── Conversation authorization delegation tested
+├── 10.3 Backend Repository / JPA Integration Testing
+│   ├── UserRepository testing completed
+│   │   ├── Lookup by email tested
+│   │   └── Missing-user (not-found) behavior tested
+│   ├── MessageRepository testing completed
+│   │   ├── Conversation message retrieval tested
+│   │   ├── Message ordering tested
+│   │   ├── Conversation isolation tested
+│   │   └── Pagination tested
+│   ├── ConversationRepository testing completed
+│   │   ├── Lookup by buyer/seller/listing tested
+│   │   ├── Missing-conversation behavior tested
+│   │   ├── Buyer-or-seller participant retrieval tested (paginated)
+│   │   ├── Lookup by id scoped to participant tested
+│   │   └── Non-participant access denial tested
+│   ├── FavoriteRepository testing completed
+│   │   ├── Lookup by user and listing tested
+│   │   ├── Missing-favorite behavior tested
+│   │   ├── Existence check tested (true/false cases)
+│   │   ├── Deletion by user and listing tested
+│   │   └── All-favorites-for-user retrieval tested
+│   ├── VehicleImageRepository testing completed
+│   │   ├── Image-existence check for listing tested
+│   │   ├── Display-order ascending retrieval tested
+│   │   ├── Image count per listing tested
+│   │   └── Listing data isolation (no cross-listing leakage) tested
+│   ├── VehicleListingRepository testing completed
+│   │   ├── Listing retrieval with images tested
+│   │   ├── VehicleListing ↔ VehicleImage relationship tested
+│   │   ├── Seller and status filtering tested
+│   │   ├── Pagination tested
+│   │   ├── Seller data isolation tested
+│   │   └── Missing listing behavior tested
+│   ├── Deterministic message ordering hardened in production
+│   │   └── createdAt ASC with id ASC tie-breaker
+│   └── Full test suite regression verified successfully
+├── 10.4 Backend Controller & API Testing
+├── 10.5 Backend Integration Testing
+├── 10.6 Frontend Testing
+├── 10.7 Security & Cross-Feature Testing
+└── 10.8 Test Review, Regression & Coverage
 
 ---
 
-# Phase 9.2 — Seller Profile Improvements
+### Issues Resolved During Testing
 
-## Implementation Status
+* **H2 reserved keyword conflict:** `year` was mapped to the database column `vehicle_year` while preserving the Java/API property name `year`.
+* **Missing test configuration:** Added test-specific `application.properties` with H2 and JWT configuration so the Spring application context could load during tests.
+* **JPA vehicle image relationship:** Corrected bidirectional `VehicleListing` ↔ `VehicleImage` relationship handling with synchronized collection/owning-side updates.
+* **Nondeterministic message ordering:** Message pagination originally ordered only by `createdAt`, allowing equal timestamps to produce inconsistent results. Production ordering was hardened to `createdAt ASC, id ASC`.
+* **Regression verification:** Full `clean test` execution now completes successfully.
 
-9.2.1 Seller profile/API assessment — verified
+### Verification
 
-9.2.2 Seller public profile endpoint — implemented
-
-9.2.3 Seller response DTO — already implemented
-
-9.2.4 Seller's active listings — implemented
-
-9.2.5 Frontend seller API — implemented
-
-9.2.6 Seller profile page — implemented
-
-9.2.7 Seller information on listing details — implemented
-
-9.2.8 Navigation to seller profile — implemented
-
-9.2.9 Loading/error/empty states — implemented
-
-9.2.10 Testing — verified
-
-## Files Created in 9.2
-
-### Frontend
-
-- api/sellerApi.js
-- pages/SellerProfilePage.jsx
-
-## Files Modified in 9.2
-
-### Frontend
-
-- routes/AppRouter.jsx
-- pages/ListingDetailsPage.jsx
-
-## 9.2 Verified Functionality
-
-- Public seller profile can be retrieved
-- Seller profile displays seller information
-- Seller's active listings can be retrieved
-- Seller listings are paginated
-- Seller profile page works
-- Seller profile loading state works
-- Seller profile error state works
-- Seller listings loading state works
-- Seller listings error state works
-- Empty seller listings state works
-- Seller profile is accessible without authentication
-- Seller listing cards reuse the existing `ListingCard` component
-- Listing details display seller information
-- Listing details provide navigation to the seller profile
-- Seller profile route works
-- Seller profile API integration works
-- Existing listing functionality remains operational
-- Frontend and backend integration verified
-- Complete Phase 9.2 flow tested successfully
-
-## 9.2 Status
-
-**COMPLETE**
-
----
-
-# Phase 9.3 — Buyer/Seller Messaging
-
-## Planned Implementation
-
-9.3.1 Messaging architecture/API assessment — implemented
-
-9.3.2 Domain/database model — implemented
-
-9.3.3 Repository — implemented
-
-9.3.4 Service — implemented
-
-9.3.5 Controller/API — implemented
-
-9.3.6 DTOs — implemented
-
-9.3.7 Backend verification — backend verified
-
-9.3.8 Frontend messaging API — implemented
-
-9.3.9 Conversation/message UI — implemented
-
-9.3.10 Listing-to-seller messaging entry point — implemented
-
-9.3.11 Conversation list/inbox — implemented
-
-9.3.12 Message loading/error/empty states — implemented
-
-9.3.13 Testing — done
-
-## 9.3 Current Approach
-
-The existing authentication, user, seller, and vehicle-listing architecture will be inspected before implementation.
-
-The messaging design should avoid unnecessary duplication and should establish a clear relationship between:
-
-- Buyer
-- Seller
-- Vehicle listing
-- Conversation
-- Individual message
-
-The existing JWT authentication and `CurrentUserService` will be reused for identifying the authenticated participant.
-
-The implementation should ensure that users can only access conversations in which they are participants.
-
-## Files Created in 9.3
-
-### Backend
-
-- controller/ConversationController.java
-- controller/MessageController.java
-- dto/messaging/ConversationResponse.java
-- dto/messaging/CreateConversationRequest.java
-- dto/messaging/CreateMessageRequest.java
-- dto/messaging/MessageResponse.java
-- entity/Conversation.java
-- entity/Message.java
-- exception/UnauthorizedConversationAccessException.java
-- mapper/ConversationMapper.java
-- mapper/MessageMapper.java
-- repository/ConversationRepository.java
-- repository/MessageRepository.java
-- service/ConversationService.java
-- service/MessageService.java
-
-## 9.3 Security Requirements
-
-Messaging endpoints must require authentication.
-
-Users must only be able to:
-
-- View their own conversations
-- View messages belonging to their conversations
-- Send messages to conversation participants
-- Create conversations according to the marketplace messaging rules
-
-A user must not be able to access another user's conversations by changing an ID in the request URL.
-
-## Current phase status
-
-Phase 9 can be considered complete for now.
+* **10.2 Backend Unit & Service Testing:** COMPLETE
+* **10.2.1 CurrentUserService Unit Testing:** COMPLETE
+* **10.2.2 AuthService Unit Testing:** COMPLETE
+* **10.2.3 VehicleListingService Unit Testing:** COMPLETE
+* **10.2.4 FavoriteService Unit Testing:** COMPLETE
+* **10.2.5 ConversationService Unit Testing:** COMPLETE
+* **10.2.6 MessageService Unit Testing:** COMPLETE
+* **10.3 Backend Repository / JPA Integration Testing:** COMPLETE
+* **UserRepository testing:** COMPLETE
+* **MessageRepository testing:** COMPLETE
+* **ConversationRepository testing:** COMPLETE
+* **FavoriteRepository testing:** COMPLETE
+* **VehicleImageRepository testing:** COMPLETE
+* **VehicleListingRepository testing:** COMPLETE
+* JUnit 5 and Mockito test dependencies resolved correctly.
+* Test sources placed under `src/test/java`.
+* H2 test database configuration verified.
+* Full test suite verified with `.\gradlew.bat clean test`.
+* Current result: **BUILD SUCCESSFUL; all tests passing (6 actionable tasks executed).**
+* Remaining compiler warnings (deprecated API usage in `SecurityConfig`, unchecked/unsafe operations in `VehicleListingServiceTest`) do not currently cause test failures.
 
 ## NEXT STEP
 
-Proceed to phase 10 - Testing
+* Begin **10.4 Backend Controller & API Testing**
+* Suggested focus areas:
+
+  * request/response mapping and status codes for each REST endpoint
+  * validation and error-handling behavior (bad input, missing fields)
+  * authentication/authorization enforcement at the controller layer
+  * correct delegation to service-layer methods (MockMvc + mocked services)
+  * pagination and query-parameter handling exposed via the API
+  * edge cases (not-found, forbidden, conflict scenarios)
+* After controller/API testing is complete, proceed to **10.5 Backend Integration Testing**.

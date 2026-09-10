@@ -1,3 +1,5 @@
+## Folder Structure
+
 autotrader/
 ├── backend/
 │ ├── .gradle/
@@ -106,6 +108,15 @@ autotrader/
 │ │ │ │ └── BackendApplication.java
 │ │ │ └── resources/
 │ │ └── test/
+│ │ └── java/com/autotrader/backend/
+│ │ ├── service/
+│ │ │ ├── AuthServiceTest.java
+│ │ │ ├── ConversationServiceTest.java
+│ │ │ ├── CurrentUserServiceTest.java
+│ │ │ ├── FavoriteServiceTest.java
+│ │ │ ├── MessageServiceTest.java
+│ │ │ └── VehicleListingServiceTest.java
+│ │ └── BackendApplicationTests.java
 │ ├── .gitattributes
 │ ├── .gitignore
 │ ├── build.gradle
