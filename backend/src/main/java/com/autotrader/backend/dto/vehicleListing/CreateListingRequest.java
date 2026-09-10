@@ -100,15 +100,15 @@ public class CreateListingRequest {
             String title,
             String description,
             BigDecimal price,
-            int year,
+            Integer year,
             String make,
             String model,
-            int mileage,
+            Integer mileage,
             FuelType fuelType,
             Transmission transmission,
             BodyType bodyType,
             String city
-            ) {
+    ) {
         this.title = title;
         this.description = description;
         this.price = price;
@@ -153,7 +153,7 @@ public class CreateListingRequest {
         return year;
     }
 
-    public void setYear(int year) {
+    public void setYear(Integer year) {
         this.year = year;
     }
 
@@ -177,7 +177,7 @@ public class CreateListingRequest {
         return mileage;
     }
 
-    public void setMileage(int mileage) {
+    public void setMileage(Integer mileage) {
         this.mileage = mileage;
     }
 

@@ -99,11 +99,11 @@ public class VehicleListingResponse {
     }
 
     //Mileage
-    public int getMileage() {
+    public Integer getMileage() {
         return mileage;
     }
 
-    public void setMileage(int mileage) {
+    public void setMileage(Integer mileage) {
         this.mileage = mileage;
     }
 

@@ -106,7 +106,7 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),               //Inject numeric Http status code 404
-                HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(),//Inject standard Http description String("Not Found")
+                HttpStatus.NOT_FOUND.getReasonPhrase(),//Inject standard Http description String("Not Found")
                 ex.getMessage(),                            //Message stating "Image not found"
                 request.getRequestURI()
         );
