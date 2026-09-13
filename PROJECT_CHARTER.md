@@ -421,6 +421,9 @@ Potential future work:
 - Cloud object storage
 - Advanced search
 - Use docker testcontainers + PostgreSQL instead of h2 for repository testing.
+- Messaging integration tests
+- Image integration tests
+- Seller/user integration tests
 
 These features should only be introduced after explaining the problem they solve and determining that the project actually requires them.
 

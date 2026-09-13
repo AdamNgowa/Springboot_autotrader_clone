@@ -114,7 +114,24 @@
 │       ├── Current authenticated user profile tested
 │       ├── Public seller profile tested (found, not found)
 │       └── Seller's active listings tested (paginated)
-├── 10.5 Backend Integration Testing
+├── 10.5 Backend Integration Testing (IN PROGRESS)
+│   ├── AuthenticationIntegrationTest completed
+│   ├── VehicleListingIntegrationTest completed
+│   │   └── Missing AuthenticationEntryPoint fixed — unauthenticated
+│   │       requests were returning 403 instead of 401
+│   ├── FavoritesIntegrationTest completed
+│   │   ├── Add/remove favorite tested
+│   │   ├── Idempotent favoriting tested
+│   │   ├── Per-user scoping tested
+│   │   ├── Favorites list retrieval tested
+│   │   └── 404/401 rejection paths tested
+│   ├── Shared ApplicationContext cleanup ordering fixed
+│   │   └── Child tables (favorites/messages/conversations/images)
+│   │       now cleared before parent tables (listings/users) in
+│   │       @BeforeEach, since integration test classes with identical
+│   │       @SpringBootTest config share one H2 database
+│   └── DEFERRED for now (see below): messaging, image, and
+│       seller/user integration tests
 ├── 10.6 Frontend Testing
 ├── 10.7 Security & Cross-Feature Testing
 └── 10.8 Test Review, Regression & Coverage
@@ -128,6 +145,7 @@
 * **JPA vehicle image relationship:** Corrected bidirectional `VehicleListing` ↔ `VehicleImage` relationship handling with synchronized collection/owning-side updates.
 * **Nondeterministic message ordering:** Message pagination originally ordered only by `createdAt`, allowing equal timestamps to produce inconsistent results. Production ordering was hardened to `createdAt ASC, id ASC`.
 * **Boxed/primitive mismatch in listing DTOs:** `VehicleListingResponse.getMileage()`, and the `mileage`/`year` setters on `CreateListingRequest` and `UpdateListingRequest`, declared primitive `int`/`Integer` inconsistently against their boxed `Integer` fields. A `null` mileage (e.g. any DTO built without it) triggered an unboxing `NullPointerException` during JSON serialization, surfacing as an unexplained 500 in `VehicleListingControllerTest` and `UserControllerTest`. Fixed by making field, getter, and setter consistently `Integer` across all three DTOs.
+* **Missing AuthenticationEntryPoint:** No custom `AuthenticationEntryPoint` was registered in `SecurityConfig`, so Spring Security's default `Http403ForbiddenEntryPoint` returned 403 for unauthenticated requests instead of 401. Added `JwtAuthenticationEntryPoint` and wired it via `.exceptionHandling(...)`.
 * **Regression verification:** Full `clean test` execution now completes successfully.
 
 ### Verification
@@ -154,6 +172,11 @@
 * **ConversationControllerTest:** COMPLETE
 * **MessageControllerTest:** COMPLETE
 * **UserControllerTest:** COMPLETE
+* **10.5 Backend Integration Testing:** IN PROGRESS
+* **AuthenticationIntegrationTest:** COMPLETE
+* **VehicleListingIntegrationTest:** COMPLETE
+* **FavoritesIntegrationTest:** COMPLETE
+* **MessagingIntegrationTest, ImageIntegrationTest, Seller/UserIntegrationTest:** DEFERRED — tracked in `PROJECT_CHARTER.md` under Phase 10.5, to be picked up after 10.6/10.7
 * JUnit 5 and Mockito test dependencies resolved correctly.
 * Test sources placed under `src/test/java`.
 * H2 test database configuration verified.
@@ -166,11 +189,6 @@
 
 ## NEXT STEP
 
-* Begin **10.5 Backend Integration Testing**
-* Suggested focus areas:
-
-  * end-to-end request flows across the full Spring context (real security filter chain enabled, not `addFilters = false`)
-  * JWT authentication and authorization enforced through actual HTTP requests
-  * multi-layer flows spanning controller → service → repository against the real H2 schema
-  * resolving the two documented exception-handling gaps from 10.4 (`IllegalArgumentException`, `UnauthorizedConversationAccessException`) so they return structured error responses instead of surfacing as unhandled exceptions
-* After integration testing is complete, proceed to **10.6 Frontend Testing**.
+* Pause remaining 10.5 integration tests (messaging, image, seller/user — deferred, see `PROJECT_CHARTER.md`)
+* Begin **10.6 Frontend Testing**
+* After finishing 10.6 proceed to **10.7 Security & Cross-Feature Testing**
