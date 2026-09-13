@@ -80,6 +80,40 @@
 │   │   └── createdAt ASC with id ASC tie-breaker
 │   └── Full test suite regression verified successfully
 ├── 10.4 Backend Controller & API Testing
+│   ├── AuthControllerTest completed
+│   │   ├── Valid registration tested (201, delegates to service)
+│   │   └── Invalid registration tested (400, service not called)
+│   │   ├── Valid login tested (200, delegates to service)
+│   │   └── Invalid login tested (400, service not called)
+│   ├── VehicleListingControllerTest completed
+│   │   ├── Listing creation tested (201, Location header, delegates to service)
+│   │   ├── Invalid creation tested (400, service not called)
+│   │   ├── Paginated listing retrieval tested
+│   │   ├── Current user's listings tested
+│   │   ├── Listing by id tested (found / not found)
+│   │   ├── Listing update tested (valid, invalid, not-owner-forbidden)
+│   │   └── Listing deletion tested (success, not found)
+│   ├── FavoriteControllerTest completed
+│   │   ├── Add favorite tested (success, listing not found)
+│   │   ├── Remove favorite tested
+│   │   └── Favorite status and current-user favorites list tested
+│   ├── ImageControllerTest completed
+│   │   ├── Image upload tested (success, unhandled invalid-file gap documented)
+│   │   ├── Image deletion tested (success, not found)
+│   │   ├── Primary image assignment tested (success, not found)
+│   │   └── Image reorder tested (valid, invalid)
+│   ├── ConversationControllerTest completed
+│   │   ├── Conversation creation tested (valid, invalid)
+│   │   ├── Current user's conversations tested (paginated)
+│   │   ├── Conversation retrieval tested (participant access)
+│   │   └── Unauthorized access gap documented (no handler yet for 403 conversion)
+│   ├── MessageControllerTest completed
+│   │   ├── Paginated message retrieval tested
+│   │   └── Message sending tested (valid, invalid)
+│   └── UserControllerTest completed
+│       ├── Current authenticated user profile tested
+│       ├── Public seller profile tested (found, not found)
+│       └── Seller's active listings tested (paginated)
 ├── 10.5 Backend Integration Testing
 ├── 10.6 Frontend Testing
 ├── 10.7 Security & Cross-Feature Testing
@@ -93,6 +127,7 @@
 * **Missing test configuration:** Added test-specific `application.properties` with H2 and JWT configuration so the Spring application context could load during tests.
 * **JPA vehicle image relationship:** Corrected bidirectional `VehicleListing` ↔ `VehicleImage` relationship handling with synchronized collection/owning-side updates.
 * **Nondeterministic message ordering:** Message pagination originally ordered only by `createdAt`, allowing equal timestamps to produce inconsistent results. Production ordering was hardened to `createdAt ASC, id ASC`.
+* **Boxed/primitive mismatch in listing DTOs:** `VehicleListingResponse.getMileage()`, and the `mileage`/`year` setters on `CreateListingRequest` and `UpdateListingRequest`, declared primitive `int`/`Integer` inconsistently against their boxed `Integer` fields. A `null` mileage (e.g. any DTO built without it) triggered an unboxing `NullPointerException` during JSON serialization, surfacing as an unexplained 500 in `VehicleListingControllerTest` and `UserControllerTest`. Fixed by making field, getter, and setter consistently `Integer` across all three DTOs.
 * **Regression verification:** Full `clean test` execution now completes successfully.
 
 ### Verification
@@ -111,22 +146,31 @@
 * **FavoriteRepository testing:** COMPLETE
 * **VehicleImageRepository testing:** COMPLETE
 * **VehicleListingRepository testing:** COMPLETE
+* **10.4 Backend Controller & API Testing:** COMPLETE
+* **AuthControllerTest:** COMPLETE
+* **VehicleListingControllerTest:** COMPLETE
+* **FavoriteControllerTest:** COMPLETE
+* **ImageControllerTest:** COMPLETE
+* **ConversationControllerTest:** COMPLETE
+* **MessageControllerTest:** COMPLETE
+* **UserControllerTest:** COMPLETE
 * JUnit 5 and Mockito test dependencies resolved correctly.
 * Test sources placed under `src/test/java`.
 * H2 test database configuration verified.
 * Full test suite verified with `.\gradlew.bat clean test`.
-* Current result: **BUILD SUCCESSFUL; all tests passing (6 actionable tasks executed).**
+* Current result: **BUILD SUCCESSFUL; all tests passing.**
+* Two documented gaps carried forward (not regressions, tracked for 10.7):
+  * `IllegalArgumentException` on invalid image upload has no dedicated `@ExceptionHandler` — currently surfaces as an unhandled exception rather than a structured 400.
+  * `UnauthorizedConversationAccessException` has no dedicated `@ExceptionHandler` — currently surfaces as an unhandled exception rather than a structured 403.
 * Remaining compiler warnings (deprecated API usage in `SecurityConfig`, unchecked/unsafe operations in `VehicleListingServiceTest`) do not currently cause test failures.
 
 ## NEXT STEP
 
-* Begin **10.4 Backend Controller & API Testing**
+* Begin **10.5 Backend Integration Testing**
 * Suggested focus areas:
 
-  * request/response mapping and status codes for each REST endpoint
-  * validation and error-handling behavior (bad input, missing fields)
-  * authentication/authorization enforcement at the controller layer
-  * correct delegation to service-layer methods (MockMvc + mocked services)
-  * pagination and query-parameter handling exposed via the API
-  * edge cases (not-found, forbidden, conflict scenarios)
-* After controller/API testing is complete, proceed to **10.5 Backend Integration Testing**.
+  * end-to-end request flows across the full Spring context (real security filter chain enabled, not `addFilters = false`)
+  * JWT authentication and authorization enforced through actual HTTP requests
+  * multi-layer flows spanning controller → service → repository against the real H2 schema
+  * resolving the two documented exception-handling gaps from 10.4 (`IllegalArgumentException`, `UnauthorizedConversationAccessException`) so they return structured error responses instead of surfacing as unhandled exceptions
+* After integration testing is complete, proceed to **10.6 Frontend Testing**.

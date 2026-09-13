@@ -420,7 +420,7 @@ Potential future work:
 - Background jobs
 - Cloud object storage
 - Advanced search
-- Use docker testcontainers instead of h2 for repository testing.
+- Use docker testcontainers + PostgreSQL instead of h2 for repository testing.
 
 These features should only be introduced after explaining the problem they solve and determining that the project actually requires them.
 

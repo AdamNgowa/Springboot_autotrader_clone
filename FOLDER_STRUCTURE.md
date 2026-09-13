@@ -107,16 +107,34 @@ autotrader/
 │ │ │ │ │ └── VehicleListingSpecificationBuilder.java
 │ │ │ │ └── BackendApplication.java
 │ │ │ └── resources/
+│ │ │ └── application.properties
 │ │ └── test/
-│ │ └── java/com/autotrader/backend/
-│ │ ├── service/
-│ │ │ ├── AuthServiceTest.java
-│ │ │ ├── ConversationServiceTest.java
-│ │ │ ├── CurrentUserServiceTest.java
-│ │ │ ├── FavoriteServiceTest.java
-│ │ │ ├── MessageServiceTest.java
-│ │ │ └── VehicleListingServiceTest.java
-│ │ └── BackendApplicationTests.java
+│ │ ├── java/com/autotrader/backend/
+│ │ │ ├── controller/
+│ │ │ │ ├── AuthControllerTest.java
+│ │ │ │ ├── ConversationControllerTest.java
+│ │ │ │ ├── FavoriteControllerTest.java
+│ │ │ │ ├── ImageControllerTest.java
+│ │ │ │ ├── MessageControllerTest.java
+│ │ │ │ ├── UserControllerTest.java
+│ │ │ │ └── VehicleListingControllerTest.java
+│ │ │ ├── repository/
+│ │ │ │ ├── ConversationRepositoryTest.java
+│ │ │ │ ├── FavoriteRepositoryTest.java
+│ │ │ │ ├── MessageRepositoryTest.java
+│ │ │ │ ├── UserRepositoryTest.java
+│ │ │ │ ├── VehicleImageRepositoryTest.java
+│ │ │ │ └── VehicleListingRepositoryTest.java
+│ │ │ ├── service/
+│ │ │ │ ├── AuthServiceTest.java
+│ │ │ │ ├── ConversationServiceTest.java
+│ │ │ │ ├── CurrentUserServiceTest.java
+│ │ │ │ ├── FavoriteServiceTest.java
+│ │ │ │ ├── MessageServiceTest.java
+│ │ │ │ └── VehicleListingServiceTest.java
+│ │ │ └── BackendApplicationTests.java
+│ │ └── resources/
+│ │ └── application.properties
 │ ├── .gitattributes
 │ ├── .gitignore
 │ ├── build.gradle
