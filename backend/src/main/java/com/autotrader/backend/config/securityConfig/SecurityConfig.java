@@ -1,6 +1,7 @@
 package com.autotrader.backend.config.securityConfig;
 
 import com.autotrader.backend.security.CustomUserDetailsService;
+import com.autotrader.backend.security.JwtAuthenticationEntryPoint;
 import com.autotrader.backend.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ public class SecurityConfig {
     // These 'final' fields guarantee that once these dependencies are set, they can never be changed or be null.
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService userDetailsService;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     // 2. CONSTRUCTOR INJECTION
     // Spring looks at this constructor, finds the instances of these classes in its memory container,
@@ -36,10 +38,12 @@ public class SecurityConfig {
     // 'this.permanentVar = incomingTempVar' assigns the incoming tool into our permanent class slot.
     public SecurityConfig(
             JwtAuthenticationFilter jwtAuthenticationFilter,
-            CustomUserDetailsService userDetailsService) {
+            CustomUserDetailsService userDetailsService,
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
 
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.userDetailsService = userDetailsService;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
     }
 
     // 3. PASSWORD ENCODER BEAN
@@ -133,6 +137,23 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS))
+
+                // Configure what happens when an UNAUTHENTICATED request is denied access.
+                /*
+                 By default, Spring Security falls back to Http403ForbiddenEntryPoint, which
+                 returns 403 for every denial - even when the real problem is "no credentials
+                 were presented at all" (which should be 401). Registering our own
+                 AuthenticationEntryPoint here tells ExceptionTranslationFilter to send a proper
+                 401 response, with a JSON body matching the rest of our API, whenever an
+                 anonymous request is rejected by the authorizeHttpRequests rules below.
+
+                 This is separate from, and does not affect, the 403 responses our
+                 GlobalExceptionHandler already returns for UnauthorizedListingAccessException -
+                 that case only ever happens to an ALREADY-authenticated user, deeper in the
+                 request, after the filter chain has let them through.
+                 */
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
                 // Configure Authorization Rules (Who can access what URLs)
                 // 1. Open up the rulebook on who is allowed to see what URLs
