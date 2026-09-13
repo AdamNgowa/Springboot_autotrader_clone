@@ -3,7 +3,11 @@ package com.autotrader.backend.integration;
 import com.autotrader.backend.entity.Enums.ListingStatus;
 import com.autotrader.backend.entity.User;
 import com.autotrader.backend.entity.VehicleListing;
+import com.autotrader.backend.repository.ConversationRepository;
+import com.autotrader.backend.repository.FavoriteRepository;
+import com.autotrader.backend.repository.MessageRepository;
 import com.autotrader.backend.repository.UserRepository;
+import com.autotrader.backend.repository.VehicleImageRepository;
 import com.autotrader.backend.repository.VehicleListingRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,10 +41,36 @@ class VehicleListingIntegrationTest {
     private VehicleListingRepository vehicleListingRepository;
 
     @Autowired
+    private FavoriteRepository favoriteRepository;
+
+    @Autowired
+    private MessageRepository messageRepository;
+
+    @Autowired
+    private ConversationRepository conversationRepository;
+
+    @Autowired
+    private VehicleImageRepository vehicleImageRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
+        // Spring caches and reuses the ApplicationContext (and therefore the
+        // same in-memory H2 database) across test classes that share an
+        // identical @SpringBootTest configuration signature. That means rows
+        // left behind by other integration test classes (Favorites,
+        // Messaging, Images) can still be present when this class runs.
+        //
+        // messages/conversations/favorites/vehicle_images all hold
+        // non-nullable foreign keys into vehicle_listings and/or users, so
+        // child tables must be cleared before parent tables or deleteAll()
+        // below throws a ConstraintViolationException.
+        messageRepository.deleteAll();
+        conversationRepository.deleteAll();
+        favoriteRepository.deleteAll();
+        vehicleImageRepository.deleteAll();
         vehicleListingRepository.deleteAll();
         userRepository.deleteAll();
     }
