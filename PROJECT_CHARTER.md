@@ -331,26 +331,49 @@ Not yet scoped. Held open for future marketplace interaction features as require
 
 ---
 
-# Phase 10 — Testing
+# Phase 10 — Testing & Quality Assurance
 
-Backend:
+Testing and quality assurance were established across the backend, with the frontend testing infrastructure also established.
 
-- Unit testing
-- Service tests
-- Repository tests
-- Controller tests
-- MockMvc
-- Mockito
-- Integration testing
+Implemented:
 
-Frontend:
+* Testing architecture and strategy
+* Backend unit and service testing
+* Repository / JPA integration testing with H2
+* Controller and API testing
+* Backend integration testing
+* Authentication integration testing
+* Vehicle listing integration testing
+* Favorites integration testing
+* Frontend testing infrastructure using Vitest
+* jsdom browser-like test environment
+* React Testing Library setup
+* `@testing-library/jest-dom` setup
+* Initial frontend test coverage for `AuthContext`
+* Verification that the frontend test suite executes successfully
 
-- React Testing Library
-- Component testing
-- Hook testing
-- API mocking
+Backend testing verified:
 
-Testing should be introduced after the relevant functionality is stable enough to test meaningfully.
+* Service behavior
+* Repository persistence and queries
+* HTTP status codes
+* Request validation
+* Authentication and authorization boundaries
+* Core listing, favorite, image, conversation, message, and user APIs
+* Deterministic message ordering
+* Core authentication, listing, and favorites integration flows
+
+Frontend testing setup verified:
+
+* Vitest configuration
+* jsdom environment
+* React Testing Library integration
+* Test setup configuration
+* Initial authentication context behavior
+
+The remaining frontend testing expansion, security and cross-feature testing, regression/coverage review, and additional integration testing are intentionally deferred to Phase 13.
+
+**Phase 10 overall status: COMPLETE**
 
 # Phase 11 — Docker & Developer Tooling
 
@@ -406,24 +429,32 @@ Planned:
 
 Potential future work:
 
-- Refresh tokens
-- Email verification
-- Password reset
-- Expanded role-based authorization
-- Rate limiting
-- Database indexing
-- Caching
-- Performance optimization
-- Security hardening
-- Audit logging
-- API versioning
-- Background jobs
-- Cloud object storage
-- Advanced search
-- Use docker testcontainers + PostgreSQL instead of h2 for repository testing.
-- Messaging integration tests
-- Image integration tests
-- Seller/user integration tests
+* Refresh tokens
+* Email verification
+* Password reset
+* Expanded role-based authorization
+* Rate limiting
+* Database indexing
+* Caching
+* Performance optimization
+* Security hardening
+* Audit logging
+* API versioning
+* Background jobs
+* Cloud object storage
+* Advanced search
+
+### Deferred Testing & Quality Work
+
+Testing and quality improvements deferred from Phase 10 for future production hardening:
+
+* Expanded frontend testing with Vitest, jsdom, and React Testing Library
+* Security & cross-feature testing
+* Test review, regression testing, and coverage analysis
+* Additional messaging integration tests
+* Additional image management integration tests
+* Seller/user integration tests
+* Docker Testcontainers with PostgreSQL for repository/JPA integration testing instead of H2
 
 These features should only be introduced after explaining the problem they solve and determining that the project actually requires them.
 
