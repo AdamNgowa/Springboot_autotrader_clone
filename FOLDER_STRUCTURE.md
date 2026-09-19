@@ -1,5 +1,3 @@
-## Folder Structure
-
 autotrader/
 ├── backend/
 │   ├── .gradle/
@@ -141,11 +139,13 @@ autotrader/
 │   │           └── application.properties
 │   ├── .gitattributes
 │   ├── .gitignore
+│   ├── Dockerfile
 │   ├── build.gradle
 │   ├── gradlew
 │   ├── gradlew.bat
 │   ├── HELP.md
 │   └── settings.gradle
+│
 ├── frontend/
 │   ├── dist/
 │   ├── node_modules/
@@ -206,8 +206,11 @@ autotrader/
 │   ├── package.json
 │   ├── README.md
 │   └── vite.config.js
+│
 ├── uploads/
+│
 ├── .gitignore
+├── docker-compose.yml
 ├── CURRENT_STATUS.md
 ├── FOLDER_STRUCTURE.md
 ├── PROJECT_CHARTER.md
