@@ -1,0 +1,9 @@
+.gradle/
+src/
+uploads/
+gradle/
+.git/
+.gitignore
+.gitattributes
+.idea/
+*.iml

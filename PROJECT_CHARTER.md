@@ -413,16 +413,26 @@ The goal is to experience building tools that improve the development workflow, 
 
 Planned:
 
-- Environment profiles
-- Production configuration
-- Secrets management
-- HTTPS
-- Reverse proxy
-- CI/CD
-- Logging
-- Monitoring
-- Health checks
-- Cloud hosting
+* Environment profiles
+* Production configuration
+* Centralized environment variables
+* Frontend API configuration
+* Secrets management
+* Database migration strategy
+* Multi-stage backend Docker build
+* HTTPS
+* Reverse proxy
+* CI/CD
+* Logging
+* Monitoring
+* Health checks
+* PostgreSQL readiness handling
+* Cloud hosting
+
+The objective of this phase is to move the application from a local Docker-based environment 
+to a deployable production environment, with appropriate configuration, deployment automation, 
+networking, and basic operational visibility.
+
 
 ---
 
@@ -439,11 +449,16 @@ Potential future work:
 * Caching
 * Performance optimization
 * Security hardening
+* Container security
+* Non-root containers
+* Image size optimization
 * Audit logging
 * API versioning
 * Background jobs
 * Cloud object storage
 * Advanced search
+* Production observability improvements
+* Reliability and resilience improvements
 
 ### Deferred Testing & Quality Work
 
@@ -456,6 +471,18 @@ Testing and quality improvements deferred from Phase 10 for future production ha
 * Additional image management integration tests
 * Seller/user integration tests
 * Docker Testcontainers with PostgreSQL for repository/JPA integration testing instead of H2
+
+### Deferred Infrastructure & Deployment Improvements
+
+Additional improvements that are not required for the initial deployment but may become valuable during production hardening:
+
+* More advanced CI/CD workflows
+* Automated rollback strategies
+* Infrastructure-as-code
+* Blue/green or canary deployments
+* Advanced monitoring and alerting
+* Distributed caching
+* Additional scalability improvements
 
 These features should only be introduced after explaining the problem they solve and determining that the project actually requires them.
 
