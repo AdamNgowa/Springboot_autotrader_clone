@@ -31,5 +31,15 @@ services:
     depends_on:
       - postgres
 
+  frontend:
+    image: autotrader-frontend:latest
+    container_name: autotrader-frontend
+
+    ports:
+      - "5173:80"
+
+    depends_on:
+      - backend
+
 volumes:
   postgres-data:
