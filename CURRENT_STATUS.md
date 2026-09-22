@@ -4,7 +4,7 @@
 ├── 11.2 Dockerizing PostgreSQL — COMPLETE
 ├── 11.3 Dockerizing Spring Boot Backend — COMPLETE
 ├── 11.4 Dockerizing React Frontend — COMPLETE
-├── 11.5 Docker Compose & Multi-Container Networking — PENDING
+├── 11.5 Docker Compose & Multi-Container Networking — COMPLETE
 ├── 11.6 Persistent Volumes & Upload Storage — PENDING
 ├── 11.7 Developer Tooling — PENDING
 └── 11.8 Phase 11 Review — PENDING
