@@ -28,6 +28,9 @@ services:
     ports:
       - "8080:8080"
 
+    volumes:
+      - uploads-data:/app/uploads
+
     depends_on:
       - postgres
 
@@ -43,3 +46,4 @@ services:
 
 volumes:
   postgres-data:
+  uploads-data:
