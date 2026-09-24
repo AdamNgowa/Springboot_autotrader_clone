@@ -405,89 +405,124 @@ Planned:
 - Dependency auditing
 - Project health reports
 
-The goal is to experience building tools that improve the development workflow, not only applications for end users.
+### Developer Tooling Status
 
----
+The following developer tooling has been implemented:
+
+- Development scripts
+
+The following items remain optional or deferred because they primarily provide developer convenience rather than significant architectural or production value:
+
+- Project document generator
+- Folder structure generator
+- Current status generator
+- Git hooks
+- Project health reports
+
+The following items have greater relevance to production workflows and may be addressed in later phases where appropriate:
+
+- Formatting and linting
+- Environment validation
+- Dependency auditing
+
+Developer tooling should be introduced when it solves a real development, maintenance, or operational problem. Convenience tooling should not take priority over more valuable application, deployment, security, testing, or production engineering work.
+
 
 # Phase 12 — Deployment
 
 Planned:
 
-* Environment profiles
-* Production configuration
-* Centralized environment variables
-* Frontend API configuration
-* Secrets management
-* Database migration strategy
-* Multi-stage backend Docker build
-* HTTPS
-* Reverse proxy
-* CI/CD
-* Logging
-* Monitoring
-* Health checks
-* PostgreSQL readiness handling
-* Cloud hosting
+- Environment profiles
+- Production configuration
+- Centralized environment variables
+- Frontend API configuration
+- Secrets management
+- Database migration strategy
+- Multi-stage backend Docker build
+- HTTPS
+- Reverse proxy
+- CI/CD
+- Logging
+- Monitoring
+- Health checks
+- PostgreSQL readiness handling
+- Cloud hosting
 
-The objective of this phase is to move the application from a local Docker-based environment 
-to a deployable production environment, with appropriate configuration, deployment automation, 
-networking, and basic operational visibility.
-
-
----
 
 # Phase 13 — Production Hardening
 
 Potential future work:
 
-* Refresh tokens
-* Email verification
-* Password reset
-* Expanded role-based authorization
-* Rate limiting
-* Database indexing
-* Caching
-* Performance optimization
-* Security hardening
-* Container security
-* Non-root containers
-* Image size optimization
-* Audit logging
-* API versioning
-* Background jobs
-* Cloud object storage
-* Advanced search
-* Production observability improvements
-* Reliability and resilience improvements
+### General Improvements
+
+- Refresh tokens
+- Email verification
+- Password reset
+- Expanded role-based authorization
+- Database indexing
+- Caching
+- Performance optimization
+- API versioning
+- Background jobs
+- Cloud object storage
+- Advanced search
+- Advanced monitoring and alerting
+- Dependency auditing
+- Formatting and linting
+- Environment validation
+
+These improvements may improve maintainability, functionality, developer experience, or scalability, but they should be introduced based on an identified need rather than simply because they are common production technologies.
+
+### Production Hardening
+
+The following items directly strengthen the application's security, reliability, resilience, or operational safety:
+
+- Rate limiting
+- Security hardening
+- Container security
+- Non-root containers
+- Image size and runtime image optimization
+- Audit logging
+- Reliability and resilience improvements
+- Production observability improvements
 
 ### Deferred Testing & Quality Work
 
 Testing and quality improvements deferred from Phase 10 for future production hardening:
 
-* Expanded frontend testing with Vitest, jsdom, and React Testing Library
-* Security & cross-feature testing
-* Test review, regression testing, and coverage analysis
-* Additional messaging integration tests
-* Additional image management integration tests
-* Seller/user integration tests
-* Docker Testcontainers with PostgreSQL for repository/JPA integration testing instead of H2
+- Expanded frontend testing with Vitest, jsdom, and React Testing Library
+- Security & cross-feature testing
+- Test review, regression testing, and coverage analysis
+- Additional messaging integration tests
+- Additional image management integration tests
+- Seller/user integration tests
+- Docker Testcontainers with PostgreSQL for repository/JPA integration testing instead of H2
 
 ### Deferred Infrastructure & Deployment Improvements
 
-Additional improvements that are not required for the initial deployment but may become valuable during production hardening:
+Additional infrastructure improvements that may be introduced after the initial deployment when their value is established:
 
-* More advanced CI/CD workflows
-* Automated rollback strategies
-* Infrastructure-as-code
-* Blue/green or canary deployments
-* Advanced monitoring and alerting
-* Distributed caching
-* Additional scalability improvements
+- More advanced CI/CD workflows
+- Automated rollback strategies
+- Infrastructure-as-code
+- Blue/green or canary deployments
+- Distributed caching
+- Additional scalability improvements
 
 These features should only be introduced after explaining the problem they solve and determining that the project actually requires them.
 
----
+### Deferred Production Architecture
 
+Some features may require larger architectural changes and should remain deferred until there is a demonstrated need:
+
+- Cloud object storage for uploaded images
+- Background job processing
+- Advanced search infrastructure
+- Distributed caching
+- More sophisticated deployment strategies
+- Additional scalability improvements
+
+The project should prioritize understanding the problem and the underlying engineering concepts before introducing additional infrastructure, abstractions, or distributed-system components.
 # Mentoring Agreement
 
 Throughout this project, the assistant should act as a **senior software engineer and mentor**, not as someone who simply writes code.
