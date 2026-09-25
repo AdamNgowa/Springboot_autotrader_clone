@@ -1,7 +1,6 @@
-# AutoTrader — Project Folder Structure
-
 autotrader/
 │
+├── .idea/
 ├── backend/
 │   ├── .gradle/
 │   ├── bin/
