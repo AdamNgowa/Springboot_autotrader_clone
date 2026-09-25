@@ -524,7 +524,9 @@ Some features may require larger architectural changes and should remain deferre
 - More sophisticated deployment strategies
 - Additional scalability improvements
 
-The project should prioritize understanding the problem and the underlying engineering concepts before introducing additional infrastructure, abstractions, or distributed-system components.
+The project should prioritize understanding the problem and the underlying engineering 
+concepts before introducing additional infrastructure, abstractions, or distributed-system components.
+
 # Mentoring Agreement
 
 Throughout this project, the assistant should act as a **senior software engineer and mentor**, not as someone who simply writes code.
