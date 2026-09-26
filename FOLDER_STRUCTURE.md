@@ -1,6 +1,9 @@
+# AutoTrader — Project Folder Structure
+
 autotrader/
 │
 ├── .idea/
+│
 ├── backend/
 │   ├── .gradle/
 │   ├── bin/
@@ -35,121 +38,121 @@ autotrader/
 │   │   │   │
 │   │   │   ├── dto/
 │   │   │   │   ├── auth/
-│   │   │   │   ├── error/
-│   │   │   │   ├── favorite/
-│   │   │   │   ├── image/
-│   │   │   │   ├── messaging/
-│   │   │   │   ├── user/
-│   │   │   │   └── vehicleListing/
-│   │   │   │
-│   │   │   ├── entity/
-│   │   │   │   ├── Enums/
-│   │   │   │   │   ├── BodyType.java
-│   │   │   │   │   ├── FuelType.java
-│   │   │   │   │   ├── ListingStatus.java
-│   │   │   │   │   ├── Transmission.java
-│   │   │   │   │   └── UserRole.java
-│   │   │   │   │
-│   │   │   │   ├── Conversation.java
-│   │   │   │   ├── Favorite.java
-│   │   │   │   ├── Message.java
-│   │   │   │   ├── User.java
-│   │   │   │   ├── VehicleImage.java
-│   │   │   │   └── VehicleListing.java
-│   │   │   │
-│   │   │   ├── exception/
-│   │   │   │   ├── AuthenticatedUserNotFoundException.java
-│   │   │   │   ├── EmailAlreadyExistsException.java
-│   │   │   │   ├── GlobalExceptionHandler.java
-│   │   │   │   ├── ImageNotFoundException.java
-│   │   │   │   ├── InvalidCredentialsException.java
-│   │   │   │   ├── ListingNotFoundException.java
-│   │   │   │   ├── UnauthorizedConversationAccessException.java
-│   │   │   │   ├── UnauthorizedListingAccessException.java
-│   │   │   │   └── UserNotFoundException.java
-│   │   │   │
-│   │   │   ├── mapper/
-│   │   │   │   ├── ConversationMapper.java
-│   │   │   │   ├── FavoriteMapper.java
-│   │   │   │   ├── ImageMapper.java
-│   │   │   │   ├── MessageMapper.java
-│   │   │   │   ├── UserMapper.java
-│   │   │   │   └── VehicleListingMapper.java
-│   │   │   │
-│   │   │   ├── repository/
-│   │   │   │   ├── ConversationRepository.java
-│   │   │   │   ├── FavoriteRepository.java
-│   │   │   │   ├── MessageRepository.java
-│   │   │   │   ├── UserRepository.java
-│   │   │   │   ├── VehicleImageRepository.java
-│   │   │   │   └── VehicleListingRepository.java
-│   │   │   │
-│   │   │   ├── security/
-│   │   │   │   ├── CustomUserDetailsService.java
-│   │   │   │   ├── JwtAuthenticationFilter.java
-│   │   │   │   └── JwtService.java
-│   │   │   │
-│   │   │   ├── service/
-│   │   │   │   ├── AuthService.java
-│   │   │   │   ├── ConversationService.java
-│   │   │   │   ├── CurrentUserService.java
-│   │   │   │   ├── FavoriteService.java
-│   │   │   │   ├── FileStorageService.java
-│   │   │   │   ├── ImageService.java
-│   │   │   │   ├── MessageService.java
-│   │   │   │   ├── UserService.java
-│   │   │   │   └── VehicleListingService.java
-│   │   │   │
-│   │   │   ├── specification/
-│   │   │   │   ├── VehicleListingSpecification.java
-│   │   │   │   └── VehicleListingSpecificationBuilder.java
-│   │   │   │
-│   │   │   └── BackendApplication.java
+│   │   │   ├── error/
+│   │   │   ├── favorite/
+│   │   │   ├── image/
+│   │   │   ├── messaging/
+│   │   │   ├── user/
+│   │   │   └── vehicleListing/
 │   │   │
-│   │   ├── resources/
-│   │   │   └── application.properties
+│   │   ├── entity/
+│   │   │   ├── Enums/
+│   │   │   │   ├── BodyType.java
+│   │   │   │   ├── FuelType.java
+│   │   │   │   ├── ListingStatus.java
+│   │   │   │   ├── Transmission.java
+│   │   │   │   └── UserRole.java
+│   │   │   │
+│   │   │   ├── Conversation.java
+│   │   │   ├── Favorite.java
+│   │   │   ├── Message.java
+│   │   │   ├── User.java
+│   │   │   ├── VehicleImage.java
+│   │   │   └── VehicleListing.java
 │   │   │
-│   │   └── test/
-│   │       ├── java/
-│   │       │   └── com/
-│   │       │       └── autotrader/
-│   │       │           └── backend/
-│   │       │               │
-│   │       │               ├── controller/
-│   │       │               │   ├── AuthControllerTest.java
-│   │       │               │   ├── ConversationControllerTest.java
-│   │       │               │   ├── FavoriteControllerTest.java
-│   │       │               │   ├── ImageControllerTest.java
-│   │       │               │   ├── MessageControllerTest.java
-│   │       │               │   ├── UserControllerTest.java
-│   │       │               │   └── VehicleListingControllerTest.java
-│   │       │               │
-│   │       │               ├── integration/
-│   │       │               │   ├── AuthenticationIntegrationTest.java
-│   │       │               │   ├── FavoritesIntegrationTest.java
-│   │       │               │   └── VehicleListingIntegrationTest.java
-│   │       │               │
-│   │       │               ├── repository/
-│   │       │               │   ├── ConversationRepositoryTest.java
-│   │       │               │   ├── FavoriteRepositoryTest.java
-│   │       │               │   ├── MessageRepositoryTest.java
-│   │       │               │   ├── UserRepositoryTest.java
-│   │       │               │   ├── VehicleImageRepositoryTest.java
-│   │       │               │   └── VehicleListingRepositoryTest.java
-│   │       │               │
-│   │       │               ├── service/
-│   │       │               │   ├── AuthServiceTest.java
-│   │       │               │   ├── ConversationServiceTest.java
-│   │       │               │   ├── CurrentUserServiceTest.java
-│   │       │               │   ├── FavoriteServiceTest.java
-│   │       │               │   ├── MessageServiceTest.java
-│   │       │               │   └── VehicleListingServiceTest.java
-│   │       │               │
-│   │       │               └── BackendApplicationTests.java
-│   │       │
-│   │       └── resources/
-│   │           └── application.properties
+│   │   ├── exception/
+│   │   │   ├── AuthenticatedUserNotFoundException.java
+│   │   │   ├── EmailAlreadyExistsException.java
+│   │   │   ├── GlobalExceptionHandler.java
+│   │   │   ├── ImageNotFoundException.java
+│   │   │   ├── InvalidCredentialsException.java
+│   │   │   ├── ListingNotFoundException.java
+│   │   │   ├── UnauthorizedConversationAccessException.java
+│   │   │   ├── UnauthorizedListingAccessException.java
+│   │   │   └── UserNotFoundException.java
+│   │   │
+│   │   ├── mapper/
+│   │   │   ├── ConversationMapper.java
+│   │   │   ├── FavoriteMapper.java
+│   │   │   ├── ImageMapper.java
+│   │   │   ├── MessageMapper.java
+│   │   │   ├── UserMapper.java
+│   │   │   └── VehicleListingMapper.java
+│   │   │
+│   │   ├── repository/
+│   │   │   ├── ConversationRepository.java
+│   │   │   ├── FavoriteRepository.java
+│   │   │   ├── MessageRepository.java
+│   │   │   ├── UserRepository.java
+│   │   │   ├── VehicleImageRepository.java
+│   │   │   └── VehicleListingRepository.java
+│   │   │
+│   │   ├── security/
+│   │   │   ├── CustomUserDetailsService.java
+│   │   │   ├── JwtAuthenticationFilter.java
+│   │   │   └── JwtService.java
+│   │   │
+│   │   ├── service/
+│   │   │   ├── AuthService.java
+│   │   │   ├── ConversationService.java
+│   │   │   ├── CurrentUserService.java
+│   │   │   ├── FavoriteService.java
+│   │   │   ├── FileStorageService.java
+│   │   │   ├── ImageService.java
+│   │   │   ├── MessageService.java
+│   │   │   ├── UserService.java
+│   │   │   └── VehicleListingService.java
+│   │   │
+│   │   ├── specification/
+│   │   │   ├── VehicleListingSpecification.java
+│   │   │   └── VehicleListingSpecificationBuilder.java
+│   │   │
+│   │   └── BackendApplication.java
 │   │
+│   ├── resources/
+│   │   └── application.properties
+│   │
+│   └── test/
+│       ├── java/
+│       │   └── com/
+│       │       └── autotrader/
+│       │           └── backend/
+│       │               │
+│       │               ├── controller/
+│       │               │   ├── AuthControllerTest.java
+│       │               │   ├── ConversationControllerTest.java
+│       │               │   ├── FavoriteControllerTest.java
+│       │               │   ├── ImageControllerTest.java
+│       │               │   ├── MessageControllerTest.java
+│       │               │   ├── UserControllerTest.java
+│       │               │   └── VehicleListingControllerTest.java
+│       │               │
+│       │               ├── integration/
+│       │               │   ├── AuthenticationIntegrationTest.java
+│       │               │   ├── FavoritesIntegrationTest.java
+│       │               │   └── VehicleListingIntegrationTest.java
+│       │               │
+│       │               ├── repository/
+│       │               │   ├── ConversationRepositoryTest.java
+│       │               │   ├── FavoriteRepositoryTest.java
+│       │               │   ├── MessageRepositoryTest.java
+│       │               │   ├── UserRepositoryTest.java
+│       │               │   ├── VehicleImageRepositoryTest.java
+│       │               │   └── VehicleListingRepositoryTest.java
+│       │               │
+│       │               ├── service/
+│       │               │   ├── AuthServiceTest.java
+│       │               │   ├── ConversationServiceTest.java
+│       │               │   ├── CurrentUserServiceTest.java
+│       │               │   ├── FavoriteServiceTest.java
+│       │               │   ├── MessageServiceTest.java
+│       │               │   └── VehicleListingServiceTest.java
+│       │               │
+│       │               └── BackendApplicationTests.java
+│       │
+│       └── resources/
+│           └── application.properties
+│
 │   ├── .dockerignore
 │   ├── .gitattributes
 │   ├── .gitignore
@@ -233,6 +236,7 @@ autotrader/
 │   ├── .dockerignore
 │   ├── .gitignore
 │   ├── eslint.config.js
+│   ├── Dockerfile
 │   ├── index.html
 │   ├── nginx.conf
 │   ├── package-lock.json
@@ -242,6 +246,8 @@ autotrader/
 │
 ├── uploads/
 │
+├── .env
+├── .env.example
 ├── .gitignore
 ├── CURRENT_STATUS.md
 ├── PROJECT_CHARTER.md
