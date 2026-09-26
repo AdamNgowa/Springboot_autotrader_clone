@@ -1,7 +1,11 @@
 import { getToken } from "../auth/authStorage";
 
 // Base URL for the backend API endpoints.
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = import.meta.env.VITE_API_URL;
+
+if(!BASE_URL){
+  throw new Error("VITE_API_URL not configured!");
+}
 
 /**
  * Generic API client for making HTTP requests using the Fetch API.

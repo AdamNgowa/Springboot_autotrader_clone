@@ -5,8 +5,8 @@ services:
 
     environment:
       POSTGRES_DB: autotrader
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
 
     ports:
       - "5432:5432"
@@ -22,10 +22,11 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: autotrader
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
       DB_SSL_MODE: disable
       DB_CHANNEL_BINDING: prefer
+      JWT_SECRET: ${JWT_SECRET}
 
     ports:
       - "8080:8080"
