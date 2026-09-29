@@ -38,6 +38,11 @@ services:
       - postgres
 
   frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL}
+
     image: autotrader-frontend:latest
     container_name: autotrader-frontend
 

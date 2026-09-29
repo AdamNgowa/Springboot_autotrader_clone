@@ -1,7 +1,6 @@
 .gradle/
-src/
+build/
 uploads/
-gradle/
 .git/
 .gitignore
 .gitattributes
