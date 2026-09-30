@@ -1,7 +1,7 @@
 import { apiClient } from "./apiClient";
 import { getToken } from "../auth/authStorage";
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 // ==========================================
 // IMAGE UPLOAD WITH PROGRESS

@@ -8,13 +8,13 @@ services:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
 
-    ports:
-      - "5432:5432"
-
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
   backend:
+    build:
+      context: ./backend
+
     image: autotrader-backend:latest
     container_name: autotrader-backend
 
@@ -27,9 +27,6 @@ services:
       DB_SSL_MODE: disable
       DB_CHANNEL_BINDING: prefer
       JWT_SECRET: ${JWT_SECRET}
-
-    ports:
-      - "8080:8080"
 
     volumes:
       - uploads-data:/app/uploads
