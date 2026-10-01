@@ -8,6 +8,7 @@ import com.autotrader.backend.mapper.MessageMapper;
 import com.autotrader.backend.repository.MessageRepository;
 import com.autotrader.backend.dto.messaging.CreateMessageRequest;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class MessageService {
         this.messageMapper = messageMapper;
     }
 
+    @Transactional
     public MessageResponse sendMessage(
             Long conversationId,
             CreateMessageRequest request
@@ -58,6 +60,7 @@ public class MessageService {
         return messageMapper.toResponse(savedMessage);
     }
 
+    @Transactional(readOnly = true)
     public Page<MessageResponse> getMessages(
             Long conversationId,
             Pageable pageable

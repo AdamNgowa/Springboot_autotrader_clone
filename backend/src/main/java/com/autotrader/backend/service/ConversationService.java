@@ -8,6 +8,7 @@ import com.autotrader.backend.exception.UnauthorizedConversationAccessException;
 import com.autotrader.backend.mapper.ConversationMapper;
 import com.autotrader.backend.repository.ConversationRepository;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class ConversationService {
         this.conversationMapper = conversationMapper;
     }
 
+    @Transactional
     public ConversationResponse getOrCreateConversation(Long listingId) {
 
         User buyer = currentUserService.getAuthenticatedUser();
@@ -77,6 +79,7 @@ public class ConversationService {
         return conversationRepository.save(conversation);
     }
 
+    @Transactional(readOnly = true)
     public Page<ConversationResponse> getCurrentUserConversations(
             Pageable pageable
     ) {
@@ -94,6 +97,7 @@ public class ConversationService {
         return conversations.map(conversationMapper::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public ConversationResponse getConversation(Long conversationId) {
 
         Conversation conversation =
