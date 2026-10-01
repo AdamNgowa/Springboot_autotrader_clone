@@ -32,8 +32,8 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
   - 12.3.7 Production logging configuration - COMPLETE (stdout only, INFO app, WARN Hibernate/Security)
   - 12.3.8 Production startup verification - COMPLETE (prod profile run in Docker against local Postgres: listings load anonymous and logged in; `LazyInitializationException` fixed with `@Transactional`). Prod profile + Neon together is verified on the VM in 12.4.7.
   - 12.3.9 Transaction boundaries & error visibility - COMPLETE (`@Transactional` on listing, conversation and message services; `/error` permitted; no `LazyInitializationException` in backend logs)
-  - 12.3.10 Production-parity testing - IN PROGRESS (`open-in-view=false` in test properties done, tests pass; Testcontainers PostgreSQL pending)
-    **Status: IN PROGRESS** (must finish before 12.4)
+  - 12.3.10 Production-parity testing - COMPLETE (tests run on PostgreSQL 17 via Testcontainers, H2 removed; `open-in-view=false` in test properties; regression test for paginated `GET /listings`; `./gradlew test` passes)
+    **Status: COMPLETE** (production DB password and production JWT secret are created on the VM in 12.4.4)
 
 - 12.4 Production Docker Deployment
   - 12.4.1 Production backend image - COMPLETE
@@ -104,21 +104,22 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - `VITE_API_URL=/api` and the backend `build:` section are set in `docker-compose.yml`
 - Hardcoded `localhost:8080` removed from `imageApi.js`
 - Image upload, favorites, listings and deep-link refresh verified through the local proxy
+- Testcontainers (PostgreSQL 17) replaces H2 for all repository and integration tests via a shared `TestcontainersConfiguration`; tests keep `ddl-auto=create-drop` until Flyway owns the schema (12.10)
 - `VehicleListingService`, `ConversationService` and `MessageService` annotated with `@Transactional` / `@Transactional(readOnly = true)` (found by running with `open-in-view=false`); `FavoriteService` and the image write methods already had them; `ImageService.uploadImage` is intentionally not transactional (file cleanup relies on the save committing inside its try/catch)
 
 ## Lessons from 12.3
 - **`open-in-view` was hiding a missing transaction boundary.** Spring Boot defaults it to `true`, so lazy loading worked anywhere in a request. With the prod profile (`false`), `VehicleListingMapper` hit a detached `User` proxy: `LazyInitializationException ... no session`.
 - **A server error can show up as a 401.** The exception forwards the request to `/error`, which Spring Security protects, so the client sees 401 and the real cause is only in the logs. Always read `docker compose logs backend` before theorising.
-- **H2 tests on the default profile cannot catch this class of bug.** Tests ran with open-in-view on, and H2 is not Postgres (the `vehicle_year` column name exists only because `year` is reserved in H2).
+- **H2 tests with open-in-view on could not catch this class of bug.** Resolved in 12.3.10: tests now run on real PostgreSQL via Testcontainers with `open-in-view=false`. H2 is not Postgres (the `vehicle_year` column name exists only because `year` is reserved in H2; renaming it needs a migration, so it stays for now). Removing H2 from the classpath matters: otherwise Spring Boot silently falls back to an embedded H2 when a test class misses the container.
 - **Secrets:** never paste `.env` or `docker compose config` output. The JWT secret was rotated after exposure. `.env` was confirmed never committed.
 - **`bootRun` hang at 80% against Neon:** not investigated. Docker is the verified run path. Running from IntelliJ needs `JWT_SECRET`, `DB_USERNAME`, `DB_PASSWORD` set in the run configuration (a missing variable fails fast, so it does not explain a hang).
 
-## Remaining 12.3 work before starting 12.4 (do in this order)
+## 12.3 closing checklist (all done)
 - [x] Click through every feature under the prod profile: listing details, create/edit/delete listing, favorites, messaging inbox and conversation, seller profile, image upload / set primary / reorder / delete. Check `docker compose logs backend | Select-String "LazyInitialization"` prints nothing
 - [x] Add `@Transactional` to any other service that maps entities to DTOs or does multi-step writes (candidates: `FavoriteService`, `ConversationService`, `MessageService`, `ImageService`, `UserService`)
 - [x] Add `/error` to the `permitAll` list in `SecurityConfig` so failures return 500 instead of a misleading 401
 - [x] Add `spring.jpa.open-in-view=false` to `src/test/resources/application.properties` (tests pass)
-- [ ] Testcontainers with PostgreSQL replacing H2 (pulled forward from Phase 13)
+- [x] Testcontainers with PostgreSQL replacing H2 (pulled forward from Phase 13)
 - [x] Apply the three pending edits: move multipart limits to base `application.properties` (12.3.6), `MaxUploadSizeExceededException` 413 handler (12.3.6), try/catch in `JwtAuthenticationFilter` (12.3.4)
 
 ## To-do by sub-phase
@@ -211,6 +212,7 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - [ ] Update the charter's Phase 12 section to point to this plan
 - [ ] Regenerate `FOLDER_STRUCTURE.md` (stale: missing `JwtAuthenticationEntryPoint`, `application-prod.properties`, and the real `src/main/resources` location)
 - [ ] Delete the duplicate test listings in the local database
+- [ ] Update the stale comment in `VehicleListingIntegrationTest.setUp` (it still says the shared context uses an in-memory H2 database)
 
 ### Logged for Phase 13 (mirrored in the charter's Phase 13 "Gaps identified during Phase 12")
 - [ ] `GET /listings/me` and `/users/me` are matched by `permitAll` wildcards; declare them `authenticated()` first
@@ -228,4 +230,4 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - [ ] Revisit folder structure generator; document IDE run configuration; investigate `bootRun` hang
 - Testcontainers with PostgreSQL: moved into Phase 12.3.10
 
-**NEXT STEP:** Testcontainers with PostgreSQL replacing H2 (12.3.10), then 12.3 reflection, then 12.4.2 (OCI VM)
+**NEXT STEP:** 12.4.2 (OCI VM preparation), then 12.4.4 (production secrets on the VM) and the production compose file
