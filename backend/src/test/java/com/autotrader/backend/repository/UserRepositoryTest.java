@@ -1,16 +1,21 @@
 package com.autotrader.backend.repository;
 
+import com.autotrader.backend.TestcontainersConfiguration;
 import com.autotrader.backend.entity.Enums.UserRole;
 import com.autotrader.backend.entity.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Import(TestcontainersConfiguration.class)
 public class UserRepositoryTest {
 
     //No Mockito here because we want to test real Jpa persistence

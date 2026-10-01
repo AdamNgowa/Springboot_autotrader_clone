@@ -1,5 +1,6 @@
 package com.autotrader.backend.integration;
 
+import com.autotrader.backend.TestcontainersConfiguration;
 import com.autotrader.backend.entity.Favorite;
 import com.autotrader.backend.entity.User;
 import com.autotrader.backend.entity.VehicleListing;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@Import(TestcontainersConfiguration.class)
 @AutoConfigureMockMvc
 class FavoritesIntegrationTest {
 
