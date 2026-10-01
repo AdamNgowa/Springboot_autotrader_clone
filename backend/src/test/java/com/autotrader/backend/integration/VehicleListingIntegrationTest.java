@@ -395,6 +395,31 @@ class VehicleListingIntegrationTest {
         );
     }
 
+    @Test
+    void shouldReturnPaginatedListingsWithSellerForAnonymousUser()
+            throws Exception {
+
+        String token = registerAndGetToken(
+                "seller@example.com",
+                "John",
+                "Doe"
+        );
+
+        createListing(token);
+
+        // Anonymous request: exercises getListings() and the mapper's lazy seller/images access
+        // with open-in-view=false. Before the @Transactional fix this was a LazyInitializationException.
+        mockMvc.perform(
+                        get("/listings")
+                                .param("page", "0")
+                                .param("size", "6")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].seller.firstName")
+                        .value("John"));
+    }
+
+
     private Long createListing(String token)
             throws Exception {
 
