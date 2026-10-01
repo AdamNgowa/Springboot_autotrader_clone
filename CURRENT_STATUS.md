@@ -26,12 +26,12 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
   - 12.3.1 Spring profiles & environment separation - COMPLETE (`application-prod.properties`: show-sql off, `ddl-auto=validate`, `open-in-view=false`, logging levels)
   - 12.3.2 Environment variables - COMPLETE
   - 12.3.3 Production secrets - COMPLETE (policy defined; local JWT secret rotated; production JWT secret and strong Neon password are generated on the VM in 12.4.4)
-  - 12.3.4 JWT secret management - PENDING (new local secret validated as 32 bytes of Base64; `JwtAuthenticationFilter` try/catch for invalid tokens not yet applied)
+  - 12.3.4 JWT secret management - COMPLETE (new local secret validated as 32 bytes of Base64; `JwtAuthenticationFilter` treats invalid/expired tokens as anonymous; verified: garbage Bearer token on a public endpoint returns 200)
   - 12.3.5 Production database configuration - COMPLETE
-  - 12.3.6 Production upload configuration - PENDING (nginx `client_max_body_size 10M` done; multipart limits in base `application.properties` and the 413 handler not yet applied)
+  - 12.3.6 Production upload configuration - COMPLETE (5MB/6MB limits in base `application.properties`; JSON 413 handler verified with a >5MB upload; nginx `client_max_body_size 10M`)
   - 12.3.7 Production logging configuration - COMPLETE (stdout only, INFO app, WARN Hibernate/Security)
   - 12.3.8 Production startup verification - COMPLETE (prod profile run in Docker against local Postgres: listings load anonymous and logged in; `LazyInitializationException` fixed with `@Transactional`). Prod profile + Neon together is verified on the VM in 12.4.7.
-  - 12.3.9 Transaction boundaries & error visibility - IN PROGRESS (`VehicleListingService` done; click-through, `@Transactional` in other services, `/error` permitAll pending)
+  - 12.3.9 Transaction boundaries & error visibility - COMPLETE (`@Transactional` on listing, conversation and message services; `/error` permitted; no `LazyInitializationException` in backend logs)
   - 12.3.10 Production-parity testing - IN PROGRESS (`open-in-view=false` in test properties done, tests pass; Testcontainers PostgreSQL pending)
     **Status: IN PROGRESS** (must finish before 12.4)
 
@@ -104,7 +104,7 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - `VITE_API_URL=/api` and the backend `build:` section are set in `docker-compose.yml`
 - Hardcoded `localhost:8080` removed from `imageApi.js`
 - Image upload, favorites, listings and deep-link refresh verified through the local proxy
-- `VehicleListingService` annotated with `@Transactional` / `@Transactional(readOnly = true)` (found by running with `open-in-view=false`)
+- `VehicleListingService`, `ConversationService` and `MessageService` annotated with `@Transactional` / `@Transactional(readOnly = true)` (found by running with `open-in-view=false`); `FavoriteService` and the image write methods already had them; `ImageService.uploadImage` is intentionally not transactional (file cleanup relies on the save committing inside its try/catch)
 
 ## Lessons from 12.3
 - **`open-in-view` was hiding a missing transaction boundary.** Spring Boot defaults it to `true`, so lazy loading worked anywhere in a request. With the prod profile (`false`), `VehicleListingMapper` hit a detached `User` proxy: `LazyInitializationException ... no session`.
@@ -114,12 +114,12 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - **`bootRun` hang at 80% against Neon:** not investigated. Docker is the verified run path. Running from IntelliJ needs `JWT_SECRET`, `DB_USERNAME`, `DB_PASSWORD` set in the run configuration (a missing variable fails fast, so it does not explain a hang).
 
 ## Remaining 12.3 work before starting 12.4 (do in this order)
-- [ ] Click through every feature under the prod profile: listing details, create/edit/delete listing, favorites, messaging inbox and conversation, seller profile, image upload / set primary / reorder / delete. Check `docker compose logs backend | Select-String "LazyInitialization"` prints nothing
-- [ ] Add `@Transactional` to any other service that maps entities to DTOs or does multi-step writes (candidates: `FavoriteService`, `ConversationService`, `MessageService`, `ImageService`, `UserService`)
-- [ ] Add `/error` to the `permitAll` list in `SecurityConfig` so failures return 500 instead of a misleading 401
+- [x] Click through every feature under the prod profile: listing details, create/edit/delete listing, favorites, messaging inbox and conversation, seller profile, image upload / set primary / reorder / delete. Check `docker compose logs backend | Select-String "LazyInitialization"` prints nothing
+- [x] Add `@Transactional` to any other service that maps entities to DTOs or does multi-step writes (candidates: `FavoriteService`, `ConversationService`, `MessageService`, `ImageService`, `UserService`)
+- [x] Add `/error` to the `permitAll` list in `SecurityConfig` so failures return 500 instead of a misleading 401
 - [x] Add `spring.jpa.open-in-view=false` to `src/test/resources/application.properties` (tests pass)
 - [ ] Testcontainers with PostgreSQL replacing H2 (pulled forward from Phase 13)
-- [ ] Apply the three pending edits: move multipart limits to base `application.properties` (12.3.6), `MaxUploadSizeExceededException` 413 handler (12.3.6), try/catch in `JwtAuthenticationFilter` (12.3.4)
+- [x] Apply the three pending edits: move multipart limits to base `application.properties` (12.3.6), `MaxUploadSizeExceededException` 413 handler (12.3.6), try/catch in `JwtAuthenticationFilter` (12.3.4)
 
 ## To-do by sub-phase
 
@@ -129,7 +129,7 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - [x] Update `.env.example` with `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_SSL_MODE`, `DB_CHANNEL_BINDING`, `JWT_EXPIRATION`, `APP_UPLOAD_DIRECTORY`
 - [x] Generate a new local `JWT_SECRET` (production one is generated on the VM in 12.4.4)
 - [ ] Use a strong DB password for production (reset the Neon role password in 12.4.4; store only in the VM `.env`)
-- [ ] Set `spring.servlet.multipart.max-file-size` and `max-request-size` in base `application.properties` (currently only in prod profile)
+- [x] Set `spring.servlet.multipart.max-file-size` and `max-request-size` in base `application.properties`
 - [x] Set production logging levels
 - [x] Set `spring.jpa.open-in-view=false`
 - [x] `bootRun` hang: closed without investigation (Docker is the supported path)
@@ -228,4 +228,4 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - [ ] Revisit folder structure generator; document IDE run configuration; investigate `bootRun` hang
 - Testcontainers with PostgreSQL: moved into Phase 12.3.10
 
-**NEXT STEP:** apply the three pending edits and `/error` permitAll, click through all features, then Testcontainers (12.3.10), then 12.4.2 (OCI VM)
+**NEXT STEP:** Testcontainers with PostgreSQL replacing H2 (12.3.10), then 12.3 reflection, then 12.4.2 (OCI VM)
