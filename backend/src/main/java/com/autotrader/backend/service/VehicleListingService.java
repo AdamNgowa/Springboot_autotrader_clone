@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 // @Service tags this class as a Spring-managed Bean handling core vehicle listing business logic.
 @Service
@@ -42,6 +43,8 @@ public class VehicleListingService {
     // ==========================================
 
     // Handles saving a new vehicle listing submitted by an authenticated user
+    // @Transactional keeps one session open for the save AND the mapping below, so lazy fields (seller, images) can load.
+    @Transactional
     public VehicleListingResponse createListing(CreateListingRequest request) {
         // Fetch the complete authenticated User record using our helper method
         User seller = currentUserService.getAuthenticatedUser();
@@ -60,6 +63,8 @@ public class VehicleListingService {
     }
 
     // Fetches a filtered, dynamic, and paginated list of vehicle listings
+    // readOnly = true: no writes expected, so Hibernate skips dirty-checking. The session stays open while mapping runs.
+    @Transactional(readOnly = true)
     public Page<VehicleListingResponse> getListings(
             VehicleListingSearchCriteria filter,
             Pageable pageable) {
@@ -80,6 +85,7 @@ public class VehicleListingService {
         return listings.map(vehicleListingMapper::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<VehicleListingResponse> getCurrentUserListings(
             Pageable pageable) {
         User authenticatedUser =
@@ -94,6 +100,7 @@ public class VehicleListingService {
         return listings.map(vehicleListingMapper::toResponse);
     }
 
+    @Transactional(readOnly = true)
     public Page<VehicleListingResponse> getSellerActiveListings(
             User seller,
             Pageable pageable) {
@@ -108,6 +115,8 @@ public class VehicleListingService {
     }
 
     // Handles overwriting properties on an active vehicle listing
+    // Plain @Transactional: the fetch, update, save and mapping now succeed or fail as one unit.
+    @Transactional
     public VehicleListingResponse updateListing(
             Long listingId,
             UpdateListingRequest request
@@ -132,6 +141,8 @@ public class VehicleListingService {
     }
 
     // Performs a safe logical soft-delete on an active listing
+    // verifyOwnership reads listing.getSeller() (lazy), so this needs an open session too.
+    @Transactional
     public void deleteListing(Long listingId) {
         // 1. Fetch the active listing via helper
         VehicleListing listing = getActiveListing(listingId);
@@ -150,6 +161,7 @@ public class VehicleListingService {
     }
 
     // Fetches a single specific active vehicle listing package
+    @Transactional(readOnly = true)
     public VehicleListingResponse getListingById(Long listingId) {
         // Fetch the active listing via helper and parse directly into response structure
         VehicleListing listing = getActiveListingWithImages(listingId);

@@ -27,6 +27,8 @@ services:
       DB_SSL_MODE: disable
       DB_CHANNEL_BINDING: prefer
       JWT_SECRET: ${JWT_SECRET}
+      SPRING_PROFILES_ACTIVE: prod
+
 
     volumes:
       - uploads-data:/app/uploads

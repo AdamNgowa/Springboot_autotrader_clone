@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -224,6 +225,30 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(error);
+    }
+
+    // ==========================================
+    // 8. UPLOAD RULE HANDLER: FILE TOO LARGE
+    // ==========================================
+
+    // Intercepts MaxUploadSizeExceededException, thrown by Spring while parsing the multipart request,
+    // before the controller method runs. The limit comes from spring.servlet.multipart.max-file-size.
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSize(
+            MaxUploadSizeExceededException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.PAYLOAD_TOO_LARGE.value(),           // 413
+                HttpStatus.PAYLOAD_TOO_LARGE.getReasonPhrase(), // "Payload Too Large"
+                "The uploaded file is too large. Images must be under 5MB.",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body(error);
     }
 }

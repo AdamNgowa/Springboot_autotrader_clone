@@ -1,5 +1,6 @@
 package com.autotrader.backend.security;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -56,45 +58,59 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Step 3: Strip away the prefix "Bearer " (which is exactly 7 characters long) to get the raw JWT string
         String jwt = authHeader.substring(7);
 
-        // Step 4: Use our permanent slot 'jwtService' to decode the token and pull out the user's email
-        String email = jwtService.extractUsername(jwt);
+        // Steps 4-10 are wrapped in try/catch so a bad token can never crash the request.
+        // A token can be expired, signed with an old (rotated) secret, malformed, or belong to a deleted user.
+        // In every case we simply do NOT authenticate, and the authorization rules decide what happens next:
+        // permitAll routes proceed anonymously, protected routes get a 401 from the entry point.
+        try {
 
-        // Step 5: Perform a sanity check
-        // Ensure we actually extracted an email AND that this user isn't already logged into Spring's security system.
-        if (email != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Step 4: Use our permanent slot 'jwtService' to decode the token and pull out the user's email
+            String email = jwtService.extractUsername(jwt);
 
-            // Step 6: Use our 'userDetailsService' to look up the user in our real database
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(email);
+            // Step 5: Perform a sanity check
+            // Ensure we actually extracted an email AND that this user isn't already logged into Spring's security system.
+            if (email != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            // Step 7: Check if the token matches our database user record and hasn't expired yet
-            if (jwtService.isTokenValid(jwt, userDetails.getUsername())) {
+                // Step 6: Use our 'userDetailsService' to look up the user in our real database
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(email);
 
-                // Step 8: Create Spring's official internal "Access Pass" passport (Authentication Token)
-                // We pass 'null' for the password because they've already proven who they are via the JWT.
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities() // Attach their security roles (e.g., ROLE_USER)
-                        );
+                // Step 7: Check if the token matches our database user record and hasn't expired yet
+                if (jwtService.isTokenValid(jwt, userDetails.getUsername())) {
 
-                // Step 9: Stamp extra network metadata onto the passport (like IP address and session info)
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource()
-                                .buildDetails(request)
-                );
+                    // Step 8: Create Spring's official internal "Access Pass" passport (Authentication Token)
+                    // We pass 'null' for the password because they've already proven who they are via the JWT.
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    userDetails,
+                                    null,
+                                    userDetails.getAuthorities() // Attach their security roles (e.g., ROLE_USER)
+                            );
 
-                // Step 10: The Golden Moment! Slide this official passport into Spring's security vault.
-                // The entire application now acknowledges this user as officially logged in and verified.
-                SecurityContextHolder
-                        .getContext()
-                        .setAuthentication(authToken);
+                    // Step 9: Stamp extra network metadata onto the passport (like IP address and session info)
+                    authToken.setDetails(
+                            new WebAuthenticationDetailsSource()
+                                    .buildDetails(request)
+                    );
+
+                    // Step 10: The Golden Moment! Slide this official passport into Spring's security vault.
+                    // The entire application now acknowledges this user as officially logged in and verified.
+                    SecurityContextHolder
+                            .getContext()
+                            .setAuthentication(authToken);
+                }
             }
+        } catch (JwtException | IllegalArgumentException | UsernameNotFoundException ex) {
+            // JwtException: parent of expired, malformed and bad-signature errors.
+            // IllegalArgumentException: empty or blank token.
+            // UsernameNotFoundException: valid token for a user that no longer exists.
+            // Deliberately NOT logging the token or the message: tokens are credentials.
+            SecurityContextHolder.clearContext();
         }
 
         // Step 11: Push the request forward down the pipeline to the next filter or your Controller endpoint.
+        // This call stays OUTSIDE the try block so exceptions from controllers and later filters are never swallowed here.
         filterChain.doFilter(request, response);
     }
 }

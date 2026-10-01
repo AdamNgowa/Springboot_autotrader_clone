@@ -179,10 +179,12 @@ public class SecurityConfig {
                                 //Compatibility endpoint
                                 "/swagger-ui.html",
 
-                                "/uploads/**"
-                                //Authorization rules are based on the combination of HTTP method and request path.
-                                // GET /listings/{id} can be public, while PUT /listings/{id} and DELETE /listings/{id} remain restricted to authenticated users (and, in your application,
-                                // further restricted by ownership checks in the service layer).
+                                "/uploads/**",
+                                // Spring forwards failed requests to /error. If it is blocked,
+                                // a real 500 shows up as a misleading 401.
+                                "/error"
+
+
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/listings")
                         .permitAll()

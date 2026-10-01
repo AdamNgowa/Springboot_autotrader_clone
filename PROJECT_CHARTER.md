@@ -371,7 +371,7 @@ Frontend testing setup verified:
 * Test setup configuration
 * Initial authentication context behavior
 
-The remaining frontend testing expansion, security and cross-feature testing, regression/coverage review, 
+The remaining frontend testing expansion, security and cross-feature testing, regression/coverage review,
 and additional integration testing are intentionally deferred to Phase 13.
 
 **Phase 10 overall status: COMPLETE**
@@ -449,48 +449,85 @@ Planned:
 - Health checks
 - PostgreSQL readiness handling
 - Cloud hosting
+- Managed PostgreSQL (Neon) connectivity
+- Production upload configuration
+- Transaction boundaries under production settings
+- Production-parity testing with PostgreSQL (Testcontainers)
+- Domain and DNS
+- Frontend hosting and CORS configuration
 
 
 # Phase 13 — Production Hardening
 
-Potential future work:
+Potential future work, grouped by topic. Every item should be introduced based on an identified need rather than simply because it is a common production technology. Items marked *(found in Phase 12)* came out of real problems met while deploying.
 
-### General Improvements
+### Security & Authentication
+
+Authentication works end to end, but deployment exposed how much of its safety depends on secret handling and rule ordering.
 
 - Refresh tokens
 - Email verification
 - Password reset
 - Expanded role-based authorization
+- Rate limiting
+- Security hardening
+- Audit logging
+- Explicit `authenticated()` rules for `/listings/me` and `/users/me`, declared before the wildcard `permitAll` matchers *(found in Phase 12: these routes are currently matched by the public wildcards, so their protection depends on the service layer instead of the filter chain)*
+- Startup validation of `JWT_SECRET` (valid Base64, at least 32 bytes) *(found in Phase 12: a weak secret only fails on the first login)*
+- JWT secret rotation procedure *(found in Phase 12: the secret was exposed and had to be replaced, which invalidates every issued token)*
+- Secrets manager evaluation to replace the `.env` file on the VM
+- Secret scanning (git hook and CI) *(found in Phase 12: secrets were pasted into chats and printed in output)*
+
+### Performance & Data Access
+
+Running with `open-in-view=false` made lazy loading visible. The listing endpoints now work, but they issue more queries than they should.
+
 - Database indexing
 - Caching
 - Performance optimization
+- N+1 query review on paginated listings (fetch join, `@EntityGraph` or DTO projections; fetch-joining a collection with pagination makes Hibernate paginate in memory)
+- Application-wide `@Transactional` policy review (every service that maps entities or does multi-step writes)
+- Connection pool tuning for Neon's pooled endpoint
+
+### Product & API Evolution
+
+Capabilities that change what the product does or how clients consume it. They stay deferred until requirements justify them.
+
 - API versioning
 - Background jobs
 - Cloud object storage
 - Advanced search
+
+### Frontend Robustness
+
+Small gaps in how the UI behaves when the network or the session misbehaves.
+
+- Disable submit buttons while a request is in flight *(found in Phase 12: duplicate listings were created)*
+- Frontend handling of expired or rejected tokens (clear the session and redirect to login on 401) *(found in Phase 12: a rotated secret left stale tokens in browsers)*
+
+### Reliability & Observability
+
+Once the app runs on a server, the questions become "is it healthy?" and "what happened?".
+
+- Reliability and resilience improvements
+- Production observability improvements
 - Advanced monitoring and alerting
-- Dependency auditing
-- Formatting and linting
-- Environment validation
+- Structured (JSON) logging
+- Logging of authentication failures, never tokens or passwords *(found in Phase 12: the app logs nothing about auth events)*
+- Backup strategy for the uploads volume *(found in Phase 12: images live in a Docker volume on a single VM)*
 
-These improvements may improve maintainability, functionality, developer experience, or scalability, but they should be introduced based on an identified need rather than simply because they are common production technologies.
+### Container & Image Hardening
 
-### Production Hardening
+The following items directly strengthen the application's security, reliability, resilience, or operational safety at the container level:
 
-The following items directly strengthen the application's security, reliability, resilience, or operational safety:
-
-- Rate limiting
-- Security hardening
 - Container security
 - Non-root containers
 - Image size and runtime image optimization
-- Audit logging
-- Reliability and resilience improvements
-- Production observability improvements
+- Container resource limits
 
-### Deferred Testing & Quality Work
+### Testing & Quality
 
-Testing and quality improvements deferred from Phase 10 for future production hardening:
+Testing and quality improvements deferred from Phase 10. Phase 12 added several items because the test suite ran with `open-in-view` on and on H2, so it missed a lazy-loading bug that production settings exposed.
 
 - Expanded frontend testing with Vitest, jsdom, and React Testing Library
 - Security & cross-feature testing
@@ -498,9 +535,24 @@ Testing and quality improvements deferred from Phase 10 for future production ha
 - Additional messaging integration tests
 - Additional image management integration tests
 - Seller/user integration tests
-- Docker Testcontainers with PostgreSQL for repository/JPA integration testing instead of H2
+- Docker Testcontainers with PostgreSQL for repository/JPA integration testing instead of H2 (pulled forward into Phase 12, kept here as a record)
+- Review tests for class-level or method-level `@Transactional`, which keeps one session open and hides lazy-loading bugs
+- Test that an invalid or expired Bearer token on a public endpoint is treated as anonymous
+- Test that an oversized upload returns 413 with the JSON error body
+- Run the Testcontainers-based tests in CI
 
-### Deferred Infrastructure & Deployment Improvements
+### Developer Tooling & Code Quality
+
+Deferred from Phase 11. A few of these became more relevant because documents and local runs drifted from reality.
+
+- Dependency auditing
+- Formatting and linting
+- Environment validation
+- Folder structure generator, revisited *(found in Phase 12: `FOLDER_STRUCTURE.md` drifted from the real codebase)*
+- Document the local IDE run configuration (`JWT_SECRET`, `DB_USERNAME`, `DB_PASSWORD`) and investigate the unexplained `bootRun` hang at 80% against Neon
+- Remaining optional Phase 11 tooling (project document generator, current status generator, Git hooks, project health reports)
+
+### Infrastructure & Deployment
 
 Additional infrastructure improvements that may be introduced after the initial deployment when their value is established:
 
@@ -510,6 +562,8 @@ Additional infrastructure improvements that may be introduced after the initial 
 - Blue/green or canary deployments
 - Distributed caching
 - Additional scalability improvements
+- Versioned image tags and a container registry instead of the mutable `latest` tag *(found in Phase 12: a manually built image silently replaced the backend image)*
+- Nginx upstream re-resolution after the backend container is recreated *(found in Phase 12: nginx caches the backend IP at startup)*
 
 These features should only be introduced after explaining the problem they solve and determining that the project actually requires them.
 
@@ -524,7 +578,7 @@ Some features may require larger architectural changes and should remain deferre
 - More sophisticated deployment strategies
 - Additional scalability improvements
 
-The project should prioritize understanding the problem and the underlying engineering 
+The project should prioritize understanding the problem and the underlying engineering
 concepts before introducing additional infrastructure, abstractions, or distributed-system components.
 
 # Mentoring Agreement
