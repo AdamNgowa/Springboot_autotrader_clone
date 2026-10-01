@@ -61,7 +61,6 @@ class VehicleListingIntegrationTest {
     @BeforeEach
     void setUp() {
         // Spring caches and reuses the ApplicationContext (and therefore the
-        // same in-memory H2 database) across test classes that share an
         // identical @SpringBootTest configuration signature. That means rows
         // left behind by other integration test classes (Favorites,
         // Messaging, Images) can still be present when this class runs.
