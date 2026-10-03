@@ -1,10 +1,12 @@
 # Phase 12 — Deployment
-**Status: IN PROGRESS** (last updated 2026-10-01)
+**Status: IN PROGRESS** (last updated 2026-10-03)
 
-Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM → Neon PostgreSQL
+Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon PostgreSQL
+
+> Hosting changed on 2026-10-01: Oracle Cloud (OCI) requires a credit card at sign-up and only a virtual prepaid card is available, so the backend moves to Render. See "Hosting decision" below.
 
 - 12.1 Deployment Architecture & Production Environment
-  - 12.1.1 Production topology - COMPLETE
+  - 12.1.1 Production topology - COMPLETE (revised: Render replaces the OCI VM and the VM Nginx)
   - 12.1.2 Managed vs self-managed infrastructure - COMPLETE
   - 12.1.3 Network boundaries - COMPLETE
   - 12.1.4 Environment separation - COMPLETE
@@ -25,39 +27,39 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - 12.3 Production Configuration
   - 12.3.1 Spring profiles & environment separation - COMPLETE (`application-prod.properties`: show-sql off, `ddl-auto=validate`, `open-in-view=false`, logging levels)
   - 12.3.2 Environment variables - COMPLETE
-  - 12.3.3 Production secrets - COMPLETE (policy defined; local JWT secret rotated; production JWT secret and strong Neon password are generated on the VM in 12.4.4)
+  - 12.3.3 Production secrets - COMPLETE (policy defined; local JWT secret rotated; production JWT secret and strong Neon password are created for Render in 12.4.4)
   - 12.3.4 JWT secret management - COMPLETE (new local secret validated as 32 bytes of Base64; `JwtAuthenticationFilter` treats invalid/expired tokens as anonymous; verified: garbage Bearer token on a public endpoint returns 200)
   - 12.3.5 Production database configuration - COMPLETE
   - 12.3.6 Production upload configuration - COMPLETE (5MB/6MB limits in base `application.properties`; JSON 413 handler verified with a >5MB upload; nginx `client_max_body_size 10M`)
   - 12.3.7 Production logging configuration - COMPLETE (stdout only, INFO app, WARN Hibernate/Security)
-  - 12.3.8 Production startup verification - COMPLETE (prod profile run in Docker against local Postgres: listings load anonymous and logged in; `LazyInitializationException` fixed with `@Transactional`). Prod profile + Neon together is verified on the VM in 12.4.7.
+  - 12.3.8 Production startup verification - COMPLETE (prod profile run in Docker against local Postgres: listings load anonymous and logged in; `LazyInitializationException` fixed with `@Transactional`). Prod profile + Neon together is verified on Render in 12.4.7.
   - 12.3.9 Transaction boundaries & error visibility - COMPLETE (`@Transactional` on listing, conversation and message services; `/error` permitted; no `LazyInitializationException` in backend logs)
   - 12.3.10 Production-parity testing - COMPLETE (tests run on PostgreSQL 17 via Testcontainers, H2 removed; `open-in-view=false` in test properties; regression test for paginated `GET /listings`; `./gradlew test` passes)
-    **Status: COMPLETE** (production DB password and production JWT secret are created on the VM in 12.4.4)
+    **Status: COMPLETE** (production DB password and production JWT secret are created for Render in 12.4.4)
 
-- 12.4 Production Docker Deployment
+- 12.4 Production Backend Deployment (Render)
   - 12.4.1 Production backend image - COMPLETE
-  - 12.4.2 OCI VM preparation - PENDING
-  - 12.4.3 Docker runtime configuration - COMPLETE
-  - 12.4.4 Environment & secrets - PENDING
-  - 12.4.5 Persistent application storage - COMPLETE
-  - 12.4.6 Container restart policy - PENDING
-  - 12.4.7 Container verification - PENDING
+  - 12.4.2 Render account & verification - IN PROGRESS (account exists on the Hobby workspace with no card on file; still untested whether creating the first free web service asks for card verification)
+  - 12.4.3 Docker runtime configuration - PENDING (local compose done; bind to Render's `PORT`, tune the JVM for a 512 MB instance)
+  - 12.4.4 Environment & secrets - PENDING (Render environment variables; production JWT secret; reset Neon password)
+  - 12.4.5 Persistent application storage - PENDING (reopened: a free Render filesystem is ephemeral; solved in 12.11)
+  - 12.4.6 Restart & cold-start behaviour - PENDING (free service spins down after 15 minutes idle, about a minute to wake)
+  - 12.4.7 Service verification - PENDING
     **Status: IN PROGRESS**
 
-- 12.5 Reverse Proxy
-  - 12.5.1 Nginx installation (on VM) - PENDING
-  - 12.5.2 Reverse proxy configuration - COMPLETE (local container; adapt for VM)
-  - 12.5.3 Request forwarding - COMPLETE (local container; adapt for VM)
-  - 12.5.4 HTTP headers - PENDING (set in nginx; Spring `forward-headers-strategy` not set)
-  - 12.5.5 Access logging - PENDING
+- 12.5 Reverse Proxy & Forwarded Headers
+  - 12.5.1 Nginx installation (on VM) - NOT NEEDED (Render's edge proxy replaces it)
+  - 12.5.2 Reverse proxy configuration - COMPLETE (local container only, kept for development)
+  - 12.5.3 Request forwarding - COMPLETE (local container only, kept for development)
+  - 12.5.4 HTTP headers - PENDING (Spring `forward-headers-strategy=framework`)
+  - 12.5.5 Access logging - NOT NEEDED (Render collects logs)
     **Status: IN PROGRESS**
 
 - 12.6 HTTPS & DNS
-  - 12.6.1 Domain configuration - PENDING
-  - 12.6.2 DNS records - PENDING
-  - 12.6.3 TLS certificate - PENDING
-  - 12.6.4 HTTPS configuration - PENDING
+  - 12.6.1 Domain configuration - OPTIONAL (default `*.onrender.com` URL first; custom domain later)
+  - 12.6.2 DNS records - OPTIONAL (only with a custom domain)
+  - 12.6.3 TLS certificate - NOT NEEDED (managed by Render)
+  - 12.6.4 HTTPS configuration - PENDING (confirm HTTPS-only access and correct scheme through forwarded headers)
   - 12.6.5 Secure API verification - PENDING
     **Status: NOT STARTED**
 
@@ -67,14 +69,15 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
   - 12.7.3 Managed frontend hosting (Vercel) - PENDING
   - 12.7.4 SPA routing - PENDING (local nginx version done; needs `vercel.json`)
   - 12.7.5 CORS verification - PENDING
+  - 12.7.6 Backend cold-start handling in the UI - PENDING (free Render service takes about a minute to wake)
     **Status: IN PROGRESS**
 
 - 12.8 Health Checks & Observability
-  - 12.8.1 Application health endpoint - PENDING
-  - 12.8.2 Container health - PENDING
-  - 12.8.3 Server health - PENDING
+  - 12.8.1 Application health endpoint - PENDING (Actuator `/actuator/health`, also used as Render's health check path)
+  - 12.8.2 Container health - NOT NEEDED (Render health check replaces a Docker HEALTHCHECK)
+  - 12.8.3 Server health - NOT NEEDED (managed platform; use Render metrics)
   - 12.8.4 Application logging - PENDING
-  - 12.8.5 Nginx logging - PENDING
+  - 12.8.5 Nginx logging - NOT NEEDED
   - 12.8.6 Basic diagnostics - PENDING
     **Status: NOT STARTED**
 
@@ -84,7 +87,7 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
   - 12.9.3 Frontend tests - PENDING
   - 12.9.4 Frontend build - PENDING
   - 12.9.5 Backend build - PENDING
-  - 12.9.6 Deployment automation - PENDING
+  - 12.9.6 Deployment automation - PENDING (Render auto-deploy from GitHub, ideally only after CI passes)
   - 12.9.7 Production verification - PENDING
     **Status: NOT STARTED**
 
@@ -94,6 +97,14 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
   - 12.10.3 Initial migration - PENDING
   - 12.10.4 Production migration workflow - PENDING
   - 12.10.5 Migration verification - PENDING
+    **Status: NOT STARTED**
+
+- 12.11 Production Image Storage
+  - 12.11.1 Storage options evaluation - PENDING (providers that work without a credit card; `FileStorageService` is the seam)
+  - 12.11.2 Storage implementation - PENDING
+  - 12.11.3 Image URL strategy - PENDING (`/uploads/...` becomes an absolute storage URL; `ImageMapper` and `getImageUrl`)
+  - 12.11.4 Existing local images - PENDING (re-upload or migrate)
+  - 12.11.5 Persistence verification - PENDING (images survive redeploy, restart and spin-down)
     **Status: NOT STARTED**
 
 ---
@@ -106,6 +117,14 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - Image upload, favorites, listings and deep-link refresh verified through the local proxy
 - Testcontainers (PostgreSQL 17) replaces H2 for all repository and integration tests via a shared `TestcontainersConfiguration`; tests keep `ddl-auto=create-drop` until Flyway owns the schema (12.10)
 - `VehicleListingService`, `ConversationService` and `MessageService` annotated with `@Transactional` / `@Transactional(readOnly = true)` (found by running with `open-in-view=false`); `FavoriteService` and the image write methods already had them; `ImageService.uploadImage` is intentionally not transactional (file cleanup relies on the save committing inside its try/catch)
+
+## Hosting decision: Render instead of OCI (2026-10-01)
+- **Why:** OCI sign-up requires a credit card; only a virtual prepaid card is available. Render's free tier is advertised as card-free, but Render sometimes asks for a card for verification (a small authorization hold that is reversed), so account creation is the first thing to test.
+- **What it removes:** VM provisioning, SSH, firewall/`ufw`, Docker install, Nginx install and config, certbot and DNS, the production compose file, the VM `.env`, Docker log rotation, restart policy, Docker `HEALTHCHECK`, server health checks, Nginx logs. TLS and a public HTTPS URL come from Render.
+- **What it introduces:** (1) free web services have an ephemeral filesystem, so uploaded images are lost on every redeploy, restart and spin-down, and a free service cannot attach a persistent disk (hence 12.11); (2) free services spin down after 15 minutes idle and take about a minute to wake (12.4.6, 12.7.6); (3) a small instance, so the JVM needs a memory cap (12.4.3); (4) the app must bind to Render's `PORT` (12.4.3).
+- **Unchanged:** Neon stays the database, Vercel stays the frontend host, `docker-compose.yml` stays for local development.
+- **Account facts (billing page, 2026-10-03):** Hobby workspace; no card on file; monthly included usage: 750 free instance hours, 5 GB bandwidth, 2 custom domains, 25 services, 500 pipeline (build) minutes. Docker builds consume pipeline minutes and image downloads served by the backend consume bandwidth. The billing page counts 1 service although the project shows none active; check what it is.
+- **Open decisions:** Render region (closest to the Neon region), image storage provider, whether to accept cold starts.
 
 ## Lessons from 12.3
 - **`open-in-view` was hiding a missing transaction boundary.** Spring Boot defaults it to `true`, so lazy loading worked anywhere in a request. With the prod profile (`false`), `VehicleListingMapper` hit a detached `User` proxy: `LazyInitializationException ... no session`.
@@ -128,48 +147,42 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - [x] Add `application-prod.properties` (`show-sql=false`, `ddl-auto=validate`)
 - [x] Confirm `.env` is in `.gitignore` (ignored, never tracked, never in history)
 - [x] Update `.env.example` with `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_SSL_MODE`, `DB_CHANNEL_BINDING`, `JWT_EXPIRATION`, `APP_UPLOAD_DIRECTORY`
-- [x] Generate a new local `JWT_SECRET` (production one is generated on the VM in 12.4.4)
-- [ ] Use a strong DB password for production (reset the Neon role password in 12.4.4; store only in the VM `.env`)
+- [x] Generate a new local `JWT_SECRET` (production one is generated for Render in 12.4.4)
+- [ ] Use a strong DB password for production (reset the Neon role password in 12.4.4; store only in Render environment variables)
 - [x] Set `spring.servlet.multipart.max-file-size` and `max-request-size` in base `application.properties`
 - [x] Set production logging levels
 - [x] Set `spring.jpa.open-in-view=false`
 - [x] `bootRun` hang: closed without investigation (Docker is the supported path)
 - [x] Run the backend with the prod profile and confirm startup plus API calls (local Postgres container)
 
-### 12.4 Production Docker Deployment
-- [ ] Create the OCI account and VM
-- [ ] Configure SSH, firewall/security list (ports 22, 80, 443), and `ufw`
-- [ ] Install Docker and Docker Compose on the VM
-- [ ] Create a production compose file: no local Postgres service, Neon values via env, backend only, `SPRING_PROFILES_ACTIVE=prod`
-- [ ] Put production secrets in a `.env` on the VM (permissions 600), not in Git; generate JWT secret on the VM with `openssl rand -base64 32`
-- [ ] Reset the Neon role password and store it only in the VM `.env`
-- [ ] Add `restart: unless-stopped` to each service
-- [ ] Add Docker log rotation (`json-file` `max-size` / `max-file`) so logs cannot fill the disk
-- [ ] Add PostgreSQL/Neon readiness handling on startup
-- [ ] Deploy the backend container on the VM and verify it connects to Neon (prod profile + Neon together)
-- [ ] Verify uploads persist across container restart and recreate
+### 12.4 Production Backend Deployment (Render)
+- [x] Render account exists (Hobby workspace, no card on file, 0 of 750 free instance hours used)
+- [ ] Create the first free web service; if Render asks for card verification, test whether the virtual card is accepted
+- [ ] Choose the Render region closest to the Neon database
+- [ ] Bind Spring to Render's port: `server.port=${PORT:8080}`
+- [ ] Tune the JVM for a 512 MB instance (heap cap, for example through `JAVA_TOOL_OPTIONS`)
+- [ ] Create the Render Web Service from the GitHub repo using `backend/Dockerfile`
+- [ ] Set environment variables in Render: `SPRING_PROFILES_ACTIVE=prod`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`, `DB_SSL_MODE=require`, `DB_CHANNEL_BINDING=require`, `JWT_SECRET`
+- [ ] Generate the production `JWT_SECRET` (base64 of at least 32 random bytes) and paste it straight into Render, never into chat
+- [ ] Reset the Neon role password and store it only in Render environment variables
+- [ ] Add Neon cold-start handling (Neon compute may be suspended when idle; connection timeouts and retries)
+- [ ] Deploy the backend and verify it connects to Neon (prod profile + Neon together)
+- [ ] Verify behaviour after idle spin-down and wake
+- [ ] Optional later: a `render.yaml` Blueprint
 - [ ] Change `dev.ps1` `up` to `docker compose up -d --build`
 
-### 12.5 Reverse Proxy
-- [ ] Decide what to do with the frontend container's nginx (dev only, or remove)
-- [ ] Install Nginx on the VM
-- [ ] Write an API-only nginx config for the VM (`proxy_pass` to `localhost:8080`, drop the SPA block)
-- [ ] Set `client_max_body_size` for image uploads (must stay larger than Spring's 6MB request limit)
-- [ ] Keep the forwarded headers (`Host`, `X-Real-IP`, `X-Forwarded-For`, `X-Forwarded-Proto`)
+### 12.5 Reverse Proxy & Forwarded Headers
+- [ ] Keep the frontend container's nginx for local development only
 - [ ] Add `server.forward-headers-strategy=framework` in Spring
-- [ ] Configure access and error logging
-- [ ] Verify `/uploads/*` is served through Nginx
+- [ ] Verify a 5MB image upload passes Render's edge (Spring still enforces 5MB/6MB)
 
 ### 12.6 HTTPS & DNS
-- [ ] Decide on a domain (or a free subdomain)
-- [ ] Create DNS records (API → OCI VM public IP)
-- [ ] Issue a TLS certificate (Let's Encrypt / certbot)
-- [ ] Configure HTTPS and HTTP→HTTPS redirect in Nginx
-- [ ] Set up certificate auto-renewal
+- [ ] Use the default `https://<service>.onrender.com` URL first; decide on a custom domain later (optional)
+- [ ] Confirm HTTP is redirected to HTTPS
 - [ ] Verify the API over HTTPS with `curl`
 
 ### 12.7 Frontend Production Deployment
-- [ ] Decide: Vercel rewrite of `/api` to the VM (same-origin, `VITE_API_URL=/api`) or absolute API URL with CORS
+- [ ] Decide: Vercel rewrite of `/api` to the Render URL (same-origin, `VITE_API_URL=/api`) or absolute API URL with CORS (a rewrite adds a proxy hop whose timeout may be shorter than a one-minute cold start; verify before choosing)
 - [ ] Set production `VITE_API_URL` accordingly
 - [ ] Make the CORS allowed origin an env variable (currently hardcoded `http://localhost:5173` in `SecurityConfig`)
 - [ ] Allow the Vercel production domain in CORS (if not using the rewrite)
@@ -179,15 +192,14 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - [ ] Verify register, login, listings, image upload, favorites, messaging from the Vercel URL
 - [ ] Verify images load from the API domain (`getImageUrl`)
 - [ ] Verify the frontend shows the 413 message when a file over 5MB is uploaded
+- [ ] Handle backend cold start in the UI (longer timeout and a "waking up the server" message)
 
 ### 12.8 Health Checks & Observability
 - [ ] Add Spring Boot Actuator and expose `/actuator/health` only
 - [ ] Permit the health endpoint in `SecurityConfig`
-- [ ] Add a Docker `HEALTHCHECK` for the backend
-- [ ] Server health checks (`df`, `free`, `top`, `docker stats`)
-- [ ] Application logging format and levels
-- [ ] Nginx access/error log review
-- [ ] Write a short diagnostics checklist
+- [ ] Set it as Render's health check path
+- [ ] Application logging format and levels (Render collects stdout)
+- [ ] Write a short diagnostics checklist (Render logs and metrics, Neon dashboard)
 
 ### 12.9 CI/CD
 - [ ] GitHub Actions workflow file (Docker is available on ubuntu runners, so Testcontainers tests can run in CI)
@@ -195,8 +207,8 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - [ ] Frontend tests job
 - [ ] Frontend build job
 - [ ] Backend build job
-- [ ] Deployment automation to OCI (SSH or registry pull)
-- [ ] Store secrets in GitHub Actions secrets
+- [ ] Deployment automation: Render auto-deploy from GitHub, ideally only after CI passes
+- [ ] Store secrets in GitHub Actions secrets (only if a Render deploy hook is used)
 - [ ] Post-deploy health check
 
 ### 12.10 Production Database Migration Strategy
@@ -208,7 +220,16 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - [ ] Verify migrations against Neon
 - [ ] Confirm the Neon backup/restore options and test a restore
 
+### 12.11 Production Image Storage
+- [ ] Research storage providers with current terms that work without a credit card and alongside Render's free tier
+- [ ] Decide between an S3-compatible API and a provider SDK
+- [ ] Add a second `FileStorageService` implementation selected by configuration; keep the local filesystem for development and tests
+- [ ] Return absolute image URLs from the API; update `ImageMapper` and `getImageUrl`
+- [ ] Decide what to do with existing local images (re-upload or migrate)
+- [ ] Verify upload, set primary, reorder and delete, and that images survive a redeploy and a spin-down
+
 ### Housekeeping
+- [ ] Update the charter: add persistent image storage to the Phase 12 plan, mark "Cloud object storage" in Phase 13 as pulled forward, and replace VM wording with Render
 - [ ] Update the charter's Phase 12 section to point to this plan
 - [ ] Regenerate `FOLDER_STRUCTURE.md` (stale: missing `JwtAuthenticationEntryPoint`, `application-prod.properties`, and the real `src/main/resources` location)
 - [ ] Delete the duplicate test listings in the local database
@@ -228,6 +249,8 @@ Target architecture: React on Vercel → Nginx + Spring Boot (Docker) on OCI VM 
 - [ ] Tests: no class-level `@Transactional` hiding lazy-loading bugs; invalid Bearer token on public endpoint; 413 on oversized upload; run Testcontainers tests in CI
 - [ ] Versioned image tags / registry instead of `latest`; nginx upstream re-resolution after backend recreation
 - [ ] Revisit folder structure generator; document IDE run configuration; investigate `bootRun` hang
+- [ ] Paid always-on Render instance with a persistent disk (removes cold starts; needs a payment card)
+- [ ] Custom domain and DNS (optional)
 - Testcontainers with PostgreSQL: moved into Phase 12.3.10
 
-**NEXT STEP:** 12.4.2 (OCI VM preparation), then 12.4.4 (production secrets on the VM) and the production compose file
+**NEXT STEP:** 12.4.2 (create the first free web service and see whether card verification is requested), then 12.4.3 (`PORT` and JVM memory), 12.4.4 (environment variables and secrets), 12.4.7 (first deploy against Neon), then 12.11 (image storage) before 12.7 (Vercel)
