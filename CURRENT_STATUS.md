@@ -59,9 +59,9 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
   - 12.6.1 Domain configuration - OPTIONAL (default `*.onrender.com` URL first; custom domain later)
   - 12.6.2 DNS records - OPTIONAL (only with a custom domain)
   - 12.6.3 TLS certificate - NOT NEEDED (managed by Render)
-  - 12.6.4 HTTPS configuration - PENDING (confirm HTTPS-only access and correct scheme through forwarded headers)
-  - 12.6.5 Secure API verification - PENDING
-    **Status: NOT STARTED**
+  - 12.6.4 HTTPS configuration - COMPLETE (confirm HTTPS-only access and correct scheme through forwarded headers)
+  - 12.6.5 Secure API verification - COMPLETE
+    **Status: COMPLETE**
 
 - 12.7 Frontend Production Deployment
   - 12.7.1 Production API configuration - PENDING (local `/api` version done; redo for Vercel)
