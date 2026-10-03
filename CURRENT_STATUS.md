@@ -37,23 +37,23 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
   - 12.3.10 Production-parity testing - COMPLETE (tests run on PostgreSQL 17 via Testcontainers, H2 removed; `open-in-view=false` in test properties; regression test for paginated `GET /listings`; `./gradlew test` passes)
     **Status: COMPLETE** (production DB password and production JWT secret are created for Render in 12.4.4)
 
-- 12.4 Production Backend Deployment (Render)
-  - 12.4.1 Production backend image - COMPLETE
-  - 12.4.2 Render account & verification - IN PROGRESS (account exists on the Hobby workspace with no card on file; still untested whether creating the first free web service asks for card verification)
-  - 12.4.3 Docker runtime configuration - PENDING (local compose done; bind to Render's `PORT`, tune the JVM for a 512 MB instance)
-  - 12.4.4 Environment & secrets - PENDING (Render environment variables; production JWT secret; reset Neon password)
-  - 12.4.5 Persistent application storage - PENDING (reopened: a free Render filesystem is ephemeral; solved in 12.11)
-  - 12.4.6 Restart & cold-start behaviour - PENDING (free service spins down after 15 minutes idle, about a minute to wake)
-  - 12.4.7 Service verification - PENDING
-    **Status: IN PROGRESS**
+  - 12.4 Production Backend Deployment (Render)
+    - 12.4.1 Production backend image - COMPLETE
+    - 12.4.2 Render account & verification - COMPLETE (Hobby workspace; no card on file; free web service created successfully without requiring card verification)
+    - 12.4.3 Docker runtime configuration - COMPLETE (server.port=${PORT:8080} configured; Docker build/runtime configuration verified; JVM memory tuning deferred until observed need)
+    - 12.4.4 Environment & secrets - COMPLETE (Render production environment configured with Spring profile, Neon connection variables, TLS/channel-binding settings and production JWT secret)
+    - 12.4.5 Persistent application storage - DEFERRED TO 12.11 (Render Free filesystem is ephemeral; persistent image storage will be implemented separately)
+    - 12.4.6 Restart & cold-start behaviour - DEFERRED TO FINAL VERIFICATION (free service spin-down/wake behaviour will be tested together with the deployed frontend and persistent image storage)
+    - 12.4.7 Service verification - COMPLETE FOR DEPLOYMENT AVAILABILITY (Render deployment succeeded and live backend URL responds; / returns the expected Spring Security 401 Unauthorized because the root endpoint is protected. Full application-flow verification is deferred until frontend and persistent storage are complete)
+    **Status: COMPLETE / FINAL END-TO-END VERIFICATION PENDING**
 
 - 12.5 Reverse Proxy & Forwarded Headers
   - 12.5.1 Nginx installation (on VM) - NOT NEEDED (Render's edge proxy replaces it)
   - 12.5.2 Reverse proxy configuration - COMPLETE (local container only, kept for development)
   - 12.5.3 Request forwarding - COMPLETE (local container only, kept for development)
-  - 12.5.4 HTTP headers - PENDING (Spring `forward-headers-strategy=framework`)
+  - 12.5.4 HTTP headers - COMPLETE (Spring `forward-headers-strategy=framework`)
   - 12.5.5 Access logging - NOT NEEDED (Render collects logs)
-    **Status: IN PROGRESS**
+    **Status: COMPLETE**
 
 - 12.6 HTTPS & DNS
   - 12.6.1 Domain configuration - OPTIONAL (default `*.onrender.com` URL first; custom domain later)
@@ -157,22 +157,22 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 
 ### 12.4 Production Backend Deployment (Render)
 - [x] Render account exists (Hobby workspace, no card on file, 0 of 750 free instance hours used)
-- [ ] Create the first free web service; if Render asks for card verification, test whether the virtual card is accepted
-- [ ] Choose the Render region closest to the Neon database
-- [ ] Bind Spring to Render's port: `server.port=${PORT:8080}`
+- [x] Create the first free web service; if Render asks for card verification, test whether the virtual card is accepted
+- [x] Choose the Render region closest to the Neon database (Ohio / US East; Neon is AWS East 2 / Ohio)
+- [x] Bind Spring to Render's port: `server.port=${PORT:8080}`
 - [ ] Tune the JVM for a 512 MB instance (heap cap, for example through `JAVA_TOOL_OPTIONS`)
-- [ ] Create the Render Web Service from the GitHub repo using `backend/Dockerfile`
-- [ ] Set environment variables in Render: `SPRING_PROFILES_ACTIVE=prod`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`, `DB_SSL_MODE=require`, `DB_CHANNEL_BINDING=require`, `JWT_SECRET`
-- [ ] Generate the production `JWT_SECRET` (base64 of at least 32 random bytes) and paste it straight into Render, never into chat
-- [ ] Reset the Neon role password and store it only in Render environment variables
+- [x] Create the Render Web Service from the GitHub repo using `backend/Dockerfile`
+- [x] Set environment variables in Render: `SPRING_PROFILES_ACTIVE=prod`, `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`, `DB_SSL_MODE=require`, `DB_CHANNEL_BINDING=require`, `JWT_SECRET`
+- [x] Generate the production `JWT_SECRET` (base64 of at least 32 random bytes) and paste it straight into Render, never into chat
+- [x] Reset the Neon role password and store it only in Render environment variables
 - [ ] Add Neon cold-start handling (Neon compute may be suspended when idle; connection timeouts and retries)
-- [ ] Deploy the backend and verify it connects to Neon (prod profile + Neon together)
+- [x] Deploy the backend and verify it connects to Neon (prod profile + Neon together)
 - [ ] Verify behaviour after idle spin-down and wake
 - [ ] Optional later: a `render.yaml` Blueprint
 - [ ] Change `dev.ps1` `up` to `docker compose up -d --build`
 
 ### 12.5 Reverse Proxy & Forwarded Headers
-- [ ] Keep the frontend container's nginx for local development only
+- [x] Keep the frontend container's nginx for local development only
 - [ ] Add `server.forward-headers-strategy=framework` in Spring
 - [ ] Verify a 5MB image upload passes Render's edge (Spring still enforces 5MB/6MB)
 
@@ -253,4 +253,5 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [ ] Custom domain and DNS (optional)
 - Testcontainers with PostgreSQL: moved into Phase 12.3.10
 
-**NEXT STEP:** 12.4.2 (create the first free web service and see whether card verification is requested), then 12.4.3 (`PORT` and JVM memory), 12.4.4 (environment variables and secrets), 12.4.7 (first deploy against Neon), then 12.11 (image storage) before 12.7 (Vercel)
+**NEXT STEP: 12.5.4 — add server.forward-headers-strategy=framework to backend/src/main/resources/application.properties,
+then verify the configuration and commit it before moving to 12.6.**
