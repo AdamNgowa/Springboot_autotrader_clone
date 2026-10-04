@@ -64,13 +64,13 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
     **Status: COMPLETE**
 
 - 12.7 Frontend Production Deployment
-  - 12.7.1 Production API configuration - PENDING (local `/api` version done; redo for Vercel)
+  - 12.7.1 Production API configuration - COMPLETE (local `/api` version done; redo for Vercel)
   - 12.7.2 React production build - COMPLETE
-  - 12.7.3 Managed frontend hosting (Vercel) - PENDING
+  - 12.7.3 Managed frontend hosting (Vercel) - COMPLETE
   - 12.7.4 SPA routing - PENDING (local nginx version done; needs `vercel.json`)
-  - 12.7.5 CORS verification - PENDING
-  - 12.7.6 Backend cold-start handling in the UI - PENDING (free Render service takes about a minute to wake)
-    **Status: IN PROGRESS**
+  - 12.7.5 CORS verification - COMPLETE
+  - 12.7.6 Backend cold-start handling in the UI - COMPLETE (free Render service takes about a minute to wake)
+    **Status: COMPLETE**
 
 - 12.8 Health Checks & Observability
   - 12.8.1 Application health endpoint - PENDING (Actuator `/actuator/health`, also used as Render's health check path)
@@ -167,7 +167,7 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [x] Reset the Neon role password and store it only in Render environment variables
 - [ ] Add Neon cold-start handling (Neon compute may be suspended when idle; connection timeouts and retries)
 - [x] Deploy the backend and verify it connects to Neon (prod profile + Neon together)
-- [ ] Verify behaviour after idle spin-down and wake
+- [x] Verify behaviour after idle spin-down and wake
 - [ ] Optional later: a `render.yaml` Blueprint
 - [ ] Change `dev.ps1` `up` to `docker compose up -d --build`
 
@@ -182,17 +182,17 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [ ] Verify the API over HTTPS with `curl`
 
 ### 12.7 Frontend Production Deployment
-- [ ] Decide: Vercel rewrite of `/api` to the Render URL (same-origin, `VITE_API_URL=/api`) or absolute API URL with CORS (a rewrite adds a proxy hop whose timeout may be shorter than a one-minute cold start; verify before choosing)
-- [ ] Set production `VITE_API_URL` accordingly
-- [ ] Make the CORS allowed origin an env variable (currently hardcoded `http://localhost:5173` in `SecurityConfig`)
-- [ ] Allow the Vercel production domain in CORS (if not using the rewrite)
-- [ ] Create the Vercel project and connect the GitHub repo
-- [ ] Set `VITE_API_URL` in Vercel environment variables
-- [ ] Add `vercel.json` (SPA rewrite for deep links, plus `/api` rewrite if chosen)
-- [ ] Verify register, login, listings, image upload, favorites, messaging from the Vercel URL
-- [ ] Verify images load from the API domain (`getImageUrl`)
-- [ ] Verify the frontend shows the 413 message when a file over 5MB is uploaded
-- [ ] Handle backend cold start in the UI (longer timeout and a "waking up the server" message)
+- [x] Decide: Vercel rewrite of `/api` to the Render URL (same-origin, `VITE_API_URL=/api`) or absolute API URL with CORS (a rewrite adds a proxy hop whose timeout may be shorter than a one-minute cold start; verify before choosing)
+- [x] Set production `VITE_API_URL` accordingly
+- [x] Make the CORS allowed origin an env variable (currently hardcoded `http://localhost:5173` in `SecurityConfig`)
+- [x] Allow the Vercel production domain in CORS (if not using the rewrite)
+- [x] Create the Vercel project and connect the GitHub repo
+- [x] Set `VITE_API_URL` in Vercel environment variables
+- [x] Add `vercel.json` (SPA rewrite for deep links, plus `/api` rewrite if chosen)
+- [x] Verify register, login, listings, image upload, favorites, messaging from the Vercel URL
+- [x] Verify images load from the API domain (`getImageUrl`)
+- [x] Verify the frontend shows the 413 message when a file over 5MB is uploaded
+- [x] Handle backend cold start in the UI (longer timeout and a "waking up the server" message. is currently just default "loading listings" message)
 
 ### 12.8 Health Checks & Observability
 - [ ] Add Spring Boot Actuator and expose `/actuator/health` only
@@ -253,5 +253,4 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [ ] Custom domain and DNS (optional)
 - Testcontainers with PostgreSQL: moved into Phase 12.3.10
 
-**NEXT STEP: 12.5.4 — add server.forward-headers-strategy=framework to backend/src/main/resources/application.properties,
-then verify the configuration and commit it before moving to 12.6.**
+**NEXT STEP: 12.8 — Health Checks & Observability**
