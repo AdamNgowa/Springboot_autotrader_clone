@@ -3,6 +3,7 @@ package com.autotrader.backend.config.securityConfig;
 import com.autotrader.backend.security.CustomUserDetailsService;
 import com.autotrader.backend.security.JwtAuthenticationEntryPoint;
 import com.autotrader.backend.security.JwtAuthenticationFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -31,6 +32,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
+    @Value("${app.cors.allowed-origin}")
+    private String allowedOrigin;
 
     // 2. CONSTRUCTOR INJECTION
     // Spring looks at this constructor, finds the instances of these classes in its memory container,
@@ -61,7 +65,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of(allowedOrigin));
 
         configuration.setAllowedMethods(List.of(
                 "GET",
