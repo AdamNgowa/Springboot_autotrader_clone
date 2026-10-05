@@ -76,10 +76,10 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
   - 12.8.1 Application health endpoint - COMPLETE (Actuator `/actuator/health`, also used as Render's health check path)
   - 12.8.2 Container health - NOT NEEDED (Render health check replaces a Docker HEALTHCHECK)
   - 12.8.3 Server health - NOT NEEDED (managed platform; use Render metrics)
-  - 12.8.4 Application logging - PENDING
+  - 12.8.4 Application logging - COMPLETE
   - 12.8.5 Nginx logging - NOT NEEDED
-  - 12.8.6 Basic diagnostics - PENDING
-    **Status: NOT STARTED**
+  - 12.8.6 Basic diagnostics - COMPLETE
+    **Status: COMPLETE**
 
 - 12.9 CI/CD
   - 12.9.1 GitHub Actions - PENDING
