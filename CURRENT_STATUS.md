@@ -73,7 +73,7 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
     **Status: COMPLETE**
 
 - 12.8 Health Checks & Observability
-  - 12.8.1 Application health endpoint - PENDING (Actuator `/actuator/health`, also used as Render's health check path)
+  - 12.8.1 Application health endpoint - COMPLETE (Actuator `/actuator/health`, also used as Render's health check path)
   - 12.8.2 Container health - NOT NEEDED (Render health check replaces a Docker HEALTHCHECK)
   - 12.8.3 Server health - NOT NEEDED (managed platform; use Render metrics)
   - 12.8.4 Application logging - PENDING
@@ -195,9 +195,9 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [x] Handle backend cold start in the UI (longer timeout and a "waking up the server" message. is currently just default "loading listings" message)
 
 ### 12.8 Health Checks & Observability
-- [ ] Add Spring Boot Actuator and expose `/actuator/health` only
-- [ ] Permit the health endpoint in `SecurityConfig`
-- [ ] Set it as Render's health check path
+- [x] Add Spring Boot Actuator and expose `/actuator/health` only
+- [x] Permit the health endpoint in `SecurityConfig`
+- [x] Set it as Render's health check path - Added `/actuator/health` to render, then run curl.exe -i and got status : UP
 - [ ] Application logging format and levels (Render collects stdout)
 - [ ] Write a short diagnostics checklist (Render logs and metrics, Neon dashboard)
 
