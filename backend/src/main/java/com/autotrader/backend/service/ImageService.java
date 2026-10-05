@@ -146,6 +146,11 @@ public class ImageService {
 
         String storageFilename =
                 image.getStorageFilename();
+
+        // Remove the image from the aggregate first. If it stayed in listing.getImages(),
+        // cascade = ALL would "re-persist" it at flush time and silently cancel the delete.
+        listing.removeImage(image);
+
         vehicleImageRepository.delete(image);
         vehicleImageRepository.flush();
 

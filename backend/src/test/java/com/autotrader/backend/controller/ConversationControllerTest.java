@@ -127,23 +127,17 @@ class ConversationControllerTest {
     }
 
     @Test
-    void getConversation_whenUnauthorized_propagatesException() {
+    void getConversation_whenNotParticipant_returnsForbidden() throws Exception {
 
         when(conversationService.getConversation(10L))
                 .thenThrow(new UnauthorizedConversationAccessException(
                         "You are not allowed to access this conversation"));
 
-        /*
-         * GlobalExceptionHandler currently has no @ExceptionHandler for
-         * UnauthorizedConversationAccessException, so this exception is not
-         * converted into a structured 403 response — it surfaces as an
-         * unhandled exception during dispatch instead. This test documents
-         * that current gap rather than a desired outcome; adding a handler
-         * would let this become a normal status().isForbidden() assertion.
-         */
-        assertThrows(
-                Exception.class,
-                () -> mockMvc.perform(get("/conversations/{conversationId}", 10L))
-        );
+        mockMvc.perform(get("/conversations/{conversationId}", 10L))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message")
+                        .value("You are not allowed to access this conversation"));
+
+        verify(conversationService).getConversation(10L);
     }
 }

@@ -251,4 +251,42 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body(error);
     }
+
+    // ==========================================
+// 9. SECURITY RULE HANDLER: NON-PARTICIPANT CONVERSATION ACCESS
+// ==========================================
+    @ExceptionHandler(UnauthorizedConversationAccessException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedConversationAccess(
+            UnauthorizedConversationAccessException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    // ==========================================
+// 10. INPUT RULE HANDLER: INVALID IMAGE UPLOADS / REORDER REQUESTS
+// ==========================================
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(
+            IllegalArgumentException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

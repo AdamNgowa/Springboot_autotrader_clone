@@ -80,7 +80,7 @@ class ImageControllerTest {
     }
 
     @Test
-    void uploadImage_whenFileIsInvalid_propagatesException() {
+    void uploadImage_whenFileIsInvalid_returnsBadRequest() throws Exception {
 
         MockMultipartFile file = new MockMultipartFile(
                 "file", "notes.txt", "text/plain", "not an image".getBytes()
@@ -90,20 +90,11 @@ class ImageControllerTest {
                 .thenThrow(new IllegalArgumentException(
                         "Only JPEG, PNG and WEBP images are supported"));
 
-        /*
-         * GlobalExceptionHandler currently has no @ExceptionHandler for
-         * IllegalArgumentException, so this exception is not caught and
-         * converted into a structured 400 response — it surfaces as an
-         * unhandled exception during dispatch instead. This test documents
-         * that current gap rather than a desired outcome; adding a handler
-         * for IllegalArgumentException would let this become a normal
-         * status().isBadRequest() assertion.
-         */
-        assertThrows(
-                Exception.class,
-                () -> mockMvc.perform(multipart("/listings/{listingId}/images", 1L)
+        mockMvc.perform(multipart("/listings/{listingId}/images", 1L)
                         .file(file))
-        );
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message")
+                        .value("Only JPEG, PNG and WEBP images are supported"));
 
         verify(imageService).uploadImage(eq(1L), any(MultipartFile.class));
     }
