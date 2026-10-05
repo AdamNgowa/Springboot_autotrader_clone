@@ -198,8 +198,8 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [x] Add Spring Boot Actuator and expose `/actuator/health` only
 - [x] Permit the health endpoint in `SecurityConfig`
 - [x] Set it as Render's health check path - Added `/actuator/health` to render, then run curl.exe -i and got status : UP
-- [ ] Application logging format and levels (Render collects stdout)
-- [ ] Write a short diagnostics checklist (Render logs and metrics, Neon dashboard)
+- [x] Application logging format and levels (Render collects stdout)
+- [x] Write a short diagnostics checklist (Render logs and metrics, Neon dashboard)
 
 ### 12.9 CI/CD
 - [ ] GitHub Actions workflow file (Docker is available on ubuntu runners, so Testcontainers tests can run in CI)
@@ -253,4 +253,4 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [ ] Custom domain and DNS (optional)
 - Testcontainers with PostgreSQL: moved into Phase 12.3.10
 
-**NEXT STEP: 12.8 — Health Checks & Observability**
+**NEXT STEP: 12.9 — CI/CD**

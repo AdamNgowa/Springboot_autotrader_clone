@@ -251,6 +251,7 @@ autotrader/
 ├── .env.example
 ├── .gitignore
 ├── CURRENT_STATUS.md
+├── PRODUCTION_DIAGNOSTICS.md
 ├── dev.ps1
 ├── docker-compose.yml
 ├── FOLDER_STRUCTURE.md
