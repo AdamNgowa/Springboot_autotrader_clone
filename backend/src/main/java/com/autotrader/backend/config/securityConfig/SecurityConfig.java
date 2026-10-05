@@ -186,7 +186,8 @@ public class SecurityConfig {
                                 "/uploads/**",
                                 // Spring forwards failed requests to /error. If it is blocked,
                                 // a real 500 shows up as a misleading 401.
-                                "/error"
+                                "/error",
+                                "/actuator/health"
 
 
                         ).permitAll()
