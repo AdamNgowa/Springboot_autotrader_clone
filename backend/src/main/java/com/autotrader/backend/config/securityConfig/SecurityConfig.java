@@ -187,6 +187,7 @@ public class SecurityConfig {
                                 // Spring forwards failed requests to /error. If it is blocked,
                                 // a real 500 shows up as a misleading 401.
                                 "/error",
+                                //Health check
                                 "/actuator/health"
 
 
