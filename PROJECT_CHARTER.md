@@ -103,6 +103,8 @@ Implemented:
 
 **Updated 2026-08-19:** A direct inspection of `ImageController.java`, `ImageService.java`, `VehicleImageRepository.java`, and `VehicleImage.java` confirmed that several items previously recorded as "intentionally deferred" are in fact implemented. This section has been corrected accordingly.
 
+**Updated 2026-10-05:** Integration tests written in Phase 12 showed that image deletion did not actually delete the database row: the deleted image was still in `VehicleListing.images`, and `cascade = ALL` re-persisted it at flush time while the physical file was still removed. `ImageService.deleteImage` now calls `listing.removeImage(image)` before deleting. See the Phase 13 data access and testing notes.
+
 Implemented:
 
 - Dedicated `VehicleImage` entity (includes `displayOrder` and `primaryImage` fields)
@@ -374,6 +376,8 @@ Frontend testing setup verified:
 The remaining frontend testing expansion, security and cross-feature testing, regression/coverage review,
 and additional integration testing are intentionally deferred to Phase 13.
 
+**Updated 2026-10-05:** Part of that deferred work was pulled forward into Phase 12, before CI/CD. Repository and integration tests now run on PostgreSQL 17 through Testcontainers instead of H2 (12.3.10). The backend suite also gained integration tests for the security boundary, image management, messaging and seller profiles, unit tests for `ImageService` and `UserService`, and a handler-level `GlobalExceptionHandlerTest`. Frontend testing expansion is still open.
+
 **Phase 10 overall status: COMPLETE**
 
 # Phase 11 — Docker & Developer Tooling
@@ -453,6 +457,7 @@ Planned:
 - Production upload configuration
 - Transaction boundaries under production settings
 - Production-parity testing with PostgreSQL (Testcontainers)
+- Pre-CI test expansion (security boundary, image management, messaging and seller profile integration tests)
 - Domain and DNS
 - Frontend hosting and CORS configuration
 
@@ -472,7 +477,7 @@ Authentication works end to end, but deployment exposed how much of its safety d
 - Rate limiting
 - Security hardening
 - Audit logging
-- Explicit `authenticated()` rules for `/listings/me` and `/users/me`, declared before the wildcard `permitAll` matchers *(found in Phase 12: these routes are currently matched by the public wildcards, so their protection depends on the service layer instead of the filter chain)*
+- Explicit `authenticated()` rules for `/listings/me` and `/users/me`, declared before the wildcard `permitAll` matchers *(found in Phase 12: these routes are currently matched by the public wildcards, so their protection depends on the service layer instead of the filter chain; `SecurityBoundaryIntegrationTest` pins today's 401 behaviour so the change can be made safely)*
 - Startup validation of `JWT_SECRET` (valid Base64, at least 32 bytes) *(found in Phase 12: a weak secret only fails on the first login)*
 - JWT secret rotation procedure *(found in Phase 12: the secret was exposed and had to be replaced, which invalidates every issued token)*
 - Secrets manager evaluation to replace the `.env` file on the VM
@@ -488,6 +493,7 @@ Running with `open-in-view=false` made lazy loading visible. The listing endpoin
 - N+1 query review on paginated listings (fetch join, `@EntityGraph` or DTO projections; fetch-joining a collection with pagination makes Hibernate paginate in memory)
 - Application-wide `@Transactional` policy review (every service that maps entities or does multi-step writes)
 - Connection pool tuning for Neon's pooled endpoint
+- Review `cascade = ALL` and `orphanRemoval = true` on `VehicleListing.images`, and decide whether images should be removed only through the aggregate *(found in Phase 12: deleting an image through the repository while it was still in the listing's collection let the cascade cancel the delete, so the row survived and only the file was removed; fixed with `removeImage` in `ImageService.deleteImage`)*
 
 ### Product & API Evolution
 
@@ -515,6 +521,7 @@ Once the app runs on a server, the questions become "is it healthy?" and "what h
 - Structured (JSON) logging
 - Logging of authentication failures, never tokens or passwords *(found in Phase 12: the app logs nothing about auth events)*
 - Backup strategy for the uploads volume *(found in Phase 12: images live in a Docker volume on a single VM)*
+- Replace the broad `IllegalArgumentException` handler with dedicated exceptions such as `InvalidImageException` *(found in Phase 12: missing handlers made bad uploads return 500; the quick fix maps every `IllegalArgumentException` to 400, which would also report a future programming error as a client error)*
 
 ### Container & Image Hardening
 
@@ -527,19 +534,25 @@ The following items directly strengthen the application's security, reliability,
 
 ### Testing & Quality
 
-Testing and quality improvements deferred from Phase 10. Phase 12 added several items because the test suite ran with `open-in-view` on and on H2, so it missed a lazy-loading bug that production settings exposed.
+Testing and quality improvements deferred from Phase 10. Phase 12 added several items because the test suite ran with `open-in-view` on and on H2, so it missed a lazy-loading bug that production settings exposed. A second round of tests written before CI found more real defects and added the lessons below.
 
 - Expanded frontend testing with Vitest, jsdom, and React Testing Library
 - Security & cross-feature testing
 - Test review, regression testing, and coverage analysis
-- Additional messaging integration tests
-- Additional image management integration tests
-- Seller/user integration tests
+- Additional messaging integration tests (pulled forward into Phase 12, kept here as a record)
+- Additional image management integration tests (pulled forward into Phase 12, kept here as a record)
+- Seller/user integration tests (pulled forward into Phase 12, kept here as a record)
 - Docker Testcontainers with PostgreSQL for repository/JPA integration testing instead of H2 (pulled forward into Phase 12, kept here as a record)
 - Review tests for class-level or method-level `@Transactional`, which keeps one session open and hides lazy-loading bugs
-- Test that an invalid or expired Bearer token on a public endpoint is treated as anonymous
-- Test that an oversized upload returns 413 with the JSON error body
+- Test that an invalid or expired Bearer token on a public endpoint is treated as anonymous (pulled forward into Phase 12, kept here as a record)
+- Test that an oversized upload returns 413 with the JSON error body (pulled forward into Phase 12 as a handler-level test in `GlobalExceptionHandlerTest`; the end-to-end path is verified manually)
 - Run the Testcontainers-based tests in CI
+- Cover every flow that deletes, cascades or depends on flush order with at least one test on real PostgreSQL *(found in Phase 12: `ImageServiceTest` with mocked repositories passed while image deletion was broken; only the Testcontainers integration test exposed it, because a mock cannot reproduce Hibernate's cascade behaviour)*
+- Review tests that assert a failure as the expected outcome, such as `propagatesException` *(found in Phase 12: two controller tests had locked in missing 403 and 400 handlers; they passed for months and had to be rewritten once the handlers existed. Search for such tests whenever a handler is added)*
+- Give every custom exception a handler and a test that asserts its status code and JSON body *(found in Phase 12: `UnauthorizedConversationAccessException` and `IllegalArgumentException` returned 500 instead of 403 and 400)*
+- Keep `src/test/resources/application.properties` complete *(found in Phase 12: the test file shadows the main one on the classpath, so every property the application requires, such as the CORS origin and multipart limits, must be repeated there)*
+- Test transport-level behaviour at the handler, not through a client *(found in Phase 12: Tomcat aborts an oversized multipart upload mid-stream and closes the socket, so MockMvc cannot trigger it and a real HTTP client sees a connection reset instead of the 413. Assert the handler's contract in isolation and verify the end-to-end path manually or in a staging environment)*
+- Make every MockMvc integration test extend `IntegrationTestSupport` *(found in Phase 12: one shared annotation signature lets Spring cache a single context and a single PostgreSQL container, and the base class clears tables child-first so foreign keys never break a cleanup. A test with a different signature, such as a random-port server, starts its own context and container)*
 
 ### Developer Tooling & Code Quality
 
