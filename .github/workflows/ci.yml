@@ -1,61 +1,176 @@
+# =============================================================================
+# HOW TO READ THIS FILE (YAML + GitHub Actions in 60 seconds)
+#
+#   YAML basics
+#   - Structure comes from INDENTATION (spaces, never tabs). Two spaces per level.
+#   - "key: value" is a setting.
+#   - A line starting with "- " is one item in a list.
+#   - "|" after a key means "the following indented lines are one multi-line text".
+#   - "#" starts a comment, like "//" in Java.
+#
+#   GitHub Actions vocabulary (each level lives inside the previous one)
+#   - WORKFLOW : this whole file. GitHub runs it when a trigger (on:) happens.
+#   - JOB      : a group of steps that runs on ONE fresh virtual machine
+#                (the "runner"). Jobs run in parallel unless one says "needs:".
+#   - STEP     : one action inside a job. Steps run top to bottom on the same
+#                machine and share its files. If a step fails, the later steps
+#                are skipped and the job fails (unless a step says "if: ...").
+#   - A step does ONE of two things:
+#       uses: -> runs a ready-made, reusable "action" written by someone else
+#       run:  -> runs shell commands, exactly as if you typed them in a terminal
+#
+#   ${{ ... }} is an EXPRESSION: GitHub replaces it with a value before running,
+#   e.g. ${{ github.ref }} becomes "refs/heads/master".
+# =============================================================================
+
+# The name shown in the "Actions" tab and on the pull request checks.
 name: CI
 
+# -----------------------------------------------------------------------------
+# TRIGGERS: when should this workflow start?
+# -----------------------------------------------------------------------------
 on:
+  # Run on every push to the master branch (that is, after a merge).
   push:
     branches:
       - master
+  # Run on every pull request that targets master, and again whenever new
+  # commits are pushed to that pull request.
   pull_request:
     branches:
       - master
+  # Adds a "Run workflow" button in the Actions tab so you can start CI by hand,
+  # for example on a feature branch that has no pull request yet.
+  workflow_dispatch:
 
+# -----------------------------------------------------------------------------
+# PERMISSIONS: what the automatic GitHub token may do.
+# Every run gets a temporary token. "contents: read" lets it download your code
+# and nothing else. If a step were ever compromised it could not push, delete
+# or edit anything. This is the "least privilege" principle.
+# -----------------------------------------------------------------------------
 permissions:
   contents: read
 
+# -----------------------------------------------------------------------------
+# CONCURRENCY: what happens when a new run starts while an older one is still
+# going for the same branch?
+# -----------------------------------------------------------------------------
 concurrency:
+  # Runs with the SAME group name are treated as "the same thing". Here the
+  # group is "ci-<workflow name>-<branch>", so each branch has its own group.
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Cancel the older run on pull requests only: if you push a fix to a PR, the
+  # outdated run is pointless. On master we never cancel, because a master run
+  # is the one a deployment would be gated on and it must always finish.
+  # (The expression evaluates to true or false.)
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# -----------------------------------------------------------------------------
+# JOBS: the work itself. "backend" and "frontend" have no "needs:", so GitHub
+# runs them at the same time on two separate machines.
+# -----------------------------------------------------------------------------
 jobs:
+  # ===========================================================================
+  # JOB 1: BACKEND (Spring Boot, Gradle, PostgreSQL via Testcontainers)
+  # ===========================================================================
   backend:
+    # Display name, and the name you pick when requiring this check in branch
+    # protection rules.
     name: Backend Test & Build
+    # The virtual machine: the latest Ubuntu Linux image GitHub provides.
+    # Docker is preinstalled on it, which Testcontainers needs.
     runs-on: ubuntu-latest
+    # Safety net: kill the job after 20 minutes. The default is 6 hours, so a
+    # hung test would otherwise quietly burn your free minutes.
+    timeout-minutes: 20
 
+    # Defaults applied to every "run:" step in this job. Your project root has
+    # backend/ and frontend/ folders, so we start every command inside backend/.
+    # (This does NOT affect "uses:" steps.)
     defaults:
       run:
         working-directory: backend
 
     steps:
+      # Step 1: download your repository onto the fresh machine. The machine
+      # starts empty, so without this there would be no code to build.
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: install Java. "with:" passes inputs to the action.
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: '17'
-          cache: gradle
+          distribution: temurin   # which JDK vendor to install (Eclipse Temurin)
+          java-version: '17'      # must match your build.gradle toolchain
+          cache: gradle           # save downloaded dependencies between runs
+          # so later runs are faster
 
+      # Step 3: files created on Windows lose the "executable" flag when they
+      # reach Linux. Without this, "./gradlew" fails with "Permission denied".
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
+      # Step 4: run every backend test (unit, controller, repository,
+      # integration). Testcontainers starts a real PostgreSQL 17 container
+      # through the Docker daemon that is already on the runner.
+      # --no-daemon: a CI machine is used once and thrown away, so Gradle's
+      # background process would only waste memory.
       - name: Run backend tests
         run: ./gradlew test --no-daemon
 
+      # Step 5: build the runnable Spring Boot JAR. This proves the project
+      # packages correctly before Render tries to build it.
       - name: Build Spring Boot JAR
         run: ./gradlew bootJar --no-daemon
 
+      # Step 6 (only on failure): keep the test reports so you can download
+      # them from the run page and read what failed, instead of guessing.
+      #   if: failure()  -> run this step only if an earlier step failed
+      #   (normally a failed step makes all later steps skip; "if:" overrides it)
+      # "uses:" steps ignore working-directory above, so the paths below start
+      # with backend/ explicitly. The "|" lets us write one path per line.
+      - name: Upload test reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: |
+            backend/build/reports/tests/test
+            backend/build/test-results/test
+          retention-days: 7       # delete the files after a week
+
+  # ===========================================================================
+  # JOB 2: FRONTEND (React, Vite, Vitest)
+  # ===========================================================================
   frontend:
     name: Frontend Test & Build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
+    # Same idea as in the backend job: run every command inside frontend/.
     defaults:
       run:
         working-directory: frontend
 
+    # Environment variables available to EVERY step in this job. Vite exposes
+    # variables starting with VITE_ to the app, and apiClient.js throws an error
+    # at import time if VITE_API_URL is missing. The value only matters for the
+    # build artifact, which CI does not deploy (Vercel builds its own).
+    env:
+      VITE_API_URL: http://localhost:8080
+
     steps:
+      # Step 1: download the repository.
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Step 2: install Node.js and cache the npm downloads.
+      # cache-dependency-path tells the cache which file describes your
+      # dependencies: when package-lock.json changes, the cache is rebuilt.
+      # The path starts with frontend/ because "uses:" steps ignore
+      # working-directory.
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -63,15 +178,19 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
+      # Step 3: install dependencies EXACTLY as written in package-lock.json.
+      # "npm ci" is the CI version of "npm install": it never edits the lock
+      # file, it fails if package.json and the lock file disagree, and it
+      # starts from a clean node_modules, so results are reproducible.
       - name: Install dependencies
         run: npm ci
 
+      # Step 4: run the Vitest suite once and exit ("test:run" is your script
+      # for "vitest run"; plain "npm test" would start watch mode and hang).
       - name: Run frontend tests
         run: npm run test:run
-        env:
-          VITE_API_URL: http://localhost:8080
 
+      # Step 5: produce the production bundle. This catches build-only errors,
+      # such as a bad import path, that tests do not reach.
       - name: Build frontend
         run: npm run build
-        env:
-          VITE_API_URL: http://localhost:8080

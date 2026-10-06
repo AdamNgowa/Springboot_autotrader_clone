@@ -3,7 +3,7 @@ import { getToken } from "../auth/authStorage";
 // Base URL for the backend API endpoints.
 const BASE_URL = import.meta.env.VITE_API_URL;
 
-if(!BASE_URL){
+if (!BASE_URL) {
   throw new Error("VITE_API_URL not configured!");
 }
 
@@ -60,6 +60,5 @@ export async function apiClient(endpoint, options = {}) {
   }
 
   // Return the parsed JSON response object (or null for empty responses like 204 No Content).
-  console.log("data", data);
   return data;
 }

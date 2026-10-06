@@ -3,37 +3,92 @@
 #             https://www.jetbrains.com/help/qodana/about-qodana.html           #
 #-------------------------------------------------------------------------------#
 
+# =============================================================================
+# WHAT THIS WORKFLOW DOES
+#
+# Qodana is JetBrains' static code analyzer (the same inspections IntelliJ runs
+# while you type). This workflow runs it in the cloud on every push and pull
+# request and reports problems such as unused code, possible null pointers or
+# suspicious patterns. It does NOT run your tests; ci.yml does that.
+#
+# The YAML and GitHub Actions vocabulary (workflow, job, step, uses, run,
+# ${{ }} expressions) is explained at the top of ci.yml.
+# =============================================================================
+
+# The name shown in the "Actions" tab and on the pull request checks.
 name: Qodana
+
+# -----------------------------------------------------------------------------
+# TRIGGERS: when should this workflow start?
+# -----------------------------------------------------------------------------
 on:
+  # Adds a "Run workflow" button in the Actions tab for manual runs.
   workflow_dispatch:
+  # Run on every pull request, whichever branch it targets, and again whenever
+  # new commits are pushed to it. (ci.yml is stricter: master only.)
   pull_request:
+  # Run on every push to master, that is, after a merge.
   push:
     branches:
       - master
 
 jobs:
   qodana:
+    # The virtual machine this job runs on: the latest Ubuntu Linux image.
     runs-on: ubuntu-latest
+
+    # PERMISSIONS for this job's automatic token. Unlike ci.yml, which only
+    # needs to read code, Qodana has to write its results back to GitHub, so it
+    # asks for exactly these three and nothing more:
+    #   contents: read        download the code
+    #   pull-requests: write  post the summary comment on a pull request
+    #   checks: write         create the check result and inline annotations
     permissions:
       contents: read
       pull-requests: write
       checks: write
+
     steps:
+      # Step 1: download the repository onto the fresh machine.
       - uses: actions/checkout@v4
         with:
+          # Which commit to download. On a pull request this expression is the
+          # exact commit you pushed, instead of GitHub's temporary "merged with
+          # master" commit, so findings match the code you actually wrote.
+          # On a normal push the pull request does not exist, the expression is
+          # empty, and checkout falls back to its default (the pushed commit).
           ref: ${{ github.event.pull_request.head.sha }}
+          # 0 means "download the FULL git history". By default checkout fetches
+          # only the latest commit, but Qodana needs history to compare against
+          # a baseline and to work out which files a pull request changed.
           fetch-depth: 0
+
+      # Step 2: run the analysis using JetBrains' official action.
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2026.2
+        # Environment variable for this step only. ${{ secrets.QODANA_TOKEN }}
+        # reads a value stored in GitHub (repository Settings -> Secrets and
+        # variables -> Actions). The token never appears in this file or in the
+        # logs, and it lets Qodana link the run to your Qodana Cloud project.
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+        # Options for the action, set with "with:" (the same keyword used in
+        # ci.yml to pass inputs to an action).
         with:
           # When pr-mode is set to true, Qodana analyzes only the files that have been changed
+          # false = analyze the whole project every time: slower, but thorough.
           pr-mode: false
+          # Save Qodana's analysis data between runs so later runs start faster.
           use-caches: true
+          # On pull requests, post a summary comment with the findings.
           post-pr-comment: true
+          # Show each finding as an inline annotation on the changed lines in
+          # the pull request's "Files changed" tab.
           use-annotations: true
           # Upload Qodana results (SARIF, other artifacts, logs) as an artifact to the job
+          # false = do not attach the full report to the run. Set it to true if
+          # you want to download the complete results when investigating a failure.
           upload-result: false
           # quick-fixes available in Ultimate and Ultimate Plus plans
+          # 'none' = never let Qodana commit automatic fixes to your code.
           push-fixes: 'none'

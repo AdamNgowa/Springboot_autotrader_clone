@@ -1,6 +1,11 @@
-# FOlDER_STRUCTURE.md
+# FOLDER_STRUCTURE.md
 
 autotrader/
+│
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       └── qodana_code_quality.yml
 │
 ├── .idea/
 │
@@ -242,8 +247,14 @@ autotrader/
 │   │
 │   ├── tests/
 │   │   ├── AuthContext.test.jsx
+│   │   ├── getImageUrl.test.js
+│   │   ├── GuestOnlyRoute.test.jsx
+│   │   ├── LoginPage.test.jsx
+│   │   ├── ProtectedRoute.test.jsx
 │   │   ├── setup.js
-│   │   └── setup.test.js
+│   │   ├── setup.test.js
+│   │   ├── validateAuth.test.js
+│   │   └── validateListing.test.js
 │   │
 │   ├── .dockerignore
 │   ├── .gitignore
@@ -269,4 +280,3 @@ autotrader/
 ├── FOLDER_STRUCTURE.md
 ├── PROJECT_CHARTER.md
 └── STATUS_REPORT_PROMPT.md
-
