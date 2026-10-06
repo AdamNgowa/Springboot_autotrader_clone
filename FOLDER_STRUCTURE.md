@@ -1,3 +1,5 @@
+# FOlDER_STRUCTURE.md
+
 autotrader/
 │
 ├── .idea/
@@ -126,9 +128,17 @@ autotrader/
 │   │       │               │   ├── UserControllerTest.java
 │   │       │               │   └── VehicleListingControllerTest.java
 │   │       │               │
+│   │       │               ├── exception/
+│   │       │               │   └── GlobalExceptionHandlerTest.java
+│   │       │               │
 │   │       │               ├── integration/
 │   │       │               │   ├── AuthenticationIntegrationTest.java
 │   │       │               │   ├── FavoritesIntegrationTest.java
+│   │       │               │   ├── ImageManagementIntegrationTest.java
+│   │       │               │   ├── IntegrationTestSupport.java
+│   │       │               │   ├── MessagingIntegrationTest.java
+│   │       │               │   ├── SecurityBoundaryIntegrationTest.java
+│   │       │               │   ├── SellerProfileIntegrationTest.java
 │   │       │               │   └── VehicleListingIntegrationTest.java
 │   │       │               │
 │   │       │               ├── repository/
@@ -144,7 +154,9 @@ autotrader/
 │   │       │               │   ├── ConversationServiceTest.java
 │   │       │               │   ├── CurrentUserServiceTest.java
 │   │       │               │   ├── FavoriteServiceTest.java
+│   │       │               │   ├── ImageServiceTest.java
 │   │       │               │   ├── MessageServiceTest.java
+│   │       │               │   ├── UserServiceTest.java
 │   │       │               │   └── VehicleListingServiceTest.java
 │   │       │               │
 │   │       │               ├── BackendApplicationTests.java
@@ -257,3 +269,4 @@ autotrader/
 ├── FOLDER_STRUCTURE.md
 ├── PROJECT_CHARTER.md
 └── STATUS_REPORT_PROMPT.md
+
