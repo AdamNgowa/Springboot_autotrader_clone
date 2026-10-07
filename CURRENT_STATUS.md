@@ -86,18 +86,18 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
   - 12.9.2 Backend tests - COMPLETE
   - 12.9.3 Frontend tests - COMPLETE
   - 12.9.4 Frontend build - COMPLETE
-  - 12.9.5 Backend build - PENDING
+  - 12.9.5 Backend build - COMPLETE
   - 12.9.6 Deployment automation - COMPLETE (Render auto-deploy from GitHub, ideally only after CI passes)
   - 12.9.7 Production verification - COMPLETE
     **Status: COMPLETE**
 
 - 12.10 Production Database Migration Strategy
-  - 12.10.1 Hibernate schema management review - PENDING
-  - 12.10.2 Flyway evaluation - PENDING
-  - 12.10.3 Initial migration - PENDING
-  - 12.10.4 Production migration workflow - PENDING
-  - 12.10.5 Migration verification - PENDING
-    **Status: NOT STARTED**
+  - 12.10.1 Hibernate schema management review - COMPLETE
+  - 12.10.2 Flyway evaluation - COMPLETE
+  - 12.10.3 Initial migration - COMPLETE
+  - 12.10.4 Production migration workflow - COMPLETE
+  - 12.10.5 Migration verification - COMPLETE
+    **Status: COMPLETE**
 
 - 12.11 Production Image Storage
   - 12.11.1 Storage options evaluation - PENDING (providers that work without a credit card; `FileStorageService` is the seam)
@@ -173,13 +173,13 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 
 ### 12.5 Reverse Proxy & Forwarded Headers
 - [x] Keep the frontend container's nginx for local development only
-- [ ] Add `server.forward-headers-strategy=framework` in Spring
-- [ ] Verify a 5MB image upload passes Render's edge (Spring still enforces 5MB/6MB)
+- [x] Add `server.forward-headers-strategy=framework` in Spring
+- [x] Verify a 5MB image upload passes Render's edge (Spring still enforces 5MB/6MB)
 
 ### 12.6 HTTPS & DNS
-- [ ] Use the default `https://<service>.onrender.com` URL first; decide on a custom domain later (optional)
-- [ ] Confirm HTTP is redirected to HTTPS
-- [ ] Verify the API over HTTPS with `curl`
+- [x] Use the default `https://<service>.onrender.com` URL first; decide on a custom domain later (optional)
+- [x] Confirm HTTP is redirected to HTTPS
+- [x] Verify the API over HTTPS with `curl`
 
 ### 12.7 Frontend Production Deployment
 - [x] Decide: Vercel rewrite of `/api` to the Render URL (same-origin, `VITE_API_URL=/api`) or absolute API URL with CORS (a rewrite adds a proxy hop whose timeout may be shorter than a one-minute cold start; verify before choosing)
@@ -212,12 +212,12 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [ ] Post-deploy health check
 
 ### 12.10 Production Database Migration Strategy
-- [ ] Review `ddl-auto=update` risks for production
-- [ ] Evaluate Flyway
-- [ ] Create the initial migration from the current schema
-- [ ] Switch `ddl-auto` to `validate` or `none`
-- [ ] Define the production migration workflow
-- [ ] Verify migrations against Neon
+- [x] Review `ddl-auto=update` risks for production
+- [x] Evaluate Flyway
+- [x] Create the initial migration from the current schema
+- [x] Switch `ddl-auto` to `validate` or `none`
+- [x] Define the production migration workflow
+- [x] Verify migrations against Neon
 - [ ] Confirm the Neon backup/restore options and test a restore
 
 ### 12.11 Production Image Storage
@@ -253,4 +253,4 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [ ] Custom domain and DNS (optional)
 - Testcontainers with PostgreSQL: moved into Phase 12.3.10
 
-**NEXT STEP: 12.10 — Production Database Migration Strategy**
+**NEXT STEP: 12.11 Production Image Storage**
