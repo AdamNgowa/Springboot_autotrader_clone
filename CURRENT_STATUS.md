@@ -82,14 +82,14 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
     **Status: COMPLETE**
 
 - 12.9 CI/CD
-  - 12.9.1 GitHub Actions - PENDING
-  - 12.9.2 Backend tests - PENDING
-  - 12.9.3 Frontend tests - PENDING
-  - 12.9.4 Frontend build - PENDING
+  - 12.9.1 GitHub Actions - COMPLETE
+  - 12.9.2 Backend tests - COMPLETE
+  - 12.9.3 Frontend tests - COMPLETE
+  - 12.9.4 Frontend build - COMPLETE
   - 12.9.5 Backend build - PENDING
-  - 12.9.6 Deployment automation - PENDING (Render auto-deploy from GitHub, ideally only after CI passes)
-  - 12.9.7 Production verification - PENDING
-    **Status: NOT STARTED**
+  - 12.9.6 Deployment automation - COMPLETE (Render auto-deploy from GitHub, ideally only after CI passes)
+  - 12.9.7 Production verification - COMPLETE
+    **Status: COMPLETE**
 
 - 12.10 Production Database Migration Strategy
   - 12.10.1 Hibernate schema management review - PENDING
@@ -202,12 +202,12 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [x] Write a short diagnostics checklist (Render logs and metrics, Neon dashboard)
 
 ### 12.9 CI/CD
-- [ ] GitHub Actions workflow file (Docker is available on ubuntu runners, so Testcontainers tests can run in CI)
-- [ ] Backend tests job
-- [ ] Frontend tests job
-- [ ] Frontend build job
-- [ ] Backend build job
-- [ ] Deployment automation: Render auto-deploy from GitHub, ideally only after CI passes
+- [x] GitHub Actions workflow file (Docker is available on ubuntu runners, so Testcontainers tests can run in CI)
+- [x] Backend tests job
+- [x] Frontend tests job
+- [x] Frontend build job
+- [x] Backend build job
+- [x] Deployment automation: Render auto-deploy from GitHub,only after CI passes
 - [ ] Store secrets in GitHub Actions secrets (only if a Render deploy hook is used)
 - [ ] Post-deploy health check
 
@@ -253,4 +253,4 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [ ] Custom domain and DNS (optional)
 - Testcontainers with PostgreSQL: moved into Phase 12.3.10
 
-**NEXT STEP: 12.9 — CI/CD**
+**NEXT STEP: 12.10 — Production Database Migration Strategy**
