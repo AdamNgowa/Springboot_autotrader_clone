@@ -25,6 +25,9 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+
     //jjwt-api exposes the interface your code uses
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     //jjwt-impl contains the implementation
