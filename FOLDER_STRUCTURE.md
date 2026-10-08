@@ -29,94 +29,98 @@ autotrader/
 │   │   │   │               │   │   └── SecurityConfig.java
 │   │   │   │               │   │
 │   │   │   │               │   └── webconfig/
-│   │   │   │                   └── WebConfig.java
-│   │   │   │
-│   │   │   ├── controller/
-│   │   │   │   ├── AuthController.java
-│   │   │   │   ├── ConversationController.java
-│   │   │   │   ├── FavoriteController.java
-│   │   │   │   ├── ImageController.java
-│   │   │   │   ├── MessageController.java
-│   │   │   │   ├── UserController.java
-│   │   │   │   └── VehicleListingController.java
-│   │   │   │
-│   │   │   ├── dto/
-│   │   │   │   ├── auth/
-│   │   │   │   ├── error/
-│   │   │   │   ├── favorite/
-│   │   │   │   ├── image/
-│   │   │   │   ├── messaging/
-│   │   │   │   ├── user/
-│   │   │   │   └── vehicleListing/
-│   │   │   │
-│   │   │   ├── entity/
-│   │   │   │   ├── Enums/
-│   │   │   │   │   ├── BodyType.java
-│   │   │   │   │   ├── FuelType.java
-│   │   │   │   │   ├── ListingStatus.java
-│   │   │   │   │   ├── Transmission.java
-│   │   │   │   │   └── UserRole.java
-│   │   │   │   │
-│   │   │   │   ├── Conversation.java
-│   │   │   │   ├── Favorite.java
-│   │   │   │   ├── Message.java
-│   │   │   │   ├── User.java
-│   │   │   │   ├── VehicleImage.java
-│   │   │   │   └── VehicleListing.java
-│   │   │   │
-│   │   │   ├── exception/
-│   │   │   │   ├── AuthenticatedUserNotFoundException.java
-│   │   │   │   ├── EmailAlreadyExistsException.java
-│   │   │   │   ├── GlobalExceptionHandler.java
-│   │   │   │   ├── ImageNotFoundException.java
-│   │   │   │   ├── InvalidCredentialsException.java
-│   │   │   │   ├── ListingNotFoundException.java
-│   │   │   │   ├── UnauthorizedConversationAccessException.java
-│   │   │   │   ├── UnauthorizedListingAccessException.java
-│   │   │   │   └── UserNotFoundException.java
-│   │   │   │
-│   │   │   ├── mapper/
-│   │   │   │   ├── ConversationMapper.java
-│   │   │   │   ├── FavoriteMapper.java
-│   │   │   │   ├── ImageMapper.java
-│   │   │   │   ├── MessageMapper.java
-│   │   │   │   ├── UserMapper.java
-│   │   │   │   └── VehicleListingMapper.java
-│   │   │   │
-│   │   │   ├── repository/
-│   │   │   │   ├── ConversationRepository.java
-│   │   │   │   ├── FavoriteRepository.java
-│   │   │   │   ├── MessageRepository.java
-│   │   │   │   ├── UserRepository.java
-│   │   │   │   ├── VehicleImageRepository.java
-│   │   │   │   └── VehicleListingRepository.java
-│   │   │   │
-│   │   │   ├── security/
-│   │   │   │   ├── CustomUserDetailsService.java
-│   │   │   │   ├── JwtAuthenticationEntryPoint.java
-│   │   │   │   ├── JwtAuthenticationFilter.java
-│   │   │   │   └── JwtService.java
-│   │   │   │
-│   │   │   ├── service/
-│   │   │   │   ├── AuthService.java
-│   │   │   │   ├── ConversationService.java
-│   │   │   │   ├── CurrentUserService.java
-│   │   │   │   ├── FavoriteService.java
-│   │   │   │   ├── FileStorageService.java
-│   │   │   │   ├── ImageService.java
-│   │   │   │   ├── MessageService.java
-│   │   │   │   ├── UserService.java
-│   │   │   │   └── VehicleListingService.java
-│   │   │   │
-│   │   │   ├── specification/
-│   │   │   │   ├── VehicleListingSpecification.java
-│   │   │   │   └── VehicleListingSpecificationBuilder.java
-│   │   │   │
-│   │   │   └── BackendApplication.java
+│   │   │   │               │       └── WebConfig.java
+│   │   │   │               │
+│   │   │   │               ├── controller/
+│   │   │   │               │   ├── AuthController.java
+│   │   │   │               │   ├── ConversationController.java
+│   │   │   │               │   ├── FavoriteController.java
+│   │   │   │               │   ├── ImageController.java
+│   │   │   │               │   ├── MessageController.java
+│   │   │   │               │   ├── UserController.java
+│   │   │   │               │   └── VehicleListingController.java
+│   │   │   │               │
+│   │   │   │               ├── dto/
+│   │   │   │               │   ├── auth/
+│   │   │   │               │   ├── error/
+│   │   │   │               │   ├── favorite/
+│   │   │   │               │   ├── image/
+│   │   │   │               │   ├── messaging/
+│   │   │   │               │   ├── user/
+│   │   │   │               │   └── vehicleListing/
+│   │   │   │               │
+│   │   │   │               ├── entity/
+│   │   │   │               │   ├── Enums/
+│   │   │   │               │   │   ├── BodyType.java
+│   │   │   │               │   │   ├── FuelType.java
+│   │   │   │               │   │   ├── ListingStatus.java
+│   │   │   │               │   │   ├── Transmission.java
+│   │   │   │               │   │   └── UserRole.java
+│   │   │   │               │   │
+│   │   │   │               │   ├── Conversation.java
+│   │   │   │               │   ├── Favorite.java
+│   │   │   │               │   ├── Message.java
+│   │   │   │               │   ├── User.java
+│   │   │   │               │   ├── VehicleImage.java
+│   │   │   │               │   └── VehicleListing.java
+│   │   │   │               │
+│   │   │   │               ├── exception/
+│   │   │   │               │   ├── AuthenticatedUserNotFoundException.java
+│   │   │   │               │   ├── EmailAlreadyExistsException.java
+│   │   │   │               │   ├── GlobalExceptionHandler.java
+│   │   │   │               │   ├── ImageNotFoundException.java
+│   │   │   │               │   ├── InvalidCredentialsException.java
+│   │   │   │               │   ├── ListingNotFoundException.java
+│   │   │   │               │   ├── UnauthorizedConversationAccessException.java
+│   │   │   │               │   ├── UnauthorizedListingAccessException.java
+│   │   │   │               │   └── UserNotFoundException.java
+│   │   │   │               │
+│   │   │   │               ├── mapper/
+│   │   │   │               │   ├── ConversationMapper.java
+│   │   │   │               │   ├── FavoriteMapper.java
+│   │   │   │               │   ├── ImageMapper.java
+│   │   │   │               │   ├── MessageMapper.java
+│   │   │   │               │   ├── UserMapper.java
+│   │   │   │               │   └── VehicleListingMapper.java
+│   │   │   │               │
+│   │   │   │               ├── repository/
+│   │   │   │               │   ├── ConversationRepository.java
+│   │   │   │               │   ├── FavoriteRepository.java
+│   │   │   │               │   ├── MessageRepository.java
+│   │   │   │               │   ├── UserRepository.java
+│   │   │   │               │   ├── VehicleImageRepository.java
+│   │   │   │               │   └── VehicleListingRepository.java
+│   │   │   │               │
+│   │   │   │               ├── security/
+│   │   │   │               │   ├── CustomUserDetailsService.java
+│   │   │   │               │   ├── JwtAuthenticationEntryPoint.java
+│   │   │   │               │   ├── JwtAuthenticationFilter.java
+│   │   │   │               │   └── JwtService.java
+│   │   │   │               │
+│   │   │   │               ├── service/
+│   │   │   │               │   ├── AuthService.java
+│   │   │   │               │   ├── ConversationService.java
+│   │   │   │               │   ├── CurrentUserService.java
+│   │   │   │               │   ├── FavoriteService.java
+│   │   │   │               │   ├── FileStorageService.java
+│   │   │   │               │   ├── ImageService.java
+│   │   │   │               │   ├── MessageService.java
+│   │   │   │               │   ├── UserService.java
+│   │   │   │               │   └── VehicleListingService.java
+│   │   │   │               │
+│   │   │   │               ├── specification/
+│   │   │   │               │   ├── VehicleListingSpecification.java
+│   │   │   │               │   └── VehicleListingSpecificationBuilder.java
+│   │   │   │               │
+│   │   │   │               └── BackendApplication.java
 │   │   │
-│   │   ├── resources/
-│   │   │   ├── application.properties
-│   │   │   └── application-prod.properties
+│   │   │   ├── resources/
+│   │   │   │   ├── db/
+│   │   │   │   │   └── migration/
+│   │   │   │   │       └── V1__initial_schema.sql
+│   │   │   │   │
+│   │   │   │   ├── application.properties
+│   │   │   │   └── application-prod.properties
 │   │   │
 │   │   └── test/
 │   │       ├── java/
