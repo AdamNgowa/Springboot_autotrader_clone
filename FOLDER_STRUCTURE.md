@@ -22,6 +22,9 @@ autotrader/
 │   │   │   │           └── backend/
 │   │   │   │               │
 │   │   │   │               ├── config/
+│   │   │   │               │   ├── cloudinary/
+│   │   │   │               │   │   └── CloudinaryConfig.java
+│   │   │   │               │   │
 │   │   │   │               │   ├── openapi/
 │   │   │   │               │   │   └── OpenApiConfig.java
 │   │   │   │               │   │
@@ -103,6 +106,8 @@ autotrader/
 │   │   │   │               │   ├── CurrentUserService.java
 │   │   │   │               │   ├── FavoriteService.java
 │   │   │   │               │   ├── FileStorageService.java
+│   │   │   │               │   ├── LocalFileStorageService.java
+│   │   │   │               │   ├── CloudinaryFileStorageService.java
 │   │   │   │               │   ├── ImageService.java
 │   │   │   │               │   ├── MessageService.java
 │   │   │   │               │   ├── UserService.java
@@ -149,6 +154,9 @@ autotrader/
 │   │       │               │   ├── SecurityBoundaryIntegrationTest.java
 │   │       │               │   ├── SellerProfileIntegrationTest.java
 │   │       │               │   └── VehicleListingIntegrationTest.java
+│   │       │               │
+│   │       │               ├── mapper/
+│   │       │               │   └── ImageMapperTest.java
 │   │       │               │
 │   │       │               ├── repository/
 │   │       │               │   ├── ConversationRepositoryTest.java
@@ -233,7 +241,6 @@ autotrader/
 │   │   │   ├── ListingDetailsPage.jsx
 │   │   │   ├── LoginPage.jsx
 │   │   │   ├── MyListingsPage.jsx
-│   │   │   ├── RegisterPage.jsx
 │   │   │   └── SellerProfilePage.jsx
 │   │   │
 │   │   ├── routes/

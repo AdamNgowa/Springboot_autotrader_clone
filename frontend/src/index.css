@@ -1,1 +1,88 @@
 @import "tailwindcss";
+
+/*
+ * Theme overrides (Tailwind v4).
+ * Every existing `rounded-lg` / `shadow-md` in the app now resolves to these
+ * values, so pages we haven't migrated yet already look boxy.
+ */
+@theme {
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+  --radius-3xl: 2px;
+
+  --shadow-xs: 0 0 #0000;
+  --shadow-sm: 0 0 #0000;
+  --shadow-md: 0 0 #0000;
+  --shadow-lg: 0 0 #0000;
+  --shadow-xl: 0 0 #0000;
+  --shadow-2xl: 0 0 #0000;
+}
+
+@layer base {
+  body {
+    @apply bg-white text-slate-900 antialiased;
+    /* Safety net: stops a stray wide element from scrolling the whole page sideways. */
+    overflow-x: clip;
+  }
+
+  /* Tailwind v4 removed the pointer cursor from buttons. Put it back. */
+  button:not(:disabled),
+  [role="button"] {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-blue-600;
+  }
+}
+
+@layer components {
+  /* ---------- Buttons ---------- */
+  .btn {
+    @apply inline-flex h-10 items-center justify-center gap-2 border border-transparent px-4 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+  .btn-outline {
+    @apply border-slate-300 bg-white text-slate-900 hover:border-slate-900 hover:bg-slate-50;
+  }
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700;
+  }
+
+  /* ---------- Form fields ---------- */
+  .field {
+    @apply h-10 w-full border border-slate-300 bg-white px-3 text-sm outline-none transition-colors hover:border-slate-500 focus:border-blue-600 disabled:cursor-not-allowed disabled:bg-slate-100;
+  }
+
+  /*
+   * Twitch-style hover.
+   * Markup:  <div class="lift"><div class="lift-face"> ...card... </div></div>
+   * A solid blue block sits behind the face; on hover the face slides up and
+   * to the right and the block shows. Needs a gap between neighbours.
+   */
+  .lift {
+    @apply relative;
+  }
+  .lift::before {
+    content: "";
+    @apply absolute inset-0 bg-blue-600 opacity-0 transition-opacity duration-100;
+  }
+  .lift-face {
+    @apply relative border border-slate-300 bg-white transition-transform duration-100 ease-out;
+  }
+  /* Only on devices that really hover, so touch screens don't get a stuck state. */
+  @media (hover: hover) {
+    .lift:hover::before {
+      @apply opacity-100;
+    }
+    .lift:hover > .lift-face {
+      transform: translate(6px, -6px);
+    }
+  }
+}

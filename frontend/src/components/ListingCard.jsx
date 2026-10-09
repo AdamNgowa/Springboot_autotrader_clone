@@ -93,132 +93,74 @@ function ListingCard({ listing, onDelete, showOwnerActions = false }) {
   }
 
   return (
-    <article className="overflow-hidden rounded-lg border border-transparent shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-lg">
-      <div className="relative">
-        <Link
-          to={`/listings/${listing.id}`}
-          className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-        >
-          <div className="flex h-48 items-center justify-center bg-gray-200">
-            {primaryImage ? (
-              <img
-                src={getImageUrl(primaryImage.imageUrl)}
-                alt={listing.title}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="px-4 text-center">
-                <p className="text-sm font-medium text-gray-600">
-                  No image available
-                </p>
-              </div>
-            )}
-          </div>
+    // .lift / .lift-face (index.css) create the Twitch-style hover:
+    // the face slides up and right and reveals a blue block behind it.
+    <article className="lift">
+      <div className="lift-face">
+        <div className="relative">
+          <Link to={`/listings/${listing.id}`} className="block">
+            {/* Image: fixed aspect ratio so every card is the same height */}
+            <div className="aspect-[4/3] w-full border-b border-slate-200 bg-slate-100">
+              {primaryImage ? (
+                <img
+                  src={getImageUrl(primaryImage.imageUrl)}
+                  alt={listing.title}
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center px-4 text-center">
+                  <p className="text-sm font-medium text-slate-500">
+                    No image available
+                  </p>
+                </div>
+              )}
+            </div>
 
-          <div className="flex flex-col gap-4 p-4">
-            {/* Vehicle title */}
-            <section>
-              <p className="text-lg font-medium">
+            <div className="space-y-2 p-3">
+              <p className="truncate text-base font-medium">
                 {listing.year} {listing.make} {listing.model}
               </p>
-            </section>
 
-            {/* Location + Mileage */}
-            <section className="flex gap-3 items-center  border-t border-gray-100 pt-3">
-              {/* Location */}
-              <div className="flex items-center gap-1.5 text-sm text-gray-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19.5 10.5c0 5.25-7.5 10-7.5 10s-7.5-4.75-7.5-10a7.5 7.5 0 1 1 15 0Z"
-                  />
-                </svg>
+              <div className="flex items-center gap-4 text-sm text-slate-500">
+                <span className="flex min-w-0 items-center gap-1.5">
+                  <LocationIcon />
+                  <span className="truncate">{listing.city}</span>
+                </span>
 
-                <span>{listing.city}</span>
-              </div>
-
-              {/* Mileage */}
-              <div className="flex items-center gap-1.5 text-sm text-gray-500">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 3a9 9 0 1 0 9 9"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 7v5l3 2"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 3v2"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 12h-2"
-                  />
-                </svg>
-
-                <span>
+                <span className="flex shrink-0 items-center gap-1.5">
+                  <MileageIcon />
                   {new Intl.NumberFormat().format(listing.mileage)} km
                 </span>
               </div>
-            </section>
 
-            {/* Price */}
-            <section className="mt-auto">
-              <strong className="text-2xl font-bold">
-                KSh {formattedPrice}
-              </strong>
-            </section>
-          </div>
-        </Link>
+              <p className="text-lg font-bold">KSh {formattedPrice}</p>
+            </div>
+          </Link>
 
-        {/* Favorite button */}
-        <button
-          type="button"
-          onClick={handleFavoriteClick}
-          disabled={favoriteLoading}
-          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-          aria-pressed={isFavorite}
-          className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full bg-white text-2xl shadow-md transition hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isFavorite ? "♥" : "♡"}
-        </button>
-      </div>
+          {/* Favorite button */}
+          <button
+            type="button"
+            onClick={handleFavoriteClick}
+            disabled={favoriteLoading}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
+            aria-pressed={isFavorite}
+            className={`absolute right-2 top-2 flex h-9 w-9 items-center justify-center border border-slate-300 bg-white text-xl transition-colors hover:border-blue-600 hover:bg-blue-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-60 ${
+              isFavorite ? "text-red-600" : "text-slate-900"
+            }`}
+          >
+            {isFavorite ? "♥" : "♡"}
+          </button>
+        </div>
 
-      {showOwnerActions && (
-        <footer className="border-t p-4">
-          <div className="flex justify-between">
+        {showOwnerActions && (
+          <footer className="flex gap-2 border-t border-slate-200 p-3">
             <button
               type="button"
               onClick={() => navigate(`/listings/${listing.id}/edit`)}
-              className="rounded-md bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+              className="btn btn-primary flex-1"
             >
               Edit
             </button>
@@ -226,14 +168,62 @@ function ListingCard({ listing, onDelete, showOwnerActions = false }) {
             <button
               type="button"
               onClick={() => onDelete(listing.id)}
-              className="rounded-md bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
+              className="btn btn-danger flex-1"
             >
               Delete
             </button>
-          </div>
-        </footer>
-      )}
+          </footer>
+        )}
+      </div>
     </article>
+  );
+}
+
+function LocationIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="h-4 w-4 shrink-0"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19.5 10.5c0 5.25-7.5 10-7.5 10s-7.5-4.75-7.5-10a7.5 7.5 0 1 1 15 0Z"
+      />
+    </svg>
+  );
+}
+
+function MileageIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="h-4 w-4 shrink-0"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 3a9 9 0 1 0 9 9"
+      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 2" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 12h-2" />
+    </svg>
   );
 }
 
