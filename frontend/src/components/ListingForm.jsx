@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import FormField from "./FormField";
 import {
   FUEL_TYPES,
   TRANSMISSIONS,
@@ -32,10 +33,11 @@ function ListingForm({
 
   function handleChange(event) {
     const { name, value } = event.target;
-    setFormData({
-      ...formData,
+
+    setFormData((current) => ({
+      ...current,
       [name]: value,
-    });
+    }));
 
     clearValidationError?.(name);
   }
@@ -47,265 +49,120 @@ function ListingForm({
     onSubmit(formData, selectedFiles);
   }
 
+  // Props every field shares: its value, change handler, disabled state and error.
+  function bind(name) {
+    return {
+      name,
+      value: formData[name],
+      onChange: handleChange,
+      disabled: saving,
+      error: validationErrors[name],
+    };
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-6 rounded border border-slate-300 p-4 shadow-md "
+      className="border border-slate-300 bg-white p-4 sm:p-6"
     >
-      {/* Title */}
-      <div>
-        <label className="block mb-1 font-medium">Title</label>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <FormField label="Title" {...bind("title")} className="col-span-full" />
 
-        <input
-          type="text"
-          name="title"
-          value={formData.title}
-          disabled={saving}
-          onChange={handleChange}
-          className="border rounded-md p-2 w-full
-          disabled:bg-gray-100
-          disabled:text-gray-500
-          disabled:cursor-not-allowed"
-        />
-        {validationErrors.title && (
-          <p className="mt-1 text-sm text-red-600">
-            {" "}
-            {validationErrors.title}{" "}
-          </p>
-        )}
-      </div>
-
-      {/* Price */}
-      <div>
-        <label className="block mb-1 font-medium">Price</label>
-
-        <input
+        <FormField label="Make" {...bind("make")} />
+        <FormField label="Model" {...bind("model")} />
+        <FormField
+          label="Year"
           type="number"
-          name="price"
-          value={formData.price}
-          onChange={handleChange}
-          disabled={saving}
-          className="border rounded-md p-2 w-full
-             disabled:bg-gray-100
-             disabled:text-gray-500
-             disabled:cursor-not-allowed"
+          inputMode="numeric"
+          {...bind("year")}
         />
-        {validationErrors.price && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.price}</p>
-        )}
-      </div>
 
-      {/* Description */}
-      <div>
-        <label className="block mb-1 font-medium">Description</label>
-
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          disabled={saving}
-          rows={4}
-          className="border rounded-md p-2 w-full
-             disabled:bg-gray-100
-             disabled:text-gray-500
-             disabled:cursor-not-allowed"
-        />
-        {validationErrors.description && (
-          <p className="mt-1 text-sm text-red-600">
-            {validationErrors.description}
-          </p>
-        )}
-      </div>
-
-      {/* Year */}
-      <div>
-        <label className="block mb-1 font-medium">Year</label>
-
-        <input
+        <FormField
+          label="Mileage (km)"
           type="number"
-          name="year"
-          disabled={saving}
-          value={formData.year}
-          onChange={handleChange}
-          className="border rounded-md p-2 w-full"
+          inputMode="numeric"
+          {...bind("mileage")}
         />
-        {validationErrors.year && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.year}</p>
-        )}
-      </div>
-
-      {/* Make */}
-      <div>
-        <label className="block mb-1 font-medium">Make</label>
-
-        <input
-          type="text"
-          name="make"
-          disabled={saving}
-          value={formData.make}
-          onChange={handleChange}
-          className="border rounded-md p-2 w-full"
-        />
-        {validationErrors.make && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.make}</p>
-        )}
-      </div>
-
-      {/* Model */}
-      <div>
-        <label className="block mb-1 font-medium">Model</label>
-
-        <input
-          type="text"
-          name="model"
-          disabled={saving}
-          value={formData.model}
-          onChange={handleChange}
-          className="border rounded-md p-2 w-full"
-        />
-        {validationErrors.model && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.model}</p>
-        )}
-      </div>
-
-      {/* Mileage */}
-      <div>
-        <label className="block mb-1 font-medium">Mileage</label>
-
-        <input
+        <FormField
+          label="Price (KSh)"
           type="number"
-          name="mileage"
-          disabled={saving}
-          value={formData.mileage}
-          onChange={handleChange}
-          className="border rounded-md p-2 w-full"
+          inputMode="numeric"
+          {...bind("price")}
         />
-        {validationErrors.mileage && (
-          <p className="mt-1 text-sm text-red-600">
-            {validationErrors.mileage}
-          </p>
-        )}
-      </div>
-      {/* City */}
-      <div>
-        <label className="block mb-1 font-medium">City</label>
+        <FormField label="City" {...bind("city")} />
 
-        <input
-          type="text"
-          name="city"
-          disabled={saving}
-          value={formData.city}
-          onChange={handleChange}
-          className="border rounded-md p-2 w-full"
+        <FormField
+          as="select"
+          label="Fuel type"
+          options={FUEL_TYPES}
+          placeholder="Select fuel type"
+          {...bind("fuelType")}
         />
-        {validationErrors.city && (
-          <p className="mt-1 text-sm text-red-600">{validationErrors.city}</p>
+        <FormField
+          as="select"
+          label="Body type"
+          options={BODY_TYPES}
+          placeholder="Select body type"
+          {...bind("bodyType")}
+        />
+        <FormField
+          as="select"
+          label="Transmission"
+          options={TRANSMISSIONS}
+          placeholder="Select transmission"
+          {...bind("transmission")}
+        />
+
+        <FormField
+          as="textarea"
+          label="Description"
+          rows={5}
+          {...bind("description")}
+          className="col-span-full"
+        />
+
+        {/* files */}
+        {showImageUpload && (
+          <div className="col-span-full">
+            <label
+              htmlFor="listing-images"
+              className="mb-1.5 block text-sm font-medium text-slate-700"
+            >
+              Images
+            </label>
+
+            <input
+              id="listing-images"
+              type="file"
+              multiple
+              accept="image/png,image/jpeg,image/webp"
+              onChange={handleFileChange}
+              disabled={saving}
+              className="block w-full border border-slate-300 text-sm file:mr-3 file:cursor-pointer file:border-0 file:bg-slate-900 file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-white hover:file:bg-blue-600"
+            />
+
+            <p className="mt-1 text-xs text-slate-500">
+              {selectedFiles.length > 0
+                ? `${selectedFiles.length} image${
+                    selectedFiles.length === 1 ? "" : "s"
+                  } selected`
+                : "You can select one or more JPEG, PNG or WEBP images"}
+            </p>
+          </div>
         )}
-      </div>
 
-      {/* Fuel type */}
-      <div>
-        <label className="block mb-1 font-medium">Fuel Type</label>
-
-        <select
-          name="fuelType"
-          value={formData.fuelType}
-          onChange={handleChange}
-          disabled={saving}
-          className="border rounded-md p-2 w-full"
-        >
-          <option value="">Select fuel type</option>
-          {/* For every item in this array, create one <option /> */}
-          {FUEL_TYPES.map((fuel) => (
-            // key={value}  -- React needs a unique identifier for every item it renders in a list.
-            <option key={fuel} value={fuel}>
-              {fuel}
-            </option>
-          ))}
-        </select>
-        {validationErrors.fuelType && (
-          <p className="mt-1 text-sm text-red-600">
-            {validationErrors.fuelType}
-          </p>
-        )}
-      </div>
-
-      {/* Body type */}
-      <div>
-        <label className="block mb-1 font-medium">Body Type</label>
-        <select
-          name="bodyType"
-          value={formData.bodyType}
-          onChange={handleChange}
-          disabled={saving}
-          className="border rounded-md p-2 w-full"
-        >
-          <option value="">Select body type</option>
-          {BODY_TYPES.map((bodyType) => (
-            <option key={bodyType} value={bodyType}>
-              {bodyType}
-            </option>
-          ))}
-        </select>
-        {validationErrors.bodyType && (
-          <p className="mt-1 text-sm text-red-600">
-            {validationErrors.bodyType}
-          </p>
-        )}
-      </div>
-
-      {/* transmission */}
-      <div>
-        <label className="block mb-1 font-medium">Transmission</label>
-        <select
-          name="transmission"
-          value={formData.transmission}
-          onChange={handleChange}
-          disabled={saving}
-          className="border rounded-md p-2 w-full"
-        >
-          <option value="">Select transmission</option>
-          {TRANSMISSIONS.map((transmission) => (
-            <option key={transmission} value={transmission}>
-              {transmission}
-            </option>
-          ))}
-        </select>
-        {validationErrors.transmission && (
-          <p className="mt-1 text-sm text-red-600">
-            {validationErrors.transmission}
-          </p>
-        )}
-      </div>
-
-      {/* files */}
-      {showImageUpload && (
-        <div>
-          <label className="block mb-1 font-medium">Images</label>
-          <input
-            type="file"
-            multiple
-            accept="image/png,image/jpeg,image/webp"
-            onChange={handleFileChange}
+        {/* When saving is false, render --> <button></button>
+        When saving is true , render --> <button disabled></button> */}
+        <div className="col-span-full">
+          <button
+            type="submit"
             disabled={saving}
-          />
-
-          <p className="mt-1 text-sm text-gray-500">
-            You can select one or more JPEG,PNG or WEBP images
-          </p>
+            className="btn btn-primary w-full sm:w-auto"
+          >
+            {saving ? "Saving..." : submitText}
+          </button>
         </div>
-      )}
-
-      {/* When saving is false, render --> <button></button>
-      When saving is true , render --> <button disabled></button> */}
-      <button
-        type="submit"
-        disabled={saving}
-        className="bg-blue-600 text-white px-5 py-2 rounded-md
-        disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 "
-      >
-        {saving ? "Saving..." : submitText}
-      </button>
+      </div>
     </form>
   );
 }

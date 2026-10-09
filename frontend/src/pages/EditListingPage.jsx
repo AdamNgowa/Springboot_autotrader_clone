@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { updateListing, getListing } from "../api/listingApi";
 import ListingForm from "../components/ListingForm";
 import ImageManager from "../components/ImageManager";
+import Notice from "../components/Notice";
 import { validateListing } from "../utils/validateListing";
 
 function EditListingPage() {
@@ -94,35 +95,45 @@ function EditListingPage() {
   }
 
   if (loading) {
-    return <p>Loading listing...</p>;
+    return (
+      <main className="mx-auto max-w-4xl px-4 py-6">
+        <div className="h-96 animate-pulse border border-slate-200 bg-slate-100" />
+      </main>
+    );
   }
 
   if (error && !listing) {
-    return <p>Error: {error}</p>;
+    return (
+      <main className="mx-auto max-w-4xl px-4 py-6">
+        <Notice variant="error">Error: {error}</Notice>
+      </main>
+    );
   }
 
   return (
-    <main className="mx-auto max-w-4xl p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Edit Listing</h1>
+    <main className="mx-auto max-w-4xl px-4 py-6">
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">Edit listing</h1>
 
         <button
           type="button"
           onClick={() => navigate(`/listings/${id}`)}
-          className="rounded-lg border border-slate-300 px-4 py-2 text-sm hover:bg-slate-100"
+          className="btn btn-outline"
         >
-          View Listing
+          View listing
         </button>
       </div>
 
       {error && (
-        <div className="mb-4 rounded bg-red-100 p-3 text-red-700">{error}</div>
+        <Notice variant="error" className="mb-4">
+          {error}
+        </Notice>
       )}
 
       {success && (
-        <div className="mb-4 rounded-md bg-green-100 p-3 text-green-800">
+        <Notice variant="success" className="mb-4">
           {success}
-        </div>
+        </Notice>
       )}
 
       <div className="space-y-8">

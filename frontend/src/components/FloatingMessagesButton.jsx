@@ -1,10 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 function FloatingMessagesButton() {
   const { isAuthenticated } = useAuth();
+  const { pathname } = useLocation();
 
-  if (!isAuthenticated) {
+  // Already in messages? The button would only cover the chat controls.
+  if (!isAuthenticated || pathname.startsWith("/conversations")) {
     return null;
   }
 
@@ -13,7 +15,7 @@ function FloatingMessagesButton() {
       to="/conversations"
       aria-label="Messages"
       title="Messages"
-      className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition hover:scale-105 hover:bg-blue-700"
+      className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center border border-blue-700 bg-blue-600 text-white transition-colors hover:bg-blue-700"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

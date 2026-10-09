@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, Link } from "react-router-dom";
 
 import { getConversation, getMessages, sendMessage } from "../api/messagingApi";
 import { useAuth } from "../hooks/useAuth";
+import MessageBubble from "../components/MessageBubble";
+import MessageComposer from "../components/MessageComposer";
+import Notice from "../components/Notice";
 
 const PAGE_SIZE = 30;
 
@@ -165,28 +168,26 @@ function ConversationPage() {
 
   if (loadingConversation) {
     return (
-      <main className="mx-auto max-w-3xl p-6">
-        <p className="text-center text-slate-500">Loading conversation...</p>
+      <main className="mx-auto max-w-3xl px-4 py-6">
+        <div className="h-24 animate-pulse border border-slate-200 bg-slate-100" />
       </main>
     );
   }
 
   if (conversationError) {
     return (
-      <main className="mx-auto max-w-3xl p-6">
-        <div className="rounded-lg bg-red-100 p-4 text-red-700">
+      <main className="mx-auto max-w-3xl px-4 py-6">
+        <Notice variant="error">
           Unable to load conversation: {conversationError}
-        </div>
+        </Notice>
       </main>
     );
   }
 
   if (!conversation) {
     return (
-      <main className="mx-auto max-w-3xl p-6">
-        <div className="rounded-lg bg-yellow-100 p-4 text-yellow-700">
-          Conversation not found.
-        </div>
+      <main className="mx-auto max-w-3xl px-4 py-6">
+        <Notice variant="warning">Conversation not found.</Notice>
       </main>
     );
   }
@@ -200,113 +201,96 @@ function ConversationPage() {
   const hasEarlierMessages = currentPage > 0;
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
-      <header className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-sm font-medium uppercase tracking-wide text-blue-600">
-          Conversation about
-        </p>
-        <h1 className="text-2xl font-bold text-slate-900">
-          {conversation.listingTitle}
-        </h1>
-        <p className="mt-1 text-slate-600">With {otherParticipantName}</p>
+    // 3.5rem is the navbar height, so the chat fills exactly the rest of the screen.
+    <main className="mx-auto flex h-[calc(100dvh-3.5rem)] max-w-3xl flex-col bg-white md:border-x md:border-slate-300">
+      <header className="flex items-center gap-3 border-b border-slate-300 p-3">
+        <Link
+          to="/conversations"
+          aria-label="Back to messages"
+          className="flex h-9 w-9 shrink-0 items-center justify-center border border-slate-300 hover:bg-slate-100"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="h-5 w-5"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m15.75 19.5-7.5-7.5 7.5-7.5"
+            />
+          </svg>
+        </Link>
+
+        <div className="min-w-0">
+          <h1 className="truncate font-semibold text-slate-900">
+            {conversation.listingTitle}
+          </h1>
+          <p className="truncate text-sm text-slate-500">
+            With {otherParticipantName}
+          </p>
+        </div>
       </header>
 
-      <section className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        {messagesError && (
-          <div className="m-4 rounded-lg bg-red-100 p-4 text-red-700">
-            {messagesError}
-          </div>
+      {messagesError && (
+        <Notice variant="error" className="m-3">
+          {messagesError}
+        </Notice>
+      )}
+
+      {/* min-h-0 lets this flex child shrink and scroll instead of growing the page. */}
+      <div
+        ref={scrollContainerRef}
+        className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto bg-slate-50 p-4"
+      >
+        {loadingMessages ? (
+          <p className="text-center text-slate-500">Loading messages...</p>
+        ) : messages.length === 0 ? (
+          <p className="text-center text-slate-500">
+            No messages yet. Say hello.
+          </p>
+        ) : (
+          <>
+            {hasEarlierMessages && (
+              <div className="mb-2 flex justify-center">
+                <button
+                  type="button"
+                  onClick={loadEarlierMessages}
+                  disabled={loadingOlder}
+                  className="btn btn-outline h-9 text-xs"
+                >
+                  {loadingOlder ? "Loading..." : "Load earlier messages"}
+                </button>
+              </div>
+            )}
+
+            {messages.map((message) => (
+              <MessageBubble
+                key={message.id}
+                message={message}
+                isMine={Boolean(user && message.senderId === user.id)}
+              />
+            ))}
+          </>
         )}
-
-        <div
-          ref={scrollContainerRef}
-          className="flex h-[60vh] flex-col gap-3 overflow-y-auto p-5"
-        >
-          {loadingMessages ? (
-            <p className="text-center text-slate-500">Loading messages...</p>
-          ) : messages.length === 0 ? (
-            <p className="text-center text-slate-500">
-              No messages yet. Say hello.
-            </p>
-          ) : (
-            <>
-              {hasEarlierMessages && (
-                <div className="mb-2 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={loadEarlierMessages}
-                    disabled={loadingOlder}
-                    className="rounded-full border border-slate-300 px-4 py-1.5 text-sm text-slate-600 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {loadingOlder ? "Loading..." : "Load earlier messages"}
-                  </button>
-                </div>
-              )}
-
-              {messages.map((message) => {
-                const isMine = user && message.senderId === user.id;
-
-                return (
-                  <div
-                    key={message.id}
-                    className={`flex flex-col ${
-                      isMine ? "items-end" : "items-start"
-                    }`}
-                  >
-                    <div
-                      className={`max-w-[75%] rounded-2xl px-4 py-2 ${
-                        isMine
-                          ? "bg-blue-600 text-white"
-                          : "bg-slate-100 text-slate-900"
-                      }`}
-                    >
-                      <p className="whitespace-pre-wrap break-words">
-                        {message.content}
-                      </p>
-                    </div>
-
-                    <span className="mt-1 text-xs text-slate-400">
-                      {new Date(message.createdAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                );
-              })}
-            </>
-          )}
-        </div>
-
-        <form
-          onSubmit={handleSend}
-          className="flex gap-3 border-t border-slate-200 p-4"
-        >
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(event) => setNewMessage(event.target.value)}
-            placeholder="Write a message..."
-            disabled={sending}
-            autoFocus
-            className="flex-1 rounded-full border border-slate-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <button
-            type="submit"
-            disabled={sending || !newMessage.trim()}
-            className="rounded-full bg-blue-600 px-5 py-2 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {sending ? "..." : "Send"}
-          </button>
-        </form>
-      </section>
+      </div>
 
       {sendError && (
-        <p className="text-sm text-red-600">
+        <p className="border-t border-slate-200 bg-white px-4 py-2 text-sm text-red-600">
           Failed to send message: {sendError}
         </p>
       )}
+
+      <MessageComposer
+        value={newMessage}
+        onChange={setNewMessage}
+        onSubmit={handleSend}
+        sending={sending}
+      />
     </main>
   );
 }

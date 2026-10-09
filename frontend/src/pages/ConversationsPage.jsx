@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 
 import { getMyConversations } from "../api/messagingApi";
 import { useAuth } from "../hooks/useAuth";
+import Notice from "../components/Notice";
+import Pagination from "../components/Pagination";
 
 const PAGE_SIZE = 10;
 
@@ -38,45 +40,42 @@ function ConversationsPage() {
     loadConversations();
   }, [currentPage]);
 
-  function goToPreviousPage() {
-    if (currentPage > 0) {
-      setCurrentPage((page) => page - 1);
-    }
-  }
-
-  function goToNextPage() {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage((page) => page + 1);
-    }
-  }
-
   return (
-    <main className="mx-auto max-w-4xl p-6">
-      <h1 className="mb-2 text-3xl font-bold text-slate-900">Messages</h1>
+    <main className="mx-auto max-w-4xl px-4 py-6">
+      <h1 className="text-2xl font-bold">Messages</h1>
 
-      <p className="mb-6 text-slate-500">
-        {totalConversations} conversation
-        {totalConversations !== 1 ? "s" : ""}
+      <p className="mb-6 mt-1 text-sm text-slate-500">
+        {totalConversations} conversation{totalConversations !== 1 ? "s" : ""}
       </p>
 
       {error && (
-        <div className="mb-6 rounded-lg bg-red-100 p-4 text-red-700">
+        <Notice variant="error" className="mb-4">
           Unable to load conversations: {error}
-        </div>
+        </Notice>
       )}
 
       {loading ? (
-        <p className="text-center text-slate-500">Loading conversations...</p>
+        <div className="flex flex-col gap-2">
+          {Array.from({ length: 4 }, (_, index) => (
+            <div
+              key={index}
+              className="h-[74px] animate-pulse border border-slate-200 bg-slate-100"
+            />
+          ))}
+        </div>
       ) : conversations.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-slate-50 p-8 text-center">
-          <p className="text-slate-600">
-            You have no conversations yet. Message a seller from a listing page
-            to start one.
+        <div className="border border-slate-300 p-8 text-center">
+          <p className="font-medium">No conversations yet</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Message a seller from a listing page to start one.
           </p>
+          <Link to="/" className="btn btn-primary mt-4">
+            Browse vehicles
+          </Link>
         </div>
       ) : (
         <>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
             {conversations.map((conversation) => {
               const isBuyer = user && user.id === conversation.buyerId;
 
@@ -84,74 +83,45 @@ function ConversationsPage() {
                 ? `${conversation.sellerFirstName} ${conversation.sellerLastName}`
                 : `${conversation.buyerFirstName} ${conversation.buyerLastName}`;
 
+              const initial =
+                otherParticipantName.trim()[0]?.toUpperCase() ?? "?";
+
               return (
                 <Link
                   key={conversation.id}
                   to={`/conversations/${conversation.id}`}
-                  className="flex flex-col gap-1 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
+                  className="flex items-center gap-3 border border-slate-300 bg-white p-4 transition-colors hover:border-blue-600 hover:bg-blue-50"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-900">
-                      {otherParticipantName}
-                    </span>
-
-                    <span className="text-xs text-slate-400">
-                      {new Date(conversation.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-
-                  <span className="text-sm text-slate-600">
-                    {conversation.listingTitle}
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center bg-blue-600 font-medium text-white">
+                    {initial}
                   </span>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="truncate font-semibold">
+                        {otherParticipantName}
+                      </span>
+
+                      <span className="shrink-0 text-xs text-slate-400">
+                        {new Date(conversation.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <p className="truncate text-sm text-slate-600">
+                      {conversation.listingTitle}
+                    </p>
+                  </div>
                 </Link>
               );
             })}
           </div>
 
-          {totalPages > 1 && (
-            <nav
-              className="mt-8 flex flex-wrap items-center justify-center gap-2"
-              aria-label="Conversation pagination"
-            >
-              <button
-                type="button"
-                onClick={goToPreviousPage}
-                disabled={currentPage === 0}
-                className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Previous
-              </button>
-
-              {Array.from({ length: totalPages }, (_, index) => index).map(
-                (pageNumber) => (
-                  <button
-                    key={pageNumber}
-                    type="button"
-                    onClick={() => setCurrentPage(pageNumber)}
-                    aria-current={
-                      currentPage === pageNumber ? "page" : undefined
-                    }
-                    className={`rounded-lg border px-4 py-2 ${
-                      currentPage === pageNumber
-                        ? "bg-blue-600 font-medium text-white"
-                        : "hover:bg-gray-100"
-                    }`}
-                  >
-                    {pageNumber + 1}
-                  </button>
-                ),
-              )}
-
-              <button
-                type="button"
-                onClick={goToNextPage}
-                disabled={currentPage === totalPages - 1}
-                className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                Next
-              </button>
-            </nav>
-          )}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            label="Conversation pagination"
+          />
         </>
       )}
     </main>

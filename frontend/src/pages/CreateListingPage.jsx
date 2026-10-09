@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import ListingForm from "../components/ListingForm";
+import Notice from "../components/Notice";
 import { useState } from "react";
 import { createListing } from "../api/listingApi";
 import { validateListing } from "../utils/validateListing";
@@ -89,11 +90,15 @@ function CreateListingPage() {
   }
 
   return (
-    <main className="max-w-4xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Create Listing</h1>
+    <main className="mx-auto max-w-4xl px-4 py-6">
+      <h1 className="mb-6 text-2xl font-bold">Create listing</h1>
+
       {error && (
-        <div className="mb-4 rounded bg-red-100 p-3 text-red-700">{error}</div>
+        <Notice variant="error" className="mb-4">
+          {error}
+        </Notice>
       )}
+
       <ListingForm
         initialValues={EMPTY_LISTING}
         onSubmit={handleSubmit}

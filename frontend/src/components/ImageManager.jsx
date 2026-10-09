@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   deleteImage,
   reorderImages,
@@ -6,6 +6,9 @@ import {
   uploadImage,
 } from "../api/imageApi";
 import { getImageUrl } from "../utils/getImageUrl";
+import ManagedImageCard from "./ManagedImageCard";
+import Notice from "./Notice";
+import PendingImageCard from "./PendingImageCard";
 
 function ImageManager({
   listingId,
@@ -21,6 +24,9 @@ function ImageManager({
   const [primaryImageId, setPrimaryImageId] = useState(null);
   const [failedImageIds, setFailedImageIds] = useState([]);
   const [error, setError] = useState("");
+
+  // Always holds the latest queue so the unmount cleanup can revoke its previews.
+  const selectedFilesRef = useRef(selectedFiles);
 
   // ==========================================
   // SYNC EXISTING IMAGES
@@ -253,25 +259,29 @@ function ImageManager({
   }
 
   // ==========================================
-  // CLEAN UP LOCAL PREVIEWS
+  // CLEAN UP LOCAL PREVIEWS (on unmount only)
   // ==========================================
 
   useEffect(() => {
+    selectedFilesRef.current = selectedFiles;
+  }, [selectedFiles]);
+
+  useEffect(() => {
     return () => {
-      selectedFiles.forEach((item) => {
+      selectedFilesRef.current.forEach((item) => {
         URL.revokeObjectURL(item.previewUrl);
       });
     };
-  }, [selectedFiles]);
+  }, []);
 
   const visibleImages = images.filter(
     (image) => !failedImageIds.includes(image.id),
   );
 
   return (
-    <section className="space-y-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    <section className="space-y-6 border border-slate-300 bg-white p-4 sm:p-6">
       <div>
-        <h2 className="text-xl font-semibold text-slate-900">Images</h2>
+        <h2 className="text-lg font-semibold text-slate-900">Images</h2>
 
         <p className="mt-1 text-sm text-slate-500">
           Upload vehicle images, choose a primary image, and control their
@@ -279,11 +289,7 @@ function ImageManager({
         </p>
       </div>
 
-      {error && (
-        <div className="rounded-lg bg-red-100 p-3 text-sm text-red-700">
-          {error}
-        </div>
-      )}
+      {error && <Notice variant="error">{error}</Notice>}
 
       {/* ========================================
           EXISTING IMAGES
@@ -293,91 +299,36 @@ function ImageManager({
         <div>
           <h3 className="mb-3 font-medium text-slate-800">Current images</h3>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {visibleImages.map((image, index) => {
-              const imageUrl = getImageUrl(
-                image.url || image.imageUrl || image.storageFilename,
-              );
-
               const isPrimary =
                 image.primaryImage ||
                 image.isPrimary ||
                 primaryImageId === image.id;
 
               return (
-                <div
+                <ManagedImageCard
                   key={image.id}
-                  className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50"
-                >
-                  <div className="relative aspect-video">
-                    <img
-                      src={imageUrl}
-                      alt={image.originalFilename || "Vehicle"}
-                      className="h-full w-full object-cover"
-                      onError={() =>
-                        setFailedImageIds((current) =>
-                          current.includes(image.id)
-                            ? current
-                            : [...current, image.id],
-                        )
-                      }
-                    />
-
-                    {isPrimary && (
-                      <span className="absolute left-2 top-2 rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
-                        Primary
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="space-y-3 p-3">
-                    <p className="truncate text-sm text-slate-600">
-                      {image.originalFilename || "Vehicle image"}
-                    </p>
-
-                    <div className="flex flex-wrap gap-2">
-                      {!isPrimary && (
-                        <button
-                          type="button"
-                          disabled={disabled || deletingImageId === image.id}
-                          onClick={() => handleSetPrimary(image.id)}
-                          className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          Make Primary
-                        </button>
-                      )}
-
-                      <button
-                        type="button"
-                        disabled={disabled || deletingImageId === image.id}
-                        onClick={() => moveImage(index, "left")}
-                        className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        ←
-                      </button>
-
-                      <button
-                        type="button"
-                        disabled={disabled || deletingImageId === image.id}
-                        onClick={() => moveImage(index, "right")}
-                        className="rounded-md border border-slate-300 px-3 py-2 text-sm hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        →
-                      </button>
-
-                      <button
-                        type="button"
-                        disabled={disabled || deletingImageId === image.id}
-                        onClick={() => handleDeleteImage(image.id)}
-                        className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {deletingImageId === image.id
-                          ? "Deleting..."
-                          : "Delete"}
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                  image={image}
+                  imageUrl={getImageUrl(
+                    image.url || image.imageUrl || image.storageFilename,
+                  )}
+                  isPrimary={isPrimary}
+                  isFirst={index === 0}
+                  isLast={index === visibleImages.length - 1}
+                  busy={disabled || deletingImageId === image.id}
+                  deleting={deletingImageId === image.id}
+                  onMakePrimary={() => handleSetPrimary(image.id)}
+                  onMove={(direction) => moveImage(index, direction)}
+                  onDelete={() => handleDeleteImage(image.id)}
+                  onError={() =>
+                    setFailedImageIds((current) =>
+                      current.includes(image.id)
+                        ? current
+                        : [...current, image.id],
+                    )
+                  }
+                />
               );
             })}
           </div>
@@ -389,21 +340,25 @@ function ImageManager({
       ======================================== */}
 
       <div>
-        <label className="mb-2 block font-medium text-slate-800">
+        <label
+          htmlFor="image-upload"
+          className="mb-1.5 block text-sm font-medium text-slate-800"
+        >
           Add images
         </label>
 
         <input
+          id="image-upload"
           type="file"
           multiple
           accept="image/png,image/jpeg,image/webp"
           onChange={handleFileChange}
           disabled={disabled || uploading}
-          className="block w-full rounded-md border border-slate-300 p-2 text-sm"
+          className="block w-full border border-slate-300 text-sm file:mr-3 file:cursor-pointer file:border-0 file:bg-slate-900 file:px-4 file:py-2.5 file:text-sm file:font-medium file:text-white hover:file:bg-blue-600"
         />
 
-        <p className="mt-1 text-sm text-slate-500">
-          JPEG, PNG and WEBP images are supported.
+        <p className="mt-1 text-xs text-slate-500">
+          JPEG, PNG and WEBP images are supported (max 5MB each).
         </p>
       </div>
 
@@ -417,68 +372,24 @@ function ImageManager({
             Images ready to upload
           </h3>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-            {selectedFiles.map((item) => {
-              const progress = uploadProgress[item.id] ?? 0;
-
-              return (
-                <div
-                  key={item.id}
-                  className="overflow-hidden rounded-lg border border-slate-200"
-                >
-                  <div className="aspect-video">
-                    <img
-                      src={item.previewUrl}
-                      alt={item.file.name}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-
-                  <div className="space-y-3 p-3">
-                    <p className="truncate text-sm font-medium">
-                      {item.file.name}
-                    </p>
-
-                    {/* Upload progress */}
-                    {uploading && (
-                      <div>
-                        <div className="mb-1 flex justify-between text-xs text-slate-500">
-                          <span>Uploading...</span>
-                          <span>{progress}%</span>
-                        </div>
-
-                        <div className="h-2 overflow-hidden rounded-full bg-slate-200">
-                          <div
-                            className="h-full bg-blue-600 transition-all duration-200"
-                            style={{
-                              width: `${progress}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
-
-                    {!uploading && (
-                      <button
-                        type="button"
-                        disabled={disabled}
-                        onClick={() => removeSelectedFile(item.id)}
-                        className="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {selectedFiles.map((item) => (
+              <PendingImageCard
+                key={item.id}
+                item={item}
+                progress={uploadProgress[item.id] ?? 0}
+                uploading={uploading}
+                disabled={disabled}
+                onRemove={() => removeSelectedFile(item.id)}
+              />
+            ))}
           </div>
 
           <button
             type="button"
             onClick={handleUpload}
             disabled={disabled || uploading || selectedFiles.length === 0}
-            className="mt-4 rounded-lg bg-blue-600 px-5 py-3 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn btn-primary mt-4"
           >
             {uploading
               ? "Uploading..."
