@@ -21,10 +21,12 @@ import java.util.List;
 // The mapper's responsibility is to convert an internal model into an API model
 @Component
 public class VehicleListingMapper {
-    // Converts a vehicleListing entity into a response DTO suitable for API clients
-    //Creates a new response i.e. new VehicleListingResponse ,
-    // then it populates it with data with getters from vehicle listing entity
-    // This process amounts to converting an entity to a request
+    private final ImageMapper imageMapper;
+
+    public VehicleListingMapper(ImageMapper imageMapper) {
+        this.imageMapper = imageMapper;
+    }
+
     public VehicleListingResponse toResponse(VehicleListing listing) {
         VehicleListingResponse response = new VehicleListingResponse();
 
@@ -68,17 +70,6 @@ public class VehicleListingMapper {
         );
     }
 
-    //Converts a vehicleImage entity into a imageResponse DTO
-    private ImageResponse toImageResponse(VehicleImage image) {
-        ImageResponse response = new ImageResponse();
-
-        response.setId(image.getId());
-        response.setImageUrl("/uploads/" + image.getStorageFilename());
-        response.setPrimaryImage(image.isPrimaryImage());
-        response.setDisplayOrder(image.getDisplayOrder());
-
-        return response;
-    }
 
     // Converts a collection of VehicleImage entities into image response DTOs, sorted by display order
     private List<ImageResponse> toImageResponses(
@@ -100,15 +91,11 @@ public class VehicleListingMapper {
                         )
                 )
                 // 3. .map() transforms each now-sorted VehicleImage entity into an ImageResponse DTO
-                .map(this::toImageResponse)
+                .map(imageMapper::toResponse)
                 // 4. .toList() collects the transformed, ordered ImageResponse DTOs into an unmodifiable List
                 .toList();
     }
 
-    //Converts create listing dto into a vehicle listing entity
-    //Creates a new vehicle listing entity and populates it with response data with getters
-    //from create listing request
-    //This process amounts to converting a request to an entity
     public VehicleListing toEntity(CreateListingRequest request) {
 
 
