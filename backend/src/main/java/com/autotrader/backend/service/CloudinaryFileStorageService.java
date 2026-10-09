@@ -19,13 +19,15 @@ public class CloudinaryFileStorageService implements FileStorageService {
         this.cloudinary = cloudinary;
     }
 
-    @Override
+     @Override
     public void saveFile(InputStream inputStream, String storageFilename) {
         String publicId = toPublicId(storageFilename);
 
         try {
+            byte[] fileBytes = inputStream.readAllBytes();
+
             Map<?, ?> result = cloudinary.uploader().upload(
-                    inputStream,
+                    fileBytes,
                     ObjectUtils.asMap(
                             "public_id", publicId,
                             "resource_type", "image",
