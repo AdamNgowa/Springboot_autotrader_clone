@@ -9,6 +9,7 @@ import com.autotrader.backend.exception.ImageNotFoundException;
 import com.autotrader.backend.exception.UnauthorizedListingAccessException;
 import com.autotrader.backend.mapper.ImageMapper;
 import com.autotrader.backend.repository.VehicleImageRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -29,13 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ImageServiceTest {
@@ -52,18 +47,28 @@ class ImageServiceTest {
     private VehicleImageRepository vehicleImageRepository;
 
     @Mock
-    private FileStorageService fileStorageService;
+    private LocalFileStorageService localFileStorageService;
 
-    // Real mapper: it is a pure, stateless converter, so mocking it adds nothing.
-    @Spy
-    private ImageMapper imageMapper = new ImageMapper();
+   private ImageMapper imageMapper;
 
-    @InjectMocks
-    private ImageService imageService;
+   private ImageService imageService;
 
     // ==========================================
     // uploadImage
     // ==========================================
+
+    @BeforeEach
+    void setUp() {
+        imageMapper = new ImageMapper(localFileStorageService);
+
+        imageService = new ImageService(
+                currentUserService,
+                vehicleListingService,
+                vehicleImageRepository,
+                localFileStorageService,
+                imageMapper
+        );
+    }
 
     @Test
     void uploadImage_firstImage_becomesPrimaryWithDisplayOrderZero() {
@@ -72,6 +77,9 @@ class ImageServiceTest {
         when(vehicleImageRepository.countByVehicleListing(listing)).thenReturn(0L);
         when(vehicleImageRepository.save(any(VehicleImage.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        when(localFileStorageService.getFileUrl(anyString()))
+                .thenAnswer(invocation ->
+                        "/uploads/" + invocation.getArgument(0));
 
         // Act
         ImageResponse response =
@@ -120,22 +128,24 @@ class ImageServiceTest {
 
         // ...and the SAME filename that was stored is the one cleaned up.
         ArgumentCaptor<String> storedName = ArgumentCaptor.forClass(String.class);
-        verify(fileStorageService).saveFile(any(InputStream.class), storedName.capture());
-        verify(fileStorageService).deleteFile(storedName.getValue());
+        verify(localFileStorageService).saveFile(any(InputStream.class), storedName.capture());
+        verify(localFileStorageService).deleteFile(storedName.getValue());
     }
 
     @Test
     void uploadImage_whenStorageFails_doesNotSaveMetadataOrDeleteAnything() {
         stubActiveListingAndUser();
-        when(fileStorageService.saveFile(any(InputStream.class), anyString()))
-                .thenThrow(new RuntimeException("disk full"));
+
+        doThrow(new RuntimeException("disk full"))
+                .when(localFileStorageService)
+                .saveFile(any(InputStream.class), anyString());
 
         assertThatThrownBy(() ->
                 imageService.uploadImage(LISTING_ID, jpeg("front.jpg")))
                 .hasMessage("disk full");
 
         verify(vehicleImageRepository, never()).save(any());
-        verify(fileStorageService, never()).deleteFile(anyString());
+        verify(localFileStorageService, never()).deleteFile(anyString());
     }
 
     @Test
@@ -148,7 +158,7 @@ class ImageServiceTest {
                 .hasMessage("Only JPEG, PNG and WEBP images are supported");
 
         verifyNoInteractions(
-                vehicleListingService, fileStorageService, vehicleImageRepository);
+                vehicleListingService, localFileStorageService, vehicleImageRepository);
     }
 
     @Test
@@ -161,7 +171,7 @@ class ImageServiceTest {
                 .hasMessage("Image file must not be empty");
 
         verifyNoInteractions(
-                vehicleListingService, fileStorageService, vehicleImageRepository);
+                vehicleListingService, localFileStorageService, vehicleImageRepository);
     }
 
     @Test
@@ -173,7 +183,7 @@ class ImageServiceTest {
         assertThatThrownBy(() -> imageService.uploadImage(LISTING_ID, noExtension))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        verifyNoInteractions(fileStorageService);
+        verifyNoInteractions(localFileStorageService);
         verify(vehicleImageRepository, never()).save(any());
     }
 
@@ -188,7 +198,7 @@ class ImageServiceTest {
                 imageService.uploadImage(LISTING_ID, jpeg("front.jpg")))
                 .isInstanceOf(UnauthorizedListingAccessException.class);
 
-        verifyNoInteractions(fileStorageService);
+        verifyNoInteractions(localFileStorageService);
         verify(vehicleImageRepository, never()).save(any());
     }
 
@@ -318,10 +328,10 @@ class ImageServiceTest {
         verify(listing).removeImage(first);
 
         // The row must be gone (flushed) BEFORE the file is deleted.
-        InOrder order = inOrder(vehicleImageRepository, fileStorageService);
+        InOrder order = inOrder(vehicleImageRepository, localFileStorageService);
         order.verify(vehicleImageRepository).delete(first);
         order.verify(vehicleImageRepository).flush();
-        order.verify(fileStorageService).deleteFile("first.jpg");
+        order.verify(localFileStorageService).deleteFile("first.jpg");
 
         // The survivor is promoted and the order has no gap.
         assertThat(second.getDisplayOrder()).isZero();
@@ -339,7 +349,7 @@ class ImageServiceTest {
                 .isInstanceOf(ImageNotFoundException.class);
 
         verify(vehicleImageRepository, never()).delete(any());
-        verifyNoInteractions(fileStorageService);
+        verifyNoInteractions(localFileStorageService);
     }
 
     @Test
@@ -353,7 +363,7 @@ class ImageServiceTest {
                 .isInstanceOf(UnauthorizedListingAccessException.class);
 
         verify(vehicleImageRepository, never()).delete(any());
-        verifyNoInteractions(fileStorageService);
+        verifyNoInteractions(localFileStorageService);
     }
 
     // ==========================================

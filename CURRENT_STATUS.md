@@ -100,7 +100,7 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
     **Status: COMPLETE**
 
 - 12.11 Production Image Storage
-  - 12.11.1 Storage options evaluation - PENDING (providers that work without a credit card; `FileStorageService` is the seam)
+  - 12.11.1 Storage options evaluation - PENDING (providers that work without a credit card; `LocalFileStorageService` is the seam)
   - 12.11.2 Storage implementation - PENDING
   - 12.11.3 Image URL strategy - PENDING (`/uploads/...` becomes an absolute storage URL; `ImageMapper` and `getImageUrl`)
   - 12.11.4 Existing local images - PENDING (re-upload or migrate)
@@ -223,7 +223,7 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 ### 12.11 Production Image Storage
 - [ ] Research storage providers with current terms that work without a credit card and alongside Render's free tier
 - [ ] Decide between an S3-compatible API and a provider SDK
-- [ ] Add a second `FileStorageService` implementation selected by configuration; keep the local filesystem for development and tests
+- [ ] Add a second `LocalFileStorageService` implementation selected by configuration; keep the local filesystem for development and tests
 - [ ] Return absolute image URLs from the API; update `ImageMapper` and `getImageUrl`
 - [ ] Decide what to do with existing local images (re-upload or migrate)
 - [ ] Verify upload, set primary, reorder and delete, and that images survive a redeploy and a spin-down

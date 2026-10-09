@@ -522,6 +522,7 @@ Once the app runs on a server, the questions become "is it healthy?" and "what h
 - Logging of authentication failures, never tokens or passwords *(found in Phase 12: the app logs nothing about auth events)*
 - Backup strategy for the uploads volume *(found in Phase 12: images live in a Docker volume on a single VM)*
 - Replace the broad `IllegalArgumentException` handler with dedicated exceptions such as `InvalidImageException` *(found in Phase 12: missing handlers made bad uploads return 500; the quick fix maps every `IllegalArgumentException` to 400, which would also report a future programming error as a client error)*
+- retryable cleanup/outbox processing for image deletion
 
 ### Container & Image Hardening
 

@@ -28,6 +28,8 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
 
+    implementation 'com.cloudinary:cloudinary-http5:2.5.0'
+
     //jjwt-api exposes the interface your code uses
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     //jjwt-impl contains the implementation

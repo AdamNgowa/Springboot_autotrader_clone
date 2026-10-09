@@ -2,7 +2,7 @@ package com.autotrader.backend.integration;
 
 import com.autotrader.backend.entity.VehicleImage;
 import com.autotrader.backend.entity.VehicleListing;
-import com.autotrader.backend.service.FileStorageService;
+import com.autotrader.backend.service.LocalFileStorageService;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ImageManagementIntegrationTest extends IntegrationTestSupport {
 
     @Autowired
-    private FileStorageService fileStorageService;
+    private LocalFileStorageService localFileStorageService;
 
     private String ownerToken;
     private Long listingId;
@@ -306,7 +306,7 @@ class ImageManagementIntegrationTest extends IntegrationTestSupport {
         String filename = image.get("imageUrl").asText()
                 .substring("/uploads/".length());
 
-        return fileStorageService.getUploadPath().resolve(filename);
+        return localFileStorageService.getUploadPath().resolve(filename);
     }
 
     private List<VehicleImage> imagesInDb(Long forListingId) {
