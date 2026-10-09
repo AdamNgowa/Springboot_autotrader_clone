@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { deleteListing, getMyListings } from "../api/listingApi";
 import ListingCard from "../components/ListingCard";
+import ListingGrid from "../components/ListingGrid";
+import ListingGridSkeleton from "../components/ListingGridSkeleton";
+import Notice from "../components/Notice";
 
 function MyListingsPage() {
   const [listings, setListings] = useState([]);
@@ -30,51 +34,66 @@ function MyListingsPage() {
       return;
     }
     try {
+      setError(null);
       await deleteListing(id);
-      // Call setListings using the "functional update pattern" (passing a callback function).
-      // React automatically runs this callback and passes in the freshest state array
-      // as the first argument, which we name 'currentListings'.
+      // Functional update: build a new array without the deleted listing,
+      // so React re-renders and the card disappears.
       setListings((currentListings) =>
-        // .filter() creates a BRAND NEW array by looping through every item in 'currentListings'.
-        // For each individual 'listing' in the array, it evaluates the condition:
-        // Is this listing's ID NOT EQUAL to the ID we just deleted?
-        //
-        // - If TRUE (IDs don't match): Keep this listing in the new array.
-        // - If FALSE (IDs match): Drop this listing from the new array.
         currentListings.filter((listing) => listing.id !== id),
       );
-      // React receives the new filtered array, replaces the old state, and re-renders the UI
-      // so the deleted item instantly vanishes from the screen.
     } catch (error) {
       setError(error.message);
     }
   }
 
-  if (loading) {
-    return <p>Loading listings...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
-
   return (
-    <main className="max-w-6xl mx-auto p-6">
-      <h1>My Listings</h1>
-      <p>Total listings: {listings.length}</p>
+    <main className="mx-auto max-w-7xl px-4 py-6">
+      <div className="mb-6 flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold">My listings</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 m-2">
-        {listings.map((listing) => (
-          <ListingCard
-            key={listing.id}
-            listing={listing}
-            onDelete={handleDelete}
-            // showOwnerActions here is the same as saying showOwnerActions={true}
-            //Used for conditional rendering
-            showOwnerActions
-          />
-        ))}
+          {!loading && (
+            <p className="mt-1 text-sm text-slate-500">
+              {listings.length} listing{listings.length !== 1 && "s"}
+            </p>
+          )}
+        </div>
+
+        <Link to="/listings/new" className="btn btn-primary">
+          Sell vehicle
+        </Link>
       </div>
+
+      {error && (
+        <Notice variant="error" className="mb-4">
+          {error}
+        </Notice>
+      )}
+
+      {loading ? (
+        <ListingGridSkeleton count={3} />
+      ) : listings.length === 0 ? (
+        <div className="border border-slate-300 p-8 text-center">
+          <p className="font-medium">You have no listings yet</p>
+          <p className="mt-1 text-sm text-slate-500">
+            Post your first vehicle and it will show up here.
+          </p>
+          <Link to="/listings/new" className="btn btn-primary mt-4">
+            Create listing
+          </Link>
+        </div>
+      ) : (
+        <ListingGrid>
+          {listings.map((listing) => (
+            <ListingCard
+              key={listing.id}
+              listing={listing}
+              onDelete={handleDelete}
+              showOwnerActions
+            />
+          ))}
+        </ListingGrid>
+      )}
     </main>
   );
 }

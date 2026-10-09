@@ -12,7 +12,12 @@ import {
   removeFavorite,
 } from "../api/favoriteApi";
 
-function ListingCard({ listing, onDelete, showOwnerActions = false }) {
+function ListingCard({
+  listing,
+  onDelete,
+  onUnfavorite,
+  showOwnerActions = false,
+}) {
   const navigate = useNavigate();
 
   const { isAuthenticated } = useAuth();
@@ -81,6 +86,8 @@ function ListingCard({ listing, onDelete, showOwnerActions = false }) {
       if (isFavorite) {
         await removeFavorite(listing.id);
         setIsFavorite(false);
+        // Lets a parent (the favorites page) remove the card from its list.
+        onUnfavorite?.(listing.id);
       } else {
         await addFavorite(listing.id);
         setIsFavorite(true);

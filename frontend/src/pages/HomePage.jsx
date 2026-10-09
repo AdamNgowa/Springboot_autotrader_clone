@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { getListings } from "../api/listingApi";
 import ListingCard from "../components/ListingCard";
+import ListingGrid from "../components/ListingGrid";
+import ListingGridSkeleton from "../components/ListingGridSkeleton";
+import Notice from "../components/Notice";
+import Pagination from "../components/Pagination";
 import SearchFilters from "../components/SearchFilters";
 
 const INITIAL_FILTERS = {
@@ -56,8 +60,6 @@ function HomePage() {
 
   // Controls the mobile filter sheet. Ignored on desktop, where the sidebar is always shown.
   const [filtersOpen, setFiltersOpen] = useState(false);
-
-  const pageNumbers = Array.from({ length: totalPages }, (_, index) => index);
 
   // The chips are derived from the filters that are actually applied.
   const activeChips = FILTER_KEYS.filter(
@@ -122,11 +124,6 @@ function HomePage() {
     setFilters((current) => ({ ...current, sort }));
     setActiveFilters((current) => ({ ...current, sort }));
     setCurrentPage(0);
-  }
-
-  function goToPage(page) {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const showSkeleton = loading && listings.length === 0;
@@ -205,12 +202,9 @@ function HomePage() {
           )}
 
           {error && (
-            <p
-              role="alert"
-              className="mb-4 border border-red-300 bg-red-50 p-3 text-sm text-red-700"
-            >
+            <Notice variant="error" className="mb-4">
               Unable to load listings. Please try again
-            </p>
+            </Notice>
           )}
 
           {loading && (
@@ -219,14 +213,7 @@ function HomePage() {
 
           {/* First load: placeholder boxes so the layout does not jump */}
           {showSkeleton && (
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {Array.from({ length: PAGE_SIZE }, (_, index) => (
-                <div
-                  key={index}
-                  className="h-72 animate-pulse border border-slate-200 bg-slate-100"
-                />
-              ))}
-            </div>
+            <ListingGridSkeleton count={PAGE_SIZE} withSidebar />
           )}
 
           {showEmpty && (
@@ -247,62 +234,17 @@ function HomePage() {
 
           {listings.length > 0 && (
             <>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <ListingGrid withSidebar>
                 {listings.map((listing) => (
                   <ListingCard key={listing.id} listing={listing} />
                 ))}
-              </div>
+              </ListingGrid>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <nav
-                  className="mt-8 flex items-center justify-center gap-2"
-                  aria-label="Pagination"
-                >
-                  <button
-                    type="button"
-                    onClick={() => goToPage(currentPage - 1)}
-                    disabled={currentPage === 0}
-                    className="btn btn-outline"
-                  >
-                    Previous
-                  </button>
-
-                  {/* Small screens: a compact counter instead of every page number */}
-                  <span className="px-2 text-sm text-slate-600 sm:hidden">
-                    Page {currentPage + 1} of {totalPages}
-                  </span>
-
-                  <div className="hidden gap-2 sm:flex">
-                    {pageNumbers.map((pageNumber) => (
-                      <button
-                        key={pageNumber}
-                        type="button"
-                        onClick={() => goToPage(pageNumber)}
-                        aria-current={
-                          currentPage === pageNumber ? "page" : undefined
-                        }
-                        className={`h-10 min-w-10 border px-3 text-sm transition-colors ${
-                          currentPage === pageNumber
-                            ? "border-blue-600 bg-blue-600 font-medium text-white"
-                            : "border-slate-300 hover:border-slate-900 hover:bg-slate-50"
-                        }`}
-                      >
-                        {pageNumber + 1}
-                      </button>
-                    ))}
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => goToPage(currentPage + 1)}
-                    disabled={currentPage === totalPages - 1}
-                    className="btn btn-outline"
-                  >
-                    Next
-                  </button>
-                </nav>
-              )}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
             </>
           )}
         </section>

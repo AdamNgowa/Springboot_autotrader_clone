@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getListing, deleteListing } from "../api/listingApi";
 import { createOrGetConversation } from "../api/messagingApi";
 import { useAuth } from "../hooks/useAuth";
 import SpecificationCard from "../components/SpecificationCard";
 import ImageGallery from "../components/ImageGallery";
+import SellerCard from "../components/SellerCard";
+import ListingManagement from "../components/ListingManagement";
+import Notice from "../components/Notice";
 
 function ListingDetailsPage() {
   const { id } = useParams();
@@ -44,28 +47,27 @@ function ListingDetailsPage() {
 
   if (loading) {
     return (
-      <main className="mx-auto max-w-6xl p-6">
-        <p className="text-center text-slate-500">Loading listing...</p>
+      <main className="mx-auto max-w-6xl px-4 py-6">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+          <div className="aspect-[4/3] animate-pulse border border-slate-200 bg-slate-100 md:aspect-[16/10]" />
+          <div className="h-48 animate-pulse border border-slate-200 bg-slate-100" />
+        </div>
       </main>
     );
   }
 
   if (error) {
     return (
-      <main className="mx-auto max-w-6xl p-6">
-        <div className="rounded-lg bg-red-100 p-4 text-red-700">
-          Error: {error}
-        </div>
+      <main className="mx-auto max-w-6xl px-4 py-6">
+        <Notice variant="error">Error: {error}</Notice>
       </main>
     );
   }
 
   if (!listing) {
     return (
-      <main className="mx-auto max-w-6xl p-6">
-        <div className="rounded-lg bg-yellow-100 p-4 text-yellow-700">
-          Listing not found.
-        </div>
+      <main className="mx-auto max-w-6xl px-4 py-6">
+        <Notice variant="warning">Listing not found.</Notice>
       </main>
     );
   }
@@ -73,6 +75,9 @@ function ListingDetailsPage() {
   const isOwner = user && listing.seller && user.id === listing.seller.id;
 
   const formattedPrice = new Intl.NumberFormat().format(listing.price);
+
+  // The sticky bottom bar only exists for visitors who can message the seller.
+  const showMessageBar = !isOwner && Boolean(listing.seller);
 
   function handleEdit() {
     navigate(`/listings/${listing.id}/edit`);
@@ -132,148 +137,125 @@ function ListingDetailsPage() {
   }
 
   return (
-    <main className="max-w-6xl mx-auto flex flex-col gap-10 p-6">
-      <ImageGallery
-        images={listing.images}
-        selectedImage={selectedImage}
-        setSelectedImage={setSelectedImage}
-        title={listing.title}
-      />
-
-      <section className="flex flex-col gap-2">
-        <h1 className="text-4xl font-bold text-slate-900">{listing.title}</h1>
-
-        <p className="text-3xl font-bold text-blue-700">KSh {formattedPrice}</p>
-
-        <p className="text-lg text-slate-500">{listing.city}</p>
-      </section>
-
-      {isOwner && (
-        <section className="rounded-xl border border-blue-200 bg-blue-50 p-5">
-          <h2 className="text-lg font-semibold text-slate-900">
-            Listing Management
-          </h2>
-
-          <p className="mt-1 text-sm text-slate-600">
-            You are the owner of this listing.
-          </p>
-
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={handleEdit}
-              disabled={deleting}
-              className="rounded-lg bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Edit Listing
-            </button>
-
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={deleting}
-              className="rounded-lg bg-red-600 px-5 py-3 font-medium text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {deleting ? "Deleting..." : "Delete Listing"}
-            </button>
-          </div>
-        </section>
-      )}
-
-      <section>
-        <h2 className="mb-3 text-2xl font-semibold">Description</h2>
-
-        <p className="leading-8 text-slate-700">{listing.description}</p>
-      </section>
-
-      <section>
-        <h2 className="mb-5 text-2xl font-semibold">Specifications</h2>
-
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-          <SpecificationCard label="Year" value={listing.year} />
-          <SpecificationCard label="Make" value={listing.make} />
-          <SpecificationCard label="Model" value={listing.model} />
-
-          <SpecificationCard
-            label="Mileage"
-            value={`${listing.mileage.toLocaleString()} km`}
+    <main
+      className={`mx-auto max-w-6xl px-4 py-6 ${
+        showMessageBar ? "pb-24 lg:pb-6" : ""
+      }`}
+    >
+      {/*
+       * Grid placement: on desktop the aside spans both rows of column 2.
+       * On mobile everything stacks in DOM order: gallery, summary, details.
+       */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-8">
+        {/* Gallery */}
+        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
+          <ImageGallery
+            images={listing.images}
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+            title={listing.title}
           />
-
-          <SpecificationCard
-            label="Fuel"
-            value={formatEnum(listing.fuelType)}
-          />
-
-          <SpecificationCard
-            label="Transmission"
-            value={formatEnum(listing.transmission)}
-          />
-
-          <SpecificationCard
-            label="Body Type"
-            value={formatEnum(listing.bodyType)}
-          />
-
-          <SpecificationCard label="Location" value={listing.city} />
         </div>
-      </section>
 
-      <section>
-        <h2 className="mb-4 text-2xl font-semibold">Seller</h2>
+        {/* Summary + seller */}
+        <aside className="min-w-0 space-y-4 lg:sticky lg:top-20 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-start">
+          <div className="border border-slate-300 p-4">
+            <h1 className="text-2xl font-bold text-slate-900">
+              {listing.title}
+            </h1>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          {listing.seller ? (
-            <div className="flex flex-col gap-4">
-              <div>
-                <Link
-                  to={`/sellers/${listing.seller.id}`}
-                  className="text-lg font-semibold text-blue-600 hover:text-blue-700 hover:underline"
-                >
-                  {listing.seller.firstName} {listing.seller.lastName}
-                </Link>
+            <p className="mt-1 text-sm text-slate-500">
+              {listing.year} {listing.make} {listing.model} · {listing.city}
+            </p>
 
-                <p className="mt-2 text-slate-600">
-                  Phone: {listing.seller.phoneNumber || "Not provided"}
-                </p>
-              </div>
+            <p className="mt-3 text-3xl font-bold text-blue-700">
+              KSh {formattedPrice}
+            </p>
+          </div>
 
-              {!isOwner && (
-                <div className="flex flex-wrap gap-3">
-                  {listing.seller.phoneNumber && (
-                    <a
-                      href={`tel:${listing.seller.phoneNumber}`}
-                      className="inline-flex w-fit items-center rounded-lg bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700"
-                    >
-                      Contact Seller
-                    </a>
-                  )}
+          {isOwner && (
+            <ListingManagement
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              deleting={deleting}
+            />
+          )}
 
-                  <button
-                    type="button"
-                    onClick={handleMessageSeller}
-                    disabled={messagingSeller}
-                    className="inline-flex w-fit items-center rounded-lg border border-blue-600 px-5 py-3 font-medium text-blue-600 transition hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {messagingSeller
-                      ? "Starting conversation..."
-                      : "Message Seller"}
-                  </button>
-                </div>
-              )}
+          <SellerCard
+            seller={listing.seller}
+            isOwner={isOwner}
+            onMessage={handleMessageSeller}
+            messaging={messagingSeller}
+            error={messageError}
+          />
+        </aside>
 
-              {messageError && (
-                <p className="text-sm text-red-600">
-                  Unable to start conversation: {messageError}
-                </p>
-              )}
+        {/* Description + specifications */}
+        <div className="min-w-0 space-y-8 lg:col-start-1 lg:row-start-2">
+          <section>
+            <h2 className="mb-3 text-lg font-semibold">Description</h2>
+
+            <p className="whitespace-pre-line leading-7 text-slate-700">
+              {listing.description}
+            </p>
+          </section>
+
+          <section>
+            <h2 className="mb-3 text-lg font-semibold">Specifications</h2>
+
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+              <SpecificationCard label="Year" value={listing.year} />
+              <SpecificationCard label="Make" value={listing.make} />
+              <SpecificationCard label="Model" value={listing.model} />
+
+              <SpecificationCard
+                label="Mileage"
+                value={`${listing.mileage.toLocaleString()} km`}
+              />
+
+              <SpecificationCard
+                label="Fuel"
+                value={formatEnum(listing.fuelType)}
+              />
+
+              <SpecificationCard
+                label="Transmission"
+                value={formatEnum(listing.transmission)}
+              />
+
+              <SpecificationCard
+                label="Body type"
+                value={formatEnum(listing.bodyType)}
+              />
+
+              <SpecificationCard label="Location" value={listing.city} />
             </div>
-          ) : (
-            <p className="text-slate-500">
-              Seller information is not available.
+          </section>
+        </div>
+      </div>
+
+      {/*
+       * Mobile-only sticky action bar. pr-24 leaves room for the floating
+       * messages button (right-6 + 56px wide) so the two never overlap.
+       */}
+      {showMessageBar && (
+        <div className="fixed inset-x-0 bottom-0 z-40 flex flex-col gap-1 border-t border-slate-300 bg-white py-3 pl-4 pr-24 lg:hidden">
+          {messageError && (
+            <p className="text-xs text-red-600">
+              Unable to start conversation: {messageError}
             </p>
           )}
+
+          <button
+            type="button"
+            onClick={handleMessageSeller}
+            disabled={messagingSeller}
+            className="btn btn-primary w-full"
+          >
+            {messagingSeller ? "Starting conversation..." : "Message seller"}
+          </button>
         </div>
-      </section>
+      )}
     </main>
   );
 }

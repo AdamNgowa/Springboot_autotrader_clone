@@ -3,6 +3,10 @@ import { useParams } from "react-router-dom";
 
 import { getSellerProfile, getSellerListings } from "../api/sellerApi";
 import ListingCard from "../components/ListingCard";
+import ListingGrid from "../components/ListingGrid";
+import ListingGridSkeleton from "../components/ListingGridSkeleton";
+import Notice from "../components/Notice";
+import Pagination from "../components/Pagination";
 
 const PAGE_SIZE = 6;
 
@@ -65,42 +69,28 @@ function SellerProfilePage() {
     loadListings();
   }, [id, currentPage]);
 
-  function goToPreviousPage() {
-    if (currentPage > 0) {
-      setCurrentPage((page) => page - 1);
-    }
-  }
-
-  function goToNextPage() {
-    if (currentPage < totalPages - 1) {
-      setCurrentPage((page) => page + 1);
-    }
-  }
-
   if (loadingSeller) {
     return (
-      <main className="mx-auto max-w-6xl p-6">
-        <p className="text-center text-slate-500">Loading seller profile...</p>
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        <div className="h-28 animate-pulse border border-slate-200 bg-slate-100" />
       </main>
     );
   }
 
   if (sellerError) {
     return (
-      <main className="mx-auto max-w-6xl p-6">
-        <div className="rounded-lg bg-red-100 p-4 text-red-700">
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        <Notice variant="error">
           Unable to load seller profile: {sellerError}
-        </div>
+        </Notice>
       </main>
     );
   }
 
   if (!seller) {
     return (
-      <main className="mx-auto max-w-6xl p-6">
-        <div className="rounded-lg bg-yellow-100 p-4 text-yellow-700">
-          Seller not found.
-        </div>
+      <main className="mx-auto max-w-7xl px-4 py-6">
+        <Notice variant="warning">Seller not found.</Notice>
       </main>
     );
   }
@@ -109,110 +99,66 @@ function SellerProfilePage() {
     `${seller.firstName ?? ""} ${seller.lastName ?? ""}`.trim() || "Seller";
 
   return (
-    <main className="mx-auto max-w-6xl p-6">
+    <main className="mx-auto max-w-7xl px-4 py-6">
       {/* Seller profile */}
-      <section className="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="mb-2 text-sm font-medium uppercase tracking-wide text-blue-600">
-              Seller Profile
-            </p>
+      <section className="mb-8 flex flex-col gap-4 border border-slate-300 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center bg-blue-600 text-2xl font-medium text-white">
+            {sellerName[0].toUpperCase()}
+          </span>
 
-            <h1 className="text-3xl font-bold text-slate-900">{sellerName}</h1>
+          <div className="min-w-0">
+            <h1 className="truncate text-2xl font-bold">{sellerName}</h1>
 
             {seller.phoneNumber && (
-              <p className="mt-3 text-slate-600">Phone: {seller.phoneNumber}</p>
+              <p className="text-sm text-slate-500">{seller.phoneNumber}</p>
             )}
           </div>
-
-          {seller.phoneNumber && (
-            <a
-              href={`tel:${seller.phoneNumber}`}
-              className="inline-flex w-fit rounded-lg bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-700"
-            >
-              Contact Seller
-            </a>
-          )}
         </div>
+
+        {seller.phoneNumber && (
+          <a href={`tel:${seller.phoneNumber}`} className="btn btn-primary">
+            Contact seller
+          </a>
+        )}
       </section>
 
       {/* Seller listings */}
       <section>
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-slate-900">Active Listings</h2>
+        <div className="mb-4">
+          <h2 className="text-xl font-bold">Active listings</h2>
 
-          <p className="mt-1 text-slate-500">
-            {totalListings} vehicle
-            {totalListings !== 1 ? "s" : ""}
+          <p className="mt-1 text-sm text-slate-500">
+            {totalListings} vehicle{totalListings !== 1 && "s"}
           </p>
         </div>
 
         {listingsError && (
-          <div className="mb-6 rounded-lg bg-red-100 p-4 text-red-700">
+          <Notice variant="error" className="mb-4">
             Unable to load seller listings: {listingsError}
-          </div>
+          </Notice>
         )}
 
         {loadingListings ? (
-          <p className="text-slate-500">Loading listings...</p>
+          <ListingGridSkeleton count={PAGE_SIZE} />
         ) : listings.length === 0 ? (
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-8 text-center">
-            <p className="text-slate-600">
-              This seller currently has no active listings.
-            </p>
+          <div className="border border-slate-300 p-8 text-center text-sm text-slate-500">
+            This seller currently has no active listings.
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <ListingGrid>
               {listings.map((listing) => (
                 <ListingCard key={listing.id} listing={listing} />
               ))}
-            </div>
+            </ListingGrid>
 
-            {totalPages > 1 && (
-              <nav
-                className="mt-8 flex flex-wrap items-center justify-center gap-2"
-                aria-label="Seller listing pagination"
-              >
-                <button
-                  type="button"
-                  onClick={goToPreviousPage}
-                  disabled={currentPage === 0}
-                  className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Previous
-                </button>
-
-                {Array.from({ length: totalPages }, (_, index) => index).map(
-                  (pageNumber) => (
-                    <button
-                      key={pageNumber}
-                      type="button"
-                      onClick={() => setCurrentPage(pageNumber)}
-                      aria-current={
-                        currentPage === pageNumber ? "page" : undefined
-                      }
-                      className={`rounded-lg border px-4 py-2 ${
-                        currentPage === pageNumber
-                          ? "bg-blue-600 font-medium text-white"
-                          : "hover:bg-gray-100"
-                      }`}
-                    >
-                      {pageNumber + 1}
-                    </button>
-                  ),
-                )}
-
-                <button
-                  type="button"
-                  onClick={goToNextPage}
-                  disabled={currentPage === totalPages - 1}
-                  className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </nav>
-            )}
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              label="Seller listing pagination"
+            />
           </>
         )}
       </section>
