@@ -94,9 +94,17 @@ function Navbar() {
           </NavLink>
 
           {isAuthenticated && (
-            <NavLink to="/listings/new" className={desktopLink}>
-              Sell vehicle
-            </NavLink>
+            <>
+              <NavLink to="/listings/new" className={desktopLink}>
+                Sell vehicle
+              </NavLink>
+              <NavLink to="/my-listings" className={desktopLink}>
+                My listings
+              </NavLink>
+              <NavLink to="/favorites" className={desktopLink}>
+                Favorites
+              </NavLink>
+            </>
           )}
         </div>
 
@@ -139,22 +147,8 @@ function Navbar() {
               {userOpen && (
                 <div
                   role="menu"
-                  className="absolute right-0 top-full z-50 mt-1 w-52 border border-slate-300 bg-white"
+                  className="absolute right-0 top-full z-50 mt-1 w-48 border border-slate-300 bg-white"
                 >
-                  <Link
-                    to="/my-listings"
-                    role="menuitem"
-                    className={dropdownItem}
-                  >
-                    My listings
-                  </Link>
-                  <Link
-                    to="/favorites"
-                    role="menuitem"
-                    className={dropdownItem}
-                  >
-                    Favorites
-                  </Link>
                   <Link
                     to="/conversations"
                     role="menuitem"
