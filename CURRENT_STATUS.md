@@ -100,12 +100,13 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
     **Status: COMPLETE**
 
 - 12.11 Production Image Storage
-  - 12.11.1 Storage options evaluation - PENDING (providers that work without a credit card; `LocalFileStorageService` is the seam)
-  - 12.11.2 Storage implementation - PENDING
-  - 12.11.3 Image URL strategy - PENDING (`/uploads/...` becomes an absolute storage URL; `ImageMapper` and `getImageUrl`)
-  - 12.11.4 Existing local images - PENDING (re-upload or migrate)
-  - 12.11.5 Persistence verification - PENDING (images survive redeploy, restart and spin-down)
-    **Status: NOT STARTED**
+  - 12.11.1 Storage options evaluation - COMPLETE (providers that work without a credit card; `LocalFileStorageService` is the seam)
+  - 12.11.2 Storage implementation - COMPLETE
+  - 12.11.3 Image URL strategy - COMPLETE (`/uploads/...` becomes an absolute storage URL; `ImageMapper` and `getImageUrl`)
+  - 12.11.4 Existing local images - COMPLETE (re-upload or migrate)
+  - 12.11.5 Persistence verification - COMPLETE (images survive redeploy, restart and spin-down)
+  - Decided to use cloudinary for persistent storage, Verified images were appearing on media libarary.
+    **Status: COMPLETE**
 
 ---
 
@@ -221,12 +222,12 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [ ] Confirm the Neon backup/restore options and test a restore
 
 ### 12.11 Production Image Storage
-- [ ] Research storage providers with current terms that work without a credit card and alongside Render's free tier
-- [ ] Decide between an S3-compatible API and a provider SDK
-- [ ] Add a second `LocalFileStorageService` implementation selected by configuration; keep the local filesystem for development and tests
-- [ ] Return absolute image URLs from the API; update `ImageMapper` and `getImageUrl`
-- [ ] Decide what to do with existing local images (re-upload or migrate)
-- [ ] Verify upload, set primary, reorder and delete, and that images survive a redeploy and a spin-down
+- [x] Research storage providers with current terms that work without a credit card and alongside Render's free tier
+- [x] Decide between an S3-compatible API and a provider SDK
+- [x] Add a second `LocalFileStorageService` implementation selected by configuration; keep the local filesystem for development and tests
+- [x] Return absolute image URLs from the API; update `ImageMapper` and `getImageUrl`
+- [x] Decide what to do with existing local images (re-upload or migrate)
+- [x] Verify upload, set primary, reorder and delete, and that images survive a redeploy and a spin-down
 
 ### Housekeeping
 - [ ] Update the charter: add persistent image storage to the Phase 12 plan, mark "Cloud object storage" in Phase 13 as pulled forward, and replace VM wording with Render
@@ -253,4 +254,4 @@ Target architecture: React on Vercel → Spring Boot (Docker) on Render → Neon
 - [ ] Custom domain and DNS (optional)
 - Testcontainers with PostgreSQL: moved into Phase 12.3.10
 
-**NEXT STEP: 12.11 Production Image Storage**
+**NEXT STEP: 13 Production Image Storage**

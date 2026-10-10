@@ -204,6 +204,7 @@ autotrader/
 │   │   │   ├── favoriteApi.js
 │   │   │   ├── imageApi.js
 │   │   │   ├── listingApi.js
+│   │   │   ├── messagingApi.js
 │   │   │   ├── sellerApi.js
 │   │   │   └── userApi.js
 │   │   │
@@ -213,14 +214,29 @@ autotrader/
 │   │   │   └── authStorage.js
 │   │   │
 │   │   ├── components/
+│   │   │   ├── AuthCard.jsx
+│   │   │   ├── FloatingMessagesButton.jsx
+│   │   │   ├── FormField.jsx
+│   │   │   ├── GalleryArrow.jsx
 │   │   │   ├── GuestOnlyRoute.jsx
 │   │   │   ├── ImageGallery.jsx
+│   │   │   ├── ImageLightbox.jsx
 │   │   │   ├── ImageManager.jsx
 │   │   │   ├── ListingCard.jsx
 │   │   │   ├── ListingForm.jsx
+│   │   │   ├── ListingGrid.jsx
+│   │   │   ├── ListingGridSkeleton.jsx
+│   │   │   ├── ListingManagement.jsx
+│   │   │   ├── ManagedImageCard.jsx
+│   │   │   ├── MessageBubble.jsx
+│   │   │   ├── MessageComposer.jsx
 │   │   │   ├── Navbar.jsx
+│   │   │   ├── Notice.jsx
+│   │   │   ├── Pagination.jsx
+│   │   │   ├── PendingImageCard.jsx
 │   │   │   ├── ProtectedRoute.jsx
 │   │   │   ├── SearchFilters.jsx
+│   │   │   ├── SellerCard.jsx
 │   │   │   └── SpecificationCard.jsx
 │   │   │
 │   │   ├── constants/
@@ -233,6 +249,8 @@ autotrader/
 │   │   │   └── useAuth.js
 │   │   │
 │   │   ├── pages/
+│   │   │   ├── ConversationPage.jsx
+│   │   │   ├── ConversationsPage.jsx
 │   │   │   ├── CreateListingPage.jsx
 │   │   │   ├── DashboardPage.jsx
 │   │   │   ├── EditListingPage.jsx
@@ -241,6 +259,7 @@ autotrader/
 │   │   │   ├── ListingDetailsPage.jsx
 │   │   │   ├── LoginPage.jsx
 │   │   │   ├── MyListingsPage.jsx
+│   │   │   ├── RegisterPage.jsx
 │   │   │   └── SellerProfilePage.jsx
 │   │   │
 │   │   ├── routes/
