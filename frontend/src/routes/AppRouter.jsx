@@ -15,6 +15,7 @@ import SellerProfilePage from "../pages/SellerProfilePage";
 import ConversationPage from "../pages/ConversationPage";
 import ConversationsPage from "../pages/ConversationsPage";
 import FloatingMessagesButton from "../components/FloatingMessagesButton";
+import ProfilePage from "../pages/ProfilePage.jsx";
 
 function AppRouter() {
   return (
@@ -99,6 +100,14 @@ function AppRouter() {
             </ProtectedRoute>
           }
         />
+          <Route
+              path="/profile"
+              element={
+                  <ProtectedRoute>
+                      <ProfilePage />
+                  </ProtectedRoute>
+              }
+          />
       </Routes>
       <FloatingMessagesButton />
     </BrowserRouter>

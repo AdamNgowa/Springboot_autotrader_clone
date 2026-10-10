@@ -149,6 +149,9 @@ function Navbar() {
                   role="menu"
                   className="absolute right-0 top-full z-50 mt-1 w-48 border border-slate-300 bg-white"
                 >
+                  <Link to="/profile" role="menuitem" className={dropdownItem}>
+                    Profile
+                  </Link>
                   <Link
                     to="/dashboard"
                     role="menuitem"
@@ -243,6 +246,9 @@ function Navbar() {
               </NavLink>
               <NavLink to="/dashboard" className={mobileLink}>
                 Dashboard
+              </NavLink>
+              <NavLink to="/profile" className={mobileLink}>
+                Profile
               </NavLink>
 
               <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">

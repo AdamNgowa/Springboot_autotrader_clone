@@ -168,7 +168,7 @@ function ListingDetailsPage() {
               {listing.year} {listing.make} {listing.model} · {listing.city}
             </p>
 
-            <p className="mt-3 text-3xl font-bold text-blue-700">
+            <p className="mt-3 text-3xl font-bold tabular-nums text-blue-700">
               KSh {formattedPrice}
             </p>
           </div>

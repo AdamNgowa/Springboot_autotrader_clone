@@ -15,7 +15,7 @@ function StatTile({ to, label, value }) {
     <Link to={to} className="lift block">
       <div className="lift-face p-4">
         <p className="text-xs font-medium text-slate-500">{label}</p>
-        <p className="mt-1 text-3xl font-bold">{value ?? "–"}</p>
+        <p className="mt-1 text-3xl font-bold tabular-nums">{value ?? "–"}</p>
       </div>
     </Link>
   );

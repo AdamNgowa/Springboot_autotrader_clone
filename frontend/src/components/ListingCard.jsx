@@ -135,13 +135,15 @@ function ListingCard({
                   <span className="truncate">{listing.city}</span>
                 </span>
 
-                <span className="flex shrink-0 items-center gap-1.5">
+                <span className="flex shrink-0 items-center gap-1.5 tabular-nums">
                   <MileageIcon />
                   {new Intl.NumberFormat().format(listing.mileage)} km
                 </span>
               </div>
 
-              <p className="text-lg font-bold">KSh {formattedPrice}</p>
+              <p className="text-lg font-bold tabular-nums">
+                KSh {formattedPrice}
+              </p>
             </div>
           </Link>
 
