@@ -6,6 +6,7 @@ import ListingGridSkeleton from "../components/ListingGridSkeleton";
 import Notice from "../components/Notice";
 import Pagination from "../components/Pagination";
 import SearchFilters from "../components/SearchFilters";
+import ColdStartNotice from "../components/ColdStartNotice";
 
 const INITIAL_FILTERS = {
   make: "",
@@ -195,7 +196,7 @@ function HomePage() {
             </div>
           )}
 
-          {!error && (
+          {!error && !showSkeleton && (
             <p className="mb-4 text-sm text-slate-500">
               Showing {totalListings} vehicle{totalListings !== 1 && "s"}
             </p>
@@ -210,6 +211,9 @@ function HomePage() {
           {loading && (
             <p className="mb-4 text-sm text-slate-500">Loading listings...</p>
           )}
+
+          {/* First load: placeholder boxes so the layout does not jump */}
+          <ColdStartNotice active={showSkeleton} />
 
           {/* First load: placeholder boxes so the layout does not jump */}
           {showSkeleton && (

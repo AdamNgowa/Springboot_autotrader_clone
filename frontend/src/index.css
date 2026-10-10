@@ -25,6 +25,25 @@
   --font-sans:
     "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji";
+
+  --animate-road: road 0.45s linear infinite;
+  --animate-bob: bob 0.5s ease-in-out infinite;
+
+  @keyframes road {
+    to {
+      background-position: -32px 0;
+    }
+  }
+
+  @keyframes bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-1px);
+    }
+  }
 }
 
 @layer base {
@@ -88,6 +107,16 @@
     }
     .lift:hover > .lift-face {
       transform: translate(6px, -6px);
+    }
+
+    /* Dashed road line used by the cold-start notice. */
+    .road {
+      background-image: repeating-linear-gradient(
+        90deg,
+        currentColor 0 16px,
+        transparent 16px 32px
+      );
+      background-size: 32px 100%;
     }
   }
 
