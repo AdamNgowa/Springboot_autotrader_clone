@@ -179,26 +179,21 @@ class SecurityBoundaryIntegrationTest extends IntegrationTestSupport {
                 Arguments.of("POST /conversations/1/messages",
                         post("/conversations/1/messages")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"content\":\"hi\"}"))
+                                .content("{\"content\":\"hi\"}")),
+                Arguments.of("GET /users/me", get("/users/me")),
+                Arguments.of("PUT /users/me",
+                        put("/users/me")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{}")),
+                Arguments.of("PUT /users/me/password",
+                        put("/users/me/password")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{}"))
         );
     }
 
-    // ==========================================
-    // PHASE 13 GAP: /users/me AND /listings/me
-    // ==========================================
 
-    /*
-     * GET /users/* and GET /listings/* are permitAll wildcards, so "/users/me" and
-     * "/listings/me" are NOT protected by the filter chain. They still answer 401
-     * today, but only because the service layer throws
-     * AuthenticatedUserNotFoundException for the anonymous principal.
-     * These tests pin the observable behaviour; the Phase 13 fix is to declare
-     * both routes authenticated() BEFORE the wildcard matchers.
-     */
-    @Test
-    void shouldReturn401ForUsersMeWithoutToken() throws Exception {
-        mockMvc.perform(get("/users/me")).andExpect(status().isUnauthorized());
-    }
+
 
     @Test
     void shouldReturn401ForListingsMeWithoutToken() throws Exception {

@@ -1,5 +1,6 @@
 package com.autotrader.backend.controller;
 
+import com.autotrader.backend.dto.user.ChangePasswordRequest;
 import com.autotrader.backend.dto.user.SellerResponse;
 import com.autotrader.backend.dto.user.UserResponse;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingResponse;
@@ -34,6 +35,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.autotrader.backend.dto.user.UpdateProfileRequest;
+import com.autotrader.backend.exception.IncorrectCurrentPasswordException;
+import org.springframework.http.MediaType;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class UserControllerTest {
@@ -146,5 +154,107 @@ class UserControllerTest {
 
         verify(vehicleListingService)
                 .getSellerActiveListings(eq(seller), any(Pageable.class));
+    }
+
+    // ==========================================
+    // PUT /users/me
+    // ==========================================
+
+    @Test
+    void updateCurrentUser_validRequest_returnsUpdatedUser() throws Exception {
+
+        User authenticatedUser = new User();
+        User updatedUser = new User();
+
+        UserResponse response = new UserResponse(
+                1L, "Jane", "Smith", "john@example.com",
+                "0712345678", UserRole.USER, LocalDateTime.now()
+        );
+
+        when(currentUserService.getAuthenticatedUser())
+                .thenReturn(authenticatedUser);
+        when(userService.updateProfile(eq(authenticatedUser), any(UpdateProfileRequest.class)))
+                .thenReturn(updatedUser);
+        when(userMapper.toResponse(updatedUser)).thenReturn(response);
+
+        mockMvc.perform(put("/users/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"firstName":"Jane","lastName":"Smith","phoneNumber":"0712345678"}
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.firstName").value("Jane"))
+                .andExpect(jsonPath("$.phoneNumber").value("0712345678"));
+    }
+
+    @Test
+    void updateCurrentUser_blankFirstName_returns400WithFieldError() throws Exception {
+
+        mockMvc.perform(put("/users/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"firstName":"","lastName":"Smith","phoneNumber":"0712345678"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors[0].field").value("firstName"));
+
+        verifyNoInteractions(userService);
+    }
+
+    // ==========================================
+    // PUT /users/me/password
+    // ==========================================
+
+    @Test
+    void changePassword_validRequest_returnsNoContent() throws Exception {
+
+        User authenticatedUser = new User();
+
+        when(currentUserService.getAuthenticatedUser())
+                .thenReturn(authenticatedUser);
+
+        mockMvc.perform(put("/users/me/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"currentPassword":"current123","newPassword":"newPassword1"}
+                                """))
+                .andExpect(status().isNoContent());
+
+        verify(userService).changePassword(
+                eq(authenticatedUser), any(ChangePasswordRequest.class));
+    }
+
+    @Test
+    void changePassword_wrongCurrentPassword_returns400WithCurrentPasswordError()
+            throws Exception {
+
+        when(currentUserService.getAuthenticatedUser())
+                .thenReturn(new User());
+        doThrow(new IncorrectCurrentPasswordException("Current password is incorrect"))
+                .when(userService)
+                .changePassword(any(User.class), any(ChangePasswordRequest.class));
+
+        mockMvc.perform(put("/users/me/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"currentPassword":"wrong","newPassword":"newPassword1"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Current password is incorrect"))
+                .andExpect(jsonPath("$.validationErrors[0].field").value("currentPassword"));
+    }
+
+    @Test
+    void changePassword_shortNewPassword_returns400WithFieldError() throws Exception {
+
+        mockMvc.perform(put("/users/me/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {"currentPassword":"current123","newPassword":"short"}
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.validationErrors[0].field").value("newPassword"));
+
+        verifyNoInteractions(userService);
     }
 }

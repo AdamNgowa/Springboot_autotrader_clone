@@ -289,4 +289,28 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+
+    // ==========================================
+    // 11. INPUT RULE HANDLER: WRONG CURRENT PASSWORD
+    // ==========================================
+
+    // 400, not 401: the user's session is fine, one form field is wrong.
+    // The field-level error uses the same shape as bean validation errors,
+    // so the frontend can show it under the "current password" input.
+    @ExceptionHandler(IncorrectCurrentPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleIncorrectCurrentPassword(
+            IncorrectCurrentPasswordException ex,
+            HttpServletRequest request
+    ) {
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                List.of(new ValidationError("currentPassword", ex.getMessage()))
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

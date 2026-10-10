@@ -1,6 +1,8 @@
 package com.autotrader.backend.controller;
 
+import com.autotrader.backend.dto.user.ChangePasswordRequest;
 import com.autotrader.backend.dto.user.SellerResponse;
+import com.autotrader.backend.dto.user.UpdateProfileRequest;
 import com.autotrader.backend.dto.user.UserResponse;
 import com.autotrader.backend.dto.vehicleListing.VehicleListingResponse;
 import com.autotrader.backend.entity.User;
@@ -12,13 +14,11 @@ import com.autotrader.backend.service.VehicleListingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
@@ -104,5 +104,41 @@ public class UserController {
                         pageable);
 
         return ResponseEntity.ok(listings);
+    }
+
+    @Operation(
+            summary = "Update the authenticated user's profile",
+            description = """
+                    Updates the first name, last name and phone number of the
+                    authenticated user. Email and role cannot be changed here.
+                    """
+    )
+    @PutMapping("/me")
+    public ResponseEntity<UserResponse> updateCurrentUser(
+            @Valid @RequestBody UpdateProfileRequest request) {
+
+        User authenticatedUser = currentUserService.getAuthenticatedUser();
+
+        User updated = userService.updateProfile(authenticatedUser, request);
+
+        return ResponseEntity.ok(userMapper.toResponse(updated));
+    }
+
+    @Operation(
+            summary = "Change the authenticated user's password",
+            description = """
+                    Requires the current password. Returns 400 with a
+                    field-level error when the current password is wrong.
+                    """
+    )
+    @PutMapping("/me/password")
+    public ResponseEntity<Void> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request) {
+
+        User authenticatedUser = currentUserService.getAuthenticatedUser();
+
+        userService.changePassword(authenticatedUser, request);
+
+        return ResponseEntity.noContent().build();
     }
 }

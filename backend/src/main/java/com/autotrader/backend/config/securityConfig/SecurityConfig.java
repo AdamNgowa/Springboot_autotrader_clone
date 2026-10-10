@@ -191,7 +191,12 @@ public class SecurityConfig {
                                 "/actuator/health"
 
 
-                        ).permitAll()
+                        )
+                        .permitAll()
+                        // Account endpoints. Declared BEFORE the "/users/*" wildcard below,
+                        // otherwise GET /users/me would match that public rule instead.
+                        .requestMatchers("/users/me", "/users/me/**")
+                        .authenticated()
                         .requestMatchers(HttpMethod.GET, "/listings")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/listings/*")
