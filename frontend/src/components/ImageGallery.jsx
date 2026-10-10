@@ -89,7 +89,7 @@ function ImageGallery({ images = [], selectedImage, setSelectedImage, title }) {
                   className="absolute right-2 top-1/2 -translate-y-1/2"
                 />
 
-                <span className="absolute bottom-2 right-2 bg-slate-900 px-2 py-1 text-xs text-white">
+                <span className="absolute bottom-2 right-2 bg-black/70 px-2 py-1 text-xs text-white">
                   {currentIndex + 1} / {total}
                 </span>
               </>
@@ -137,7 +137,7 @@ function ImageGallery({ images = [], selectedImage, setSelectedImage, title }) {
                 />
 
                 {isOverflowTile && (
-                  <span className="absolute inset-0 flex items-center justify-center bg-slate-900/70 text-lg font-medium text-white">
+                  <span className="absolute inset-0 flex items-center justify-center bg-black/60 text-lg font-medium text-white">
                     +{overflowCount}
                   </span>
                 )}

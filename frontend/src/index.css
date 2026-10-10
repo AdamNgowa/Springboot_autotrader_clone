@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
 /*
  * Theme overrides (Tailwind v4).
  * Every existing `rounded-lg` / `shadow-md` in the app now resolves to these
@@ -96,4 +97,77 @@
       font-size: 16px;
     }
   }
+}
+
+/* =====================================================================
+ * DARK MODE
+ * Activated by the "dark" class on <html> (see index.html and useTheme).
+ *
+ * Most of the app styles itself with Tailwind palette variables, so redefining
+ * them here recolours everything without touching components. Rules of thumb:
+ *   - never use bg-slate-900 as a dark button/badge background: it becomes
+ *     light in dark mode (use bg-black/70 or bg-blue-600 instead)
+ *   - text-white is safe on any coloured background (white is NOT remapped)
+ * ===================================================================== */
+.dark {
+  color-scheme: dark; /* dark native controls: selects, scrollbars, file inputs */
+
+  /* Neutral scale: surfaces dark, text light */
+  --color-slate-50: #020617;
+  --color-slate-100: #1e293b;
+  --color-slate-200: #1e293b;
+  --color-slate-300: #334155;
+  --color-slate-400: #64748b;
+  --color-slate-500: #94a3b8;
+  --color-slate-600: #cbd5e1;
+  --color-slate-700: #e2e8f0;
+  --color-slate-800: #f1f5f9;
+  --color-slate-900: #f1f5f9;
+
+  /* Tinted boxes (Notice, manage-listing panel, hover rows) */
+  --color-blue-50: #172554;
+  --color-red-50: #450a0a;
+  --color-red-300: #7f1d1d;
+  --color-yellow-50: #422006;
+  --color-yellow-300: #854d0e;
+  --color-yellow-800: #fde68a;
+  --color-green-50: #052e16;
+  --color-green-300: #166534;
+  --color-green-800: #86efac;
+}
+
+.dark body {
+  background-color: #020617;
+}
+
+/* Surfaces. Utility override for JSX, plus the component classes that
+   use bg-white through @apply (those never receive the .bg-white class). */
+.dark .bg-white,
+.dark .btn-outline,
+.dark .field,
+.dark .lift-face {
+  background-color: #0f172a;
+}
+
+.dark .btn-outline:hover {
+  background-color: #1e293b;
+}
+
+.dark .field:disabled {
+  background-color: #1e293b;
+}
+
+/* Coloured text only. bg-blue-600 / bg-red-600 buttons must keep their colour,
+   so these are utility overrides, not palette-variable overrides. */
+.dark .text-blue-600 {
+  color: #60a5fa;
+}
+.dark .text-blue-700 {
+  color: #93c5fd;
+}
+.dark .text-red-600 {
+  color: #f87171;
+}
+.dark .text-red-700 {
+  color: #fca5a5;
 }

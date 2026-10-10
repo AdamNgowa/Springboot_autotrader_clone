@@ -2,10 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
+import { useTheme } from "../hooks/useTheme";
+import ThemeToggle from "./ThemeToggle";
+
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout, isAuthenticated, loading } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   // Two independent pieces of UI state: the mobile menu and the desktop dropdown.
   const [menuOpen, setMenuOpen] = useState(false);
@@ -110,6 +114,7 @@ function Navbar() {
 
         {/* Desktop right side */}
         <div className="ml-auto hidden items-center gap-2 md:flex">
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
           {loading ? (
             <span className="text-sm text-slate-500">Loading...</span>
           ) : isAuthenticated ? (
@@ -189,38 +194,42 @@ function Navbar() {
           )}
         </div>
 
-        {/* Mobile hamburger */}
-        <button
-          type="button"
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-label={menuOpen ? "Close menu" : "Open menu"}
-          aria-expanded={menuOpen}
-          className="ml-auto flex h-9 w-9 items-center justify-center border border-slate-300 hover:bg-slate-100 md:hidden"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="h-5 w-5"
-            aria-hidden="true"
+        {/* Mobile controls */}
+        <div className="ml-auto flex items-center gap-2 md:hidden">
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            className="flex h-9 w-9 items-center justify-center border border-slate-300 hover:bg-slate-100"
           >
-            {menuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 6l12 12M18 6 6 18"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M4 7h16M4 12h16M4 17h16"
-              />
-            )}
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="h-5 w-5"
+              aria-hidden="true"
+            >
+              {menuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 6l12 12M18 6 6 18"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 7h16M4 12h16M4 17h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu panel */}
